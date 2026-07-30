@@ -1,0 +1,13 @@
+#Backend java
+Candid/Target
+*.class
+candid/.idea/.gitignore
+candid/.idea/compiler.xml
+candid/.idea/dataSources.xml
+candid/.idea/encodings.xml
+candid/.idea/jarRepositories.xml
+candid/.idea/misc.xml
+candid/src/main/resources/application.properties
+
+#Storage 
+Storage
