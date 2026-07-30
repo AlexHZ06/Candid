@@ -22,16 +22,32 @@ public class ImageController {
 
         long longUserId = Long.parseLong(userId);
 
-        ResponseBody responseBody = imageService.uplaodImage(file, imageName, longUserId, tags);
-
-        if(responseBody.isSucsess()){
-
+        try {
+            ResponseBody responseBody = imageService.saveImage(file, imageName, longUserId, tags);
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-
         }
-        else{
+        catch (Exception e) {
 
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseBody);
+            if(e.getMessage().equals("Cannot save to DB")){
+
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("Cannot save to DB", 302, false));
+
+            }
+            else if(e.getMessage().equals("tags id's do not align with number of tags")){
+
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("problem saving tags", 303, false));
+
+            }
+            else if(e.getMessage().equals("Tags junctions do not align with number of tags")){
+
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("issue with saving tags to JT", 304, false));
+
+            }
+            else{
+
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody(e.getMessage(), 300, false));
+
+            }
 
         }
 
