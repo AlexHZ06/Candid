@@ -1,16 +1,15 @@
-package com.nea.candid.data.dto;
+package com.nea.candid.data.dataObjects;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 
-public class JwtJwsBody {
+public class JwtObject {
 
     private String jwt;
     private Claims claims;
     private Boolean expired;
     private Boolean invalid;
 
-    public JwtJwsBody(String jwt, Claims claims, Boolean expired, Boolean invalid) {
+    public JwtObject(String jwt, Claims claims, Boolean expired, Boolean invalid) {
         this.jwt = jwt;
         this.claims = claims;
         this.expired = expired;

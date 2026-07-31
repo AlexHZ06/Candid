@@ -60,11 +60,7 @@ public class ImageService {
             ImageIO.write(image, "jpg", path.toFile());
 
             long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight());
-            if(photoId == -1){
 
-                throw new RuntimeException("Cannot save to DB");
-
-            }
             List<Long> tagids = saveTags(tags);
             addPhotoTags(photoId, tagids);
 
@@ -82,11 +78,11 @@ public class ImageService {
 
             }
 
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to save image", e);
 
         }
 
-        return new ResponseBody("image saved", 350,true);
+        return ResponseBody.success("image saved", 351);
 
     }
 
@@ -112,6 +108,14 @@ public class ImageService {
 
             }
 
+    }
+
+    //TODO implement delete photo
+    public void deletePhoto(){
+
+        //TODO delete all photo tags
+        //TODO Delete from storage
+        //TODO Delete from database
     }
 
 }

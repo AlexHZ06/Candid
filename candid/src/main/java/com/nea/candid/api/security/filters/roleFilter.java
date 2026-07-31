@@ -1,9 +1,7 @@
 package com.nea.candid.api.security.filters;
 
-import com.nea.candid.data.dto.JwtJwsBody;
+import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.services.JwtService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,36 +25,41 @@ public class roleFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String targetUrl = request.getRequestURI();
         String jwt = request.getHeader("auth");
-        JwtJwsBody jwtJwsBody = jwtService.decodeJwt(jwt);
+        JwtObject jwtObject = jwtService.decodeJwt(jwt);
 
-        if(targetUrl.contains("client")){
+        if(request.getRequestURI().contains("public")){
 
-            if(jwtJwsBody.getClaims().get("role").equals("client")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            else {
-                response.sendError(401);
-                return;
-            }
-
-        }
-        else if(targetUrl.contains("photographer")){
-
-            if(jwtJwsBody.getClaims().get("role").equals("photographer")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            else {
-                response.sendError(401);
-                return;
-            }
+            filterChain.doFilter(request,response);
+            return;
 
         }
 
-        filterChain.doFilter(request, response);
+        if(request.getRequestURI().contains("client")){
+
+            if(jwtObject.getClaims().get("role").equals("client")){
+
+                filterChain.doFilter(request,response);
+                return;
+
+            }
+            else {response.sendError(401); return;}
+
+        }
+        else if(request.getRequestURI().contains("photogrpaher")){
+
+            if(jwtObject.getClaims().get("role").equals("photogrpaher")){
+
+                filterChain.doFilter(request,response);
+                return;
+
+            }
+            else {response.sendError(401); return;}
+
+        }
+
+        filterChain.doFilter(request,response);
+        return;
 
     }
 }

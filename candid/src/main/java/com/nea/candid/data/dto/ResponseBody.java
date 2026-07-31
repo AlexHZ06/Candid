@@ -1,15 +1,30 @@
 package com.nea.candid.data.dto;
 
-public class ResponseBody {
+public class ResponseBody<T> {
 
-    private Object data;
+    private T data;
+    private String error;
     private int internalCode;
-    private boolean sucsess;
+    private boolean success;
 
-    public ResponseBody(String message, int internalCode, boolean sucsess) {
-        this.data = message;
-        this.internalCode = internalCode;
-        this.sucsess = sucsess;
+    private ResponseBody() {
+
+    }
+
+    public static ResponseBody<String> error(String message, int internalCode) {
+        ResponseBody<String> responseBody = new ResponseBody<>();
+        responseBody.setError(message);
+        responseBody.setInternalCode(internalCode);
+        responseBody.setSuccess(false);
+        return responseBody;
+    }
+
+    public static <T> ResponseBody<T> success(T data, int internalCode) {
+        ResponseBody<T> responseBody = new ResponseBody<>();
+        responseBody.setSuccess(true);
+        responseBody.setInternalCode(internalCode);
+        responseBody.setData(data);
+        return responseBody;
     }
 
     public Object getData() {
@@ -21,6 +36,26 @@ public class ResponseBody {
     }
 
     public boolean isSucsess() {
-        return sucsess;
+        return success;
+    }
+
+    private void setError(String error) {
+        this.error = error;
+    }
+
+    private void setInternalCode(int internalCode) {
+        this.internalCode = internalCode;
+    }
+
+    private void setSuccess(boolean sucsess) {
+        this.success = sucsess;
+    }
+
+    private void setData(T data) {
+        this.data = data;
+    }
+
+    public String getError() {
+        return error;
     }
 }

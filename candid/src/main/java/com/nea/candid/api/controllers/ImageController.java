@@ -2,6 +2,7 @@ package com.nea.candid.api.controllers;
 
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.ImageService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,9 @@ public class ImageController {
     }
 
     @PostMapping("/photographer/uploadimage")
-    public ResponseEntity uploadImage(@RequestPart MultipartFile file, @RequestPart String imageName, @RequestPart String userId, @RequestParam String[] tags) {
+    public ResponseEntity uploadImage(HttpServletRequest request, @RequestPart MultipartFile file, @RequestPart String imageName, @RequestParam String[] tags) {
 
-        long longUserId = Long.parseLong(userId);
+        long longUserId = Long.parseLong(request.getParameter("userId"));
 
         try {
             ResponseBody responseBody = imageService.saveImage(file, imageName, longUserId, tags);
@@ -30,22 +31,22 @@ public class ImageController {
 
             if(e.getMessage().equals("Cannot save to DB")){
 
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("Cannot save to DB", 302, false));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("Cannot save to DB", 302));
 
             }
             else if(e.getMessage().equals("tags id's do not align with number of tags")){
 
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("problem saving tags", 303, false));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("problem saving tags", 303));
 
             }
             else if(e.getMessage().equals("Tags junctions do not align with number of tags")){
 
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody("issue with saving tags to JT", 304, false));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("issue with saving tags to JT", 304));
 
             }
             else{
 
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseBody(e.getMessage(), 300, false));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error(e.getMessage(), 300));
 
             }
 

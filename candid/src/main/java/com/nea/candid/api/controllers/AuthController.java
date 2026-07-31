@@ -3,8 +3,8 @@ package com.nea.candid.api.controllers;
 
 
 import com.nea.candid.services.AuthService;
-import com.nea.candid.data.dto.LogInUserBody;
 import com.nea.candid.data.dto.ResponseBody;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +25,9 @@ public class AuthController {
     }
 
     @PostMapping("/public/login")
-    public ResponseEntity logUserIn(@RequestBody LogInUserBody body) {
+    public ResponseEntity logUserIn(@RequestBody Map<String, String> body) {
 
-        ResponseBody responseBody = authService.logInUser(body.getUserName(), body.getPassword());
+        ResponseBody responseBody = authService.logInUser(body.get("userName"), body.get("password"));
 
         if(responseBody.isSucsess()){
 
@@ -43,9 +43,9 @@ public class AuthController {
     }
 
     @PostMapping("/public/logout")
-    public ResponseEntity logOutUser(@RequestBody Map<String, Long> body) {
+    public ResponseEntity logOutUser(HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(authService.logOut(body.get("userId")));
+        return ResponseEntity.status(HttpStatus.OK).body(authService.logOut(Long.parseLong(request.getAttribute("userId").toString())));
 
     }
 

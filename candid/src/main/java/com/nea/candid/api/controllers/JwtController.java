@@ -2,10 +2,13 @@ package com.nea.candid.api.controllers;
 
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
@@ -19,9 +22,9 @@ public class JwtController {
     }
 
     @PostMapping("/public/requestjwt")
-    public ResponseEntity requestJwt(@RequestBody Map<String, Long> body){
+    public ResponseEntity requestJwt(HttpServletRequest request) {
 
-        ResponseBody responseBody = jwtServices.requestJwt(body.get("userId"));
+        ResponseBody responseBody = jwtServices.requestJwt(Long.parseLong((String) request.getAttribute("userId")));
 
         if(responseBody.isSucsess()){
 

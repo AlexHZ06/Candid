@@ -1,11 +1,9 @@
 package com.nea.candid.services;
 
 import com.nea.candid.data.dbEnties.UsersTableEntity;
-import com.nea.candid.data.dto.JwtJwsBody;
+import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.database.UsersTableService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,13 +20,11 @@ public class AuthService {
 
     public ResponseBody logInUser(String username, String password) {
 
-        ResponseBody responseBody = new ResponseBody("Message", 151, true);
-
         UsersTableEntity record = usersTableService.getUserByUserName(username);
 
         if(record == null){
 
-            return new ResponseBody("User does not exist", 101, false);
+            return ResponseBody.error("User does not exist", 101);
 
         }
         else{
@@ -38,17 +34,18 @@ public class AuthService {
                 jwtService.removeJwt(record.getUserid());
 
                 String refreshJwt = jwtService.buildJwt(record.getUserid(), record.getUsertype(), true);
+                String requestJwt  = jwtService.buildJwt(record.getUserid(), record.getUsertype(), false);
 
-                JwtJwsBody refreshJwtJwsBody = jwtService.decodeJwt(refreshJwt);
+                JwtObject refreshJwtObject = jwtService.decodeJwt(refreshJwt);
 
-                jwtService.addJwt(refreshJwtJwsBody, refreshJwt);
+                jwtService.addJwt(refreshJwtObject, refreshJwt);
 
-                return new ResponseBody("logged in", 151, true);
+                return ResponseBody.success(requestJwt, 151);
 
             }
             else{
 
-                return new ResponseBody("Incorrect details", 102, false);
+                return ResponseBody.error("Incorrect details", 102);
 
             }
 
@@ -59,7 +56,28 @@ public class AuthService {
     public ResponseBody logOut(long userId){
 
         jwtService.removeJwt(userId);
-        return  new ResponseBody("logged out", 151, true);
+        return ResponseBody.success("logged out", 153);
+
+    }
+
+    //TODO implement signup
+    public void SignUp(String username, String password){
+
+        //TODO Check if user name exists
+        //TODO email validation
+        //TODO Preferences saved
+        //TODO add all details to database
+
+    }
+
+    //TODO Delete User
+    public void deleteUser(){
+
+        //TODO check if user has any bookings if so they cannot delete untill they are cancelled or completled
+        //TODO Delete all users search history
+        //TODO Delete any uploads
+        //TODO Delete any activity
+        //TODO Delete user from user table
 
     }
 
