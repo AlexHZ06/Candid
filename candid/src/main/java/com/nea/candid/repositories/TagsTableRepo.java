@@ -67,4 +67,23 @@ public class TagsTableRepo {
 
     }
 
+    public List<String> getTagsFromPhoto(long photoid) {
+
+        String sql = """
+                    select distinct tagstable.tagname
+                    from tagstable, photostable, phototagstable
+                    where tagstable.tagid = phototagstable.tagid
+                    and photostable.photoid = phototagstable.photoid
+                    and photostable.photoid = ?
+                """;
+
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            return rs.getString("tagname");
+
+        }, photoid);
+
+    }
+
 }

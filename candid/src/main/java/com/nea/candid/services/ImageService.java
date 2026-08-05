@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +35,8 @@ public class ImageService {
 
         Path path = null;
 
+
+
         try{
 
             path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
@@ -57,6 +61,7 @@ public class ImageService {
 
             Files.createDirectories(path.getParent());
             BufferedImage image = ImageIO.read(file.getInputStream());
+
             ImageIO.write(image, "jpg", path.toFile());
 
             long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight());
@@ -78,6 +83,7 @@ public class ImageService {
 
             }
 
+            System.out.println(e.getMessage());
             throw new RuntimeException("Failed to save image", e);
 
         }
