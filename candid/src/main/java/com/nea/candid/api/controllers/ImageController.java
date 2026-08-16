@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RequestMapping("image")
+@RequestMapping("/image")
 @RestController
 public class ImageController {
 
@@ -21,7 +21,7 @@ public class ImageController {
     @PostMapping("/photographer/uploadimage")
     public ResponseEntity uploadImage(HttpServletRequest request, @RequestPart MultipartFile file, @RequestPart String imageName, @RequestParam String[] tags) {
 
-        long longUserId = Long.parseLong(request.getParameter("userId"));
+        long longUserId = Long.parseLong((String) request.getAttribute("userId"));
 
         try {
             ResponseBody responseBody = imageService.saveImage(file, imageName, longUserId, tags);
@@ -41,10 +41,13 @@ public class ImageController {
             }
             else if(e.getMessage().equals("Tags junctions do not align with number of tags")){
 
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("issue with saving tags to JT", 304));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("issue with saving tags to JT",  304));
 
-            }
-            else{
+            } else if (e.getMessage().equals("Vectors where not saved")) {
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error("Vectors where not saved", 305));
+
+            } else{
 
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBody.error(e.getMessage(), 300));
 

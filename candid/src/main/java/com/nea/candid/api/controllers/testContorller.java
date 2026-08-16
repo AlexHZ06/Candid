@@ -45,13 +45,12 @@ public class testContorller {
 
     }
 
-    @PostMapping("/public/pixel")
-    public void pixel(@RequestPart MultipartFile file) throws IOException {
+
+    @PostMapping("/public/bounds")
+    public void bounds(MultipartFile file) throws IOException {
 
         BufferedImage image = ImageIO.read(file.getInputStream());
-        ImageProfileObject imageProfileObject = new ImageProfileObject(image);
-        imageDecoderService.calcAndDisplayInfo(imageProfileObject);
-
+        imageDecoderService.extractSampleBounds(image, 3);
 
     }
 

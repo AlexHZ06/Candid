@@ -1,116 +1,178 @@
 package com.nea.candid.services;
 
 import com.nea.candid.data.dataObjects.ImageProfileObject;
+import com.nea.candid.data.dbEnties.EmbeddedVectorTableEntity;
 import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class ImageDecoderService {
 
+    private float hueThreshold = 0.15F;
+    private ArrayList<Float> globalBrightness = null;
+    private float globalTopBrightprec = 0;
+    private float gloablBotBrightprec = 0;
+
     public void calcAndDisplayInfo(ImageProfileObject imageProfileObject) {
 
-        extractSampleBounds(imageProfileObject.getImage(), 3);
+        ArrayList<int[][]> sections = extractSampleBounds(imageProfileObject.getImage(), 3);
+        float[] saturation = null;
+        float aspectRatio = calculateAspectRatio(imageProfileObject);
+        ArrayList<EmbeddedVectorTableEntity> vectors = new ArrayList<>();
 
-        ArrayList<int[]> samplePixels = extractSamplePixels(0,0,imageProfileObject.getImage().getWidth(), imageProfileObject.getImage().getHeight(), imageProfileObject.getImage());
-        ArrayList<int[]> extractedArgb = extractSamplePixelsArgb(samplePixels, imageProfileObject.getImage());
-        ArrayList<Float> sampledPixelsBrightness = extractPixelsBrightness(extractedArgb);
+        for(int i = 0; i < sections.size(); i++) {
 
-        float[] brightness = calculateSectionBrightness(sampledPixelsBrightness);
-        float[] saturation = calculateSectionSaturation(extractedArgb);
-        float[] hue = calculateSectionHue(extractedArgb);
-        float edgeDensity = calculateEdgeDensity(imageProfileObject.getImage(), brightness[2], sampledPixelsBrightness, samplePixels);
-        float aspecRatio = calculateAspectRatio(imageProfileObject);
+            ArrayList<int[]> samplePixels = extractSamplePixels(sections.get(i)[0][0], sections.get(i)[0][1], sections.get(i)[1][0], sections.get(i)[1][1], imageProfileObject.getImage());
+            ArrayList<int[]> samplePixelsArgb = extractSamplePixelsArgb(samplePixels, imageProfileObject.getImage());
+            ArrayList<Float> samplePixelsBrightness = extractPixelsBrightness(samplePixelsArgb);
+            float[] brightness = calculateSectionBrightness(samplePixelsBrightness);
+            saturation = calculateSectionSaturation(samplePixelsArgb);
+            float[] hue = calculateSectionHue(samplePixelsArgb, samplePixels.size());
+            float edgeDensity = calculateEdgeDensity(imageProfileObject.getImage(), brightness[2], samplePixelsBrightness, samplePixels);
+            float[] shadowHighlights = calculateShadowHighlights(samplePixelsBrightness);
 
-        System.out.println("brightness");
-        System.out.println("mean: " + brightness[0]);
-        System.out.println("deviation: " + brightness[1]);
-        System.out.println("dynamic range: " + brightness[2]);
-        System.out.println("saturation");
-        System.out.println("mean: " + saturation[0]);
-        System.out.println("deviation: " + saturation[1]);
-        System.out.println("hue");
-        System.out.println("red: " + hue[0]);
-        System.out.println("Yellow green: " + hue[1]);
-        System.out.println("Green Cyan: " + hue[2]);
-        System.out.println("Cyan Blue: " + hue[3]);
-        System.out.println("Blue Purple: " + hue[4]);
-        System.out.println("Purple Red: " + hue[5]);
-        System.out.println("edgeDensity");
-        System.out.println(edgeDensity);
-        System.out.println("aspecRatio");
-        System.out.println(aspecRatio);
+            vectors.add(new EmbeddedVectorTableEntity(i, brightness[0], brightness[1], brightness[2], saturation[0], saturation[1], saturation[2], hue[0], hue[1], hue[2], hue[3], hue[4], hue[5], hue[6], edgeDensity, aspectRatio));
+
+        }
+
+        calculateBrightnessPercentiles();
+
+        for(int i = 0; i < imageProfileObject.getEmbededVectors().size(); i++) {
+
+            System.out.println("---------Section " + (i + 1) + " ------");
+            System.out.println("Brightness");
+            System.out.println("Mean: " + imageProfileObject.getEmbededVectors().get(i).getBrightnessmean());
+            System.out.println("Varience: " + imageProfileObject.getEmbededVectors().get(i).getBrightnessdeviation());
+            System.out.println("Dynamic Range: " + imageProfileObject.getEmbededVectors().get(i).getDynamicrange());
+            System.out.println("Saturation");
+            System.out.println("Mean: " + imageProfileObject.getEmbededVectors().get(i).getSaturationmean());
+            System.out.println("Varience: " + imageProfileObject.getEmbededVectors().get(i).getSaturationdeviation());
+            System.out.println("colour coverage" + saturation[2]);
+            System.out.println("Hue");
+            System.out.println("Red: " + imageProfileObject.getEmbededVectors().get(i).getRed());
+            System.out.println("orange: " + imageProfileObject.getEmbededVectors().get(i).getOrange());
+            System.out.println("yellow: " + imageProfileObject.getEmbededVectors().get(i).getYellow());
+            System.out.println("green: " + imageProfileObject.getEmbededVectors().get(i).getGreen());
+            System.out.println("cyan: " + imageProfileObject.getEmbededVectors().get(i).getCyan());
+            System.out.println("blue: " + imageProfileObject.getEmbededVectors().get(i).getBlue());
+            System.out.println("purple: " + imageProfileObject.getEmbededVectors().get(i).getPurple());
+            System.out.println("Magenta: " + imageProfileObject.getEmbededVectors().get(i).getMagenta());
+            System.out.println("Edge density: " + imageProfileObject.getEmbededVectors().get(i).getEdgedensity());
+            System.out.println("AspectRatio: " + imageProfileObject.getEmbededVectors().get(i).getAspectratio());
+
+        }
 
     }
 
-    private ArrayList<int[][]> extractSampleBounds(BufferedImage image, int divisions) {
+    public void calculatePrintResults(ImageProfileObject imageProfileObject) {
 
-        ArrayList<int[][]> sampleBounds = new ArrayList<>();
-        float basePercentage = (float) (100 / divisions) / 100;
+        float aspectRatio = calculateAspectRatio(imageProfileObject);
+        ArrayList<int[][]> sections = extractSampleBounds(imageProfileObject.getImage(), 3);
 
-        float placeHolder = -1 * basePercentage;
+        for(int i =0; sections.size() > 0; i++) {
 
-        for(int i = 0; i < divisions - 1; i++) {
+            ArrayList<int[]> samplePixels = extractSamplePixels(sections.get(i)[0][0], sections.get(i)[1][0], sections.get(i)[1][0], sections.get(i)[1][1], imageProfileObject.getImage());
+            ArrayList<int[]> samplePixelsArgb = extractSamplePixelsArgb(samplePixels, imageProfileObject.getImage());
+            ArrayList<Float> samplePixelsBrightness = extractPixelsBrightness(samplePixelsArgb);
 
-            int startCoord = Math.round((placeHolder + basePercentage) * image.getWidth());
-            placeHolder = placeHolder + basePercentage;
-            int endCoord = Math.round((placeHolder + basePercentage) * image.getWidth());
+            float[] brightness = calculateSectionBrightness(samplePixelsBrightness);
+            float[] saturation = calculateSectionSaturation(samplePixelsArgb);
+            float[] hues = calculateSectionHue(samplePixelsArgb, samplePixels.size());
+            float edgeDensity = calculateEdgeDensity(imageProfileObject.getImage(), brightness[2], samplePixelsBrightness, samplePixels);
+            float[] shadowHighlights = calculateShadowHighlights(samplePixelsBrightness);
+            float sharpness = calculateSharpness(samplePixelsBrightness, samplePixels, imageProfileObject.getImage());
+
+            System.out.println("----------Section " + i + "----------");
+            System.out.println("MeanBrightness: " + brightness[0]);
+            System.out.println("Brightness deviation: " + brightness[1]);
+            System.out.println("Dynamic Range" + brightness[2]);
+            
+
+        }
+    }
+
+    private void calculateBrightnessPercentiles(){
+
+        int upperPercentileIndex = (int) Math.round(globalBrightness.size() * 0.85);
+        int lowerPercentileIndex = (int) Math.round(globalBrightness.size() * 0.15);
+
+        gloablBotBrightprec = globalBrightness.get(lowerPercentileIndex);
+        globalTopBrightprec = globalBrightness.get(upperPercentileIndex);
+
+    }
+
+    public ArrayList<int[][]> extractSampleBounds(BufferedImage image, int divisions) {
+
+        ArrayList<int[][]> sectionDivision = new ArrayList<>();
+        float divisionPercentage = (float)(100 / divisions) / 100;
+
+        ArrayList<int[]> xSectionDivision = new ArrayList<>();
+        ArrayList<int[]> ySectionDivision = new ArrayList<>();
+
+        float placeHolder = -1 * divisionPercentage;
+
+        for(int i =0; i < divisions -1; i++){
+
+            int startPixel = Math.round((placeHolder + divisionPercentage) * image.getWidth());
+            placeHolder = placeHolder + divisionPercentage;
+            int endPixel = Math.round((placeHolder + divisionPercentage) * image.getWidth());
 
             for(int j = 0; j < divisions; j++) {
-
-                sampleBounds.add(new int[][]{{startCoord,0},{endCoord,0}});
-
+                xSectionDivision.add(new int[]{startPixel, endPixel});
             }
 
         }
 
-        for(int i = 0; i < divisions; i++) {
+        for(int i = 0; i < divisions; i++){
+            xSectionDivision.add(new int[]{Math.round((placeHolder + divisionPercentage) * image.getWidth()), image.getWidth()});
+        }
 
-            sampleBounds.add(new int[][]{{Math.round((placeHolder + basePercentage) * image.getWidth()),0},{image.getWidth(),0}});
+        placeHolder = -1 * divisionPercentage;
+
+        for(int i = 0; i < divisions - 1; i++){
+
+            int startPixel = Math.round((placeHolder + divisionPercentage) * image.getHeight());
+            placeHolder = placeHolder + divisionPercentage;
+            int endPixel = Math.round((placeHolder + divisionPercentage) * image.getHeight());
+
+            ySectionDivision.add(new int[]{startPixel, endPixel});
 
         }
 
-
-        placeHolder = -1 * basePercentage;
-        ArrayList<int[]> sampleYBounds = new ArrayList<>();
-
-        for(int i = 0; i < divisions - 1; i++) {
-
-            int startCoord = Math.round((placeHolder + basePercentage) * image.getHeight());
-            placeHolder = placeHolder + basePercentage;
-            int endCoord = Math.round((placeHolder + basePercentage) * image.getHeight());
-
-            sampleYBounds.add(new int[]{startCoord,endCoord});
-
-        }
-
-        sampleYBounds.add(new int[]{Math.round((placeHolder + basePercentage) * image.getHeight()),image.getHeight()});
+        ySectionDivision.add(new int[]{Math.round((placeHolder + divisionPercentage) * image.getHeight()), image.getHeight()});
 
         int index = 0;
-        int count = 1;
 
-        for(int i = 0; i < sampleBounds.size(); i++) {
+        for(int i = 0; i < xSectionDivision.size(); i++){
 
-            if(count != divisions + 1) {
+            int startXpix = xSectionDivision.get(i)[0];
+            int endtXpix = xSectionDivision.get(i)[1];
+            int startYpix = ySectionDivision.get(index)[0];
+            int endYpix = ySectionDivision.get(index)[1];
 
-                sampleBounds.get(i)[0][1] = sampleYBounds.get(index)[0];
-                sampleBounds.get(i)[1][1] = sampleYBounds.get(index)[1];
-                count++;
+            sectionDivision.add(new int[][]{{startXpix, startYpix},{endtXpix, endYpix}});
+
+            if(index >= divisions - 1){
+
+                index = 0;
 
             }
-            else  {
+            else{
+
                 index++;
-                count = 0;
+
             }
+
 
         }
 
-        return sampleBounds;
-
-        //FIX THIS / CHECK
+        return sectionDivision;
 
     }
 
@@ -188,7 +250,7 @@ public class ImageDecoderService {
         for(int i = 0; i < extractArgbs.size(); i++) {
 
             float brightness = 0.2126f * extractArgbs.get(i)[1] +  0.7152f * extractArgbs.get(i)[2] +   0.0722f * extractArgbs.get(i)[3];
-            sectionBrightness.add(brightness);
+            globalBrightness.add(brightness);
         }
 
         return sectionBrightness;
@@ -198,10 +260,13 @@ public class ImageDecoderService {
     private float[] calculateSectionBrightness(ArrayList<Float> sectionBrightness) {
 
         double total = 0;
+        int upperPercentile = (int) ((sectionBrightness.size() - 1) * 0.85);
+        int bottomPercentile = (int) ((sectionBrightness.size() - 1) * 0.15);
 
         for (int i = 0; i < sectionBrightness.size(); i++) {
 
             total += sectionBrightness.get(i);
+
 
         }
 
@@ -218,9 +283,6 @@ public class ImageDecoderService {
 
         Collections.sort(sectionBrightness);
 
-        int upperPercentile = (int) ((sectionBrightness.size() - 1) * 0.85);
-        int bottomPercentile = (int) ((sectionBrightness.size() - 1) * 0.15);
-
         float dynamicRange = sectionBrightness.get(upperPercentile) -  sectionBrightness.get(bottomPercentile);
 
         return new float[]{(float) mean, brightnessDeviation, dynamicRange};
@@ -228,9 +290,32 @@ public class ImageDecoderService {
 
     }
 
+    private float[] calculateShadowHighlights(ArrayList<Float> sectionBrightness) {
+
+        calculateSectionBrightness(sectionBrightness);
+
+        float shadow = 0;
+        float highlights = 0;
+
+        for(int i = 0; i < sectionBrightness.size(); i++) {
+
+            if(sectionBrightness.get(i) < gloablBotBrightprec){shadow ++;}
+            else if(sectionBrightness.get(i) > globalTopBrightprec){highlights ++;}
+
+        }
+
+        shadow = shadow / sectionBrightness.size();
+        highlights = highlights / sectionBrightness.size();
+
+        return new float[]{shadow, highlights};
+
+    }
+
     private float[] calculateSectionSaturation(ArrayList<int[]> extractArgbs) {
 
         ArrayList<Float> saturations = new ArrayList<>();
+        float total = 0;
+        int totalHuePixels = 0;
 
         for(int i = 0; i < extractArgbs.size(); i++) {
 
@@ -262,14 +347,9 @@ public class ImageDecoderService {
             }
 
             saturations.add(saturation);
+            total += saturation;
+            if(saturation < hueThreshold){totalHuePixels++;}
 
-        }
-
-        double total = 0;
-
-        for (int i = 0; i < saturations.size(); i++) {
-
-            total += saturations.get(i);
 
         }
 
@@ -285,20 +365,22 @@ public class ImageDecoderService {
 
         double saturationStdDev = Math.sqrt(squaredDifference / (extractArgbs.size()));
 
-        return new float[]{(float) mean, (float) saturationStdDev};
+        float colourCoverage = (float) totalHuePixels / extractArgbs.size();
+
+        return new float[]{(float) mean, (float) saturationStdDev, colourCoverage};
 
     }
 
-    private float[] calculateSectionHue(ArrayList<int[]> extractArgbs) {
+    private float[] calculateSectionHue(ArrayList<int[]> extractArgbs, int totalPixels) {
 
         float red = 0;
-        float yellowGreen = 0;
-        float greenCyan = 0;
-        float cyanBlue = 0;
-        float bluePurple = 0;
-        float purpleRed = 0;
-
-        int totalValidPix = 0;
+        float orange = 0;
+        float yellow = 0;
+        float green = 0;
+        float cyan = 0;
+        float blue = 0;
+        float purple = 0;
+        float magenta = 0;
 
         for(int i =0; i < extractArgbs.size(); i++){
 
@@ -335,9 +417,8 @@ public class ImageDecoderService {
 
             float sat = (float) (dif) / maxRgb;
 
-            if(!(sat <= 0.15)) {
+            if(!(sat <= hueThreshold)) {
 
-                totalValidPix++;
                 float hue = 0;
 
                 if(highestIndex == 1) {
@@ -401,38 +482,47 @@ public class ImageDecoderService {
 
                 }
 
-                if (hue >= 0 && hue < 60) {
+                if (hue >= 0 && hue < 15) {
                     red += 1;
-                } else if (hue >= 60 && hue < 120) {
-                    yellowGreen += 1;
-                } else if (hue >= 120 && hue < 180) {
-                    greenCyan += 1;
-                } else if (hue >= 180 && hue < 240) {
-                    cyanBlue += 1;
-                } else if (hue >= 240 && hue< 300) {
-                    bluePurple += 1;
-                } else if (hue >= 300 && hue < 360) {
-                    purpleRed += 1;
+                }else if(hue >= 15 && hue < 45) {
+                    orange += 1;
+                }
+                else if(hue >= 45 && hue < 75) {
+                    yellow += 1;
+                }
+                else if(hue >= 75 && hue < 165) {
+                    green += 1;
+                }
+                else if(hue >= 165 && hue < 195) {
+                    cyan += 1;
+                }
+                else if(hue >= 195 && hue < 225) {
+                    blue += 1;
+                }
+                else if(hue >= 225 && hue < 285) {
+                    purple += 1;
+                }
+                else if(hue >= 285 && hue < 345) {
+                    magenta += 1;
+                }
+                else if(hue >= 345 && hue < 360) {
+                    red += 1;
                 }
 
             }
 
         }
 
-        if(totalValidPix == 0) {
+        red = red / totalPixels;
+        orange = orange / totalPixels;
+        yellow = yellow / totalPixels;
+        green = green / totalPixels;
+        cyan = cyan / totalPixels;
+        blue = blue / totalPixels;
+        purple = purple / totalPixels;
+        magenta = magenta / totalPixels;
 
-            return new float[]{0,0,0,0,0,0};
-
-        }
-
-        red = red /  totalValidPix;
-        yellowGreen = yellowGreen / totalValidPix;
-        greenCyan = greenCyan / totalValidPix;
-        cyanBlue = cyanBlue / totalValidPix;
-        bluePurple = bluePurple / totalValidPix;
-        purpleRed = purpleRed / totalValidPix;
-
-        return new float[]{red, yellowGreen, greenCyan, cyanBlue, bluePurple, purpleRed};
+        return new float[]{red, orange, yellow, green, cyan, blue, purple, magenta};
 
     }
 
@@ -465,8 +555,7 @@ public class ImageDecoderService {
                 int[] rightArgb = convertArgb(image.getRGB(x + 1, y));
                 float brightness = 0.2126f * rightArgb[1] + 0.7152f * rightArgb[2] + 0.0722f * rightArgb[3];
 
-                float diff = pixelBrightness -  brightness;
-                if(diff < 0) {diff = diff * -1;}
+                float diff = Math.abs(pixelBrightness -  brightness);
                 if(diff >= threshold){edgeCount++;}
 
             }
@@ -476,8 +565,7 @@ public class ImageDecoderService {
                 int[] downArgb =  convertArgb(image.getRGB(x, y + 1));
                 float brightness = 0.2126f * downArgb[1] + 0.7152f * downArgb[2] + 0.0722f * downArgb[3];
 
-                float diff = pixelBrightness -  brightness;
-                if(diff < 0) {diff = diff * -1;}
+                float diff = Math.abs(pixelBrightness -  brightness);
                 if(diff >= threshold){edgeCount++;}
 
             }
@@ -494,6 +582,35 @@ public class ImageDecoderService {
 
     }
 
+    private float calculateSharpness(ArrayList<Float> sectionBrightness, ArrayList<int[]> samplePixels, BufferedImage image) {
 
+        ArrayList<Float> sharpnessList = new ArrayList<>();
+        double total = 0;
+
+        for(int  i = 0; i < samplePixels.size(); i++) {
+
+            if((samplePixels.get(i)[0] + 1 < image.getWidth()) && (samplePixels.get(i)[0] - 1 > 0) && (samplePixels.get(i)[1] + 1 < image.getHeight()) && (samplePixels.get(i)[1] - 1 > 0)) {
+
+                int[] leftArgb = convertArgb(image.getRGB((samplePixels.get(i)[0] - 1), samplePixels.get(i)[2]));
+                int[] rightArgb = convertArgb(image.getRGB((samplePixels.get(i)[0] + 1), samplePixels.get(i)[2]));
+                int[] upArgb = convertArgb(image.getRGB(samplePixels.get(i)[0], (samplePixels.get(i)[1] + 1)));
+                int[] downArgb = convertArgb(image.getRGB(samplePixels.get(i)[0], (samplePixels.get(i)[1] - 1)));
+
+                float brightnessLeft = 0.2126f * leftArgb[0] + 0.7152f * leftArgb[1] + 0.0722f * leftArgb[2];
+                float brightnessRight = 0.2126f * rightArgb[0] + 0.7152f * rightArgb[1] + 0.0722f * rightArgb[2];
+                float brightnessUp = 0.2126f * upArgb[0] + 0.7152f * upArgb[1] + 0.0722f * upArgb[2];
+                float brightnessDown = 0.2126f * downArgb[0] + 0.7152f * downArgb[1] + 0.0722f * downArgb[2];
+
+                float sharpness = Math.abs(brightnessRight + brightnessLeft + brightnessUp + brightnessDown - 4 * sectionBrightness.get(i));
+                sharpnessList.add(sharpness);
+                total += sharpness;
+
+            }
+
+        }
+
+        return (float) total / sharpnessList.size();
+
+    }
 
 }

@@ -2,66 +2,26 @@ import { useRef } from "react"
 
 function Index(){
 
-    const text = useRef(null)
-
-    function enter(){
-
-        const textValue = text.current.value;
-
-        fetch("/api/test/run",{
-
-            method:"POST",
-            headers:{
-
-                "Content-Type":"application/json"
-
-            },
-            body:JSON.stringify({
-
-                text: textValue
-
-            })
-
-        }).then(res => res.text()).then(data => {
-
-            alert("java says " + data);
-
-        })
-        
-    }
-
     return(
 
-        <div className="
-        
-            flex
-            flex-col
-            items-center  
-            
-        ">
-            <h1 className="
-            
-                mt-10
-            
-            ">Hello world this is page 1</h1>
-            <div className="
-                
-                mt-10
-                flex
-                justify-center
-                gap-10
-                w-4/5
-            
-            ">
-                <input placeholder="text" type="text" ref={text} className="
-            
-                    outline-1
+        <div>
 
-                    hover:text-blue-700
-
-                "></input>
-                <button onClick={enter}>enter</button>
+            <div>
+                <h1>Welcome to Candid</h1>
+                <p>Word word word word word word</p>
             </div>
+            <div>
+                <div>
+                    <h1>Log in</h1>
+                    <div>
+                        <input placeholder="UserName" type="text"/>
+                    </div>
+                    <div>
+                        <input placeholder="password" type="password"/>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     )

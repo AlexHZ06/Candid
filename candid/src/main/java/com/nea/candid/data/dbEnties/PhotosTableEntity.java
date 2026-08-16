@@ -81,4 +81,5 @@ public class PhotosTableEntity {
     public float getHeight() {
         return height;
     }
+
 }

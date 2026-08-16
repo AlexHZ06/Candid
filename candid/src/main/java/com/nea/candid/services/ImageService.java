@@ -1,5 +1,6 @@
 package com.nea.candid.services;
 
+import com.nea.candid.data.dataObjects.ImageProfileObject;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.database.PhotosTableService;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,9 +24,11 @@ import java.util.Random;
 public class ImageService {
 
     private final PhotosTableService photosTableService;
+    private final ImageDecoderService imageDecoderService;
 
-    public ImageService(PhotosTableService photosTableService) {
+    public ImageService(PhotosTableService photosTableService, ImageDecoderService imageDecoderService) {
         this.photosTableService = photosTableService;
+        this.imageDecoderService = imageDecoderService;
     }
 
     @Transactional
@@ -39,7 +43,7 @@ public class ImageService {
 
         try{
 
-            path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
+            path = Paths.get("D:\\Programing\\CANDID\\Candid\\Storage\\Test\\" + newName);
             boolean pathExists = Files.exists(path);
 
             String addon = "";
@@ -54,7 +58,7 @@ public class ImageService {
                 }
 
                 newName = photoName + addon + ".jpg";
-                path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
+                path = Paths.get("D:\\Programing\\CANDID\\Candid\\Storage\\Test\\" + newName);
                 pathExists = Files.exists(path);
 
             }
@@ -65,6 +69,9 @@ public class ImageService {
             ImageIO.write(image, "jpg", path.toFile());
 
             long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight());
+            ImageProfileObject imageProfileObject = new ImageProfileObject(image, photoId);
+            imageDecoderService.calcAndDisplayInfo(imageProfileObject);
+            photosTableService.addEmbeddedVectors(imageProfileObject.getEmbededVectors());
 
             List<Long> tagids = saveTags(tags);
             addPhotoTags(photoId, tagids);
@@ -84,6 +91,7 @@ public class ImageService {
             }
 
             System.out.println(e.getMessage());
+            System.out.println(e.getCause());
             throw new RuntimeException("Failed to save image", e);
 
         }
@@ -123,5 +131,4 @@ public class ImageService {
         //TODO Delete from storage
         //TODO Delete from database
     }
-
 }
