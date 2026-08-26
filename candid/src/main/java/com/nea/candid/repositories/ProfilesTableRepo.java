@@ -37,6 +37,8 @@ public class ProfilesTableRepo {
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
 
+            float[][] vector = (float[][]) rs.getArray("preferencevector").getArray();
+
             return new ProfilesTableEntity(
                     rs.getLong("profileid"),
                     rs.getLong("userid"),
@@ -46,10 +48,42 @@ public class ProfilesTableRepo {
                     rs.getBoolean("active"),
                     rs.getFloat("mincost"),
                     rs.getFloat("maxcost"),
-                    rs.getString("projectCatagory")
+                    rs.getString("projectCatagory"),
+                    vector,
+                    rs.getInt("photointeractions")
             );
 
         }, userId, profileName);
+
+    }
+
+    public ProfilesTableEntity getProfileById(long profileId){
+
+        String sql = """
+                select *
+                from profilestable
+                where profileid = ?;
+                """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+
+            float[][] vector = (float[][]) rs.getArray("preferencevector").getArray();
+
+            return new ProfilesTableEntity(
+                    rs.getLong("profileid"),
+                    rs.getLong("userid"),
+                    rs.getString("profilename"),
+                    rs.getString("profiledescription"),
+                    rs.getDate("createdAt"),
+                    rs.getBoolean("active"),
+                    rs.getFloat("mincost"),
+                    rs.getFloat("maxcost"),
+                    rs.getString("projectCatagory"),
+                    vector,
+                    rs.getInt("photointeractions")
+            );
+
+        }, profileId);
 
     }
 
@@ -63,6 +97,8 @@ public class ProfilesTableRepo {
 
         return jdbcTemplate.query(sql, (rs, rowMap) ->{
 
+            float[][] vector = (float[][]) rs.getArray("preferencevector").getArray();
+
             return new ProfilesTableEntity(
                     rs.getLong("profileid"),
                     rs.getLong("userid"),
@@ -72,10 +108,25 @@ public class ProfilesTableRepo {
                     rs.getBoolean("active"),
                     rs.getFloat("mincost"),
                     rs.getFloat("maxcost"),
-                    rs.getString("projectCatagory")
+                    rs.getString("projectCatagory"),
+                    vector,
+                    rs.getInt("photointeractions")
+
             );
 
         }, userId);
+    }
+
+    public int setPreferenceVector(long profileid, float[][] preferenceVector){
+
+        String sql = """
+                update profilestable
+                set preferencevector = ?;
+                where profileid = ?;
+                """;
+
+        return jdbcTemplate.update(sql, preferenceVector, profileid);
+
     }
 
 }

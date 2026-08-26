@@ -33,6 +33,23 @@ public class ProfilesTableService {
 
     }
 
+    public void setPreferenceVector(long profileid, float[][] vector){
+
+        int result = profilesTableRepo.setPreferenceVector(profileid, vector);
+        if(result == 0){
+
+            throw new RuntimeException("Failed to set preference vector");
+
+        }
+
+    }
+
+    public ProfilesTableEntity getProfileById(long profileId){
+
+        return profilesTableRepo.getProfileById(profileId);
+
+    }
+
     public ProfilesTableEntity getProfile(long userId, String profileName){
 
         ProfilesTableEntity profilesTableEntity = profilesTableRepo.getProfile(userId, profileName);

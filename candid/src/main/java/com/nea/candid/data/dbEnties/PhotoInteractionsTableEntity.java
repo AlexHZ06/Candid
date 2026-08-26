@@ -11,13 +11,13 @@ import java.util.Date;
 public class PhotoInteractionsTableEntity {
 
     @Id
-    private long interactionid;
-    private long profileid;
-    private long photoid;
-    private String interactiontype;
-    private Date interactedat;
-    private int duration;
-    private float weight;
+    private final long interactionid;
+    private final long profileid;
+    private final long photoid;
+    private final  String interactiontype;
+    private final  Date interactedat;
+    private final  int duration;
+    private final  float weight;
 
     public PhotoInteractionsTableEntity(long interactionid, long profileid, long photoid, String interactiontype, Date interactedat, int duration, float weight) {
         this.interactionid = interactionid;

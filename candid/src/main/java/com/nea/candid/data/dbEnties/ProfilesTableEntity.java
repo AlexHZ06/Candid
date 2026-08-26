@@ -11,17 +11,19 @@ import java.sql.Date;
 public class ProfilesTableEntity {
 
     @Id
-    private long profileid;
-    private long userid;
-    private String profilename;
-    private String profiledescription;
-    private Date creationdate;
-    private boolean active;
-    private float mincost;
-    private float maxcost;
-    private String projectcatagory;
+    private final  long profileid;
+    private final  long userid;
+    private final  String profilename;
+    private final  String profiledescription;
+    private final  Date creationdate;
+    private final  boolean active;
+    private final  float mincost;
+    private final  float maxcost;
+    private final  String projectcatagory;
+    private final float[][] preferencevector;
+    private final int photointeractions;
 
-    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, Date creationdate, boolean active, float mincost, float maxcost, String projectcatagory) {
+    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, Date creationdate, boolean active, float mincost, float maxcost, String projectcatagory, float[][] preferencevector, int photointeractions) {
         this.profileid = profileid;
         this.userid = userid;
         this.profilename = profilename;
@@ -31,6 +33,12 @@ public class ProfilesTableEntity {
         this.mincost = mincost;
         this.maxcost = maxcost;
         this.projectcatagory = projectcatagory;
+        this.preferencevector = preferencevector;
+        this.photointeractions = photointeractions;
+    }
+
+    public int getPhotointeractions() {
+        return photointeractions;
     }
 
     public long getProfileid() {
@@ -67,5 +75,9 @@ public class ProfilesTableEntity {
 
     public String getProjectcatagory() {
         return projectcatagory;
+    }
+
+    public float[][] getPreferencevector() {
+        return preferencevector;
     }
 }

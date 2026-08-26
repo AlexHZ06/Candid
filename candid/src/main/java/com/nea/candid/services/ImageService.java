@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -43,7 +45,7 @@ public class ImageService {
 
         try{
 
-            path = Paths.get("D:\\Programing\\CANDID\\Candid\\Storage\\Test\\" + newName);
+            path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
             boolean pathExists = Files.exists(path);
 
             String addon = "";
@@ -58,7 +60,7 @@ public class ImageService {
                 }
 
                 newName = photoName + addon + ".jpg";
-                path = Paths.get("D:\\Programing\\CANDID\\Candid\\Storage\\Test\\" + newName);
+                path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
                 pathExists = Files.exists(path);
 
             }
@@ -67,11 +69,12 @@ public class ImageService {
             BufferedImage image = ImageIO.read(file.getInputStream());
 
             ImageIO.write(image, "jpg", path.toFile());
+            ImageProfileObject imageProfileObject = new ImageProfileObject(image);
 
-            long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight());
-            ImageProfileObject imageProfileObject = new ImageProfileObject(image, photoId);
-            imageDecoderService.calcAndDisplayInfo(imageProfileObject);
-            photosTableService.addEmbeddedVectors(imageProfileObject.getEmbededVectors());
+            imageDecoderService.calculateValues(imageProfileObject);
+            imageDecoderService.printImageValues(imageProfileObject);
+            long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight(), imageProfileObject.getGlobalVector());
+            photosTableService.insertSectionVectors(photoId, imageProfileObject.getSectionVectors());
 
             List<Long> tagids = saveTags(tags);
             addPhotoTags(photoId, tagids);
@@ -92,7 +95,7 @@ public class ImageService {
 
             System.out.println(e.getMessage());
             System.out.println(e.getCause());
-            throw new RuntimeException("Failed to save image", e);
+            throw new RuntimeException("Failed to save image " + Arrays.toString(e.getStackTrace()));
 
         }
 

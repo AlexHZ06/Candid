@@ -24,7 +24,7 @@ public class JwtController {
     @PostMapping("/public/requestjwt")
     public ResponseEntity requestJwt(HttpServletRequest request) {
 
-        ResponseBody responseBody = jwtServices.requestJwt(Long.parseLong((String) request.getAttribute("userId")));
+        ResponseBody responseBody = jwtServices.requestJwt(Long.parseLong((String) request.getAttribute("userId")), request.getHeader("refreshTokenUUID"));
 
         if(responseBody.isSucsess()){
 

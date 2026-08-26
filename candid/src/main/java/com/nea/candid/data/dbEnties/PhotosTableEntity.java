@@ -1,30 +1,31 @@
 package com.nea.candid.data.dbEnties;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "photostable")
 public class PhotosTableEntity {
 
     @Id
-    private long photoid;
-    private long userid;
-    private String photoname;
-    private String description;
-    private String category;
-    private LocalDateTime dateposted;
-    private String photourl;
-    private String thumbnailurl;
-    private float filesize;
-    private float width;
-    private float height;
+    private final  long photoid;
+    private final  long userid;
+    private final  String photoname;
+    private final  String description;
+    private final  String category;
+    private final Date dateposted;
+    private final  String photourl;
+    private final  String thumbnailurl;
+    private final  float filesize;
+    private final  float width;
+    private final  float height;
+    private final  float[] globalembeddedvector;
 
-    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, LocalDateTime dateposted, String photourl, String thumbnailurl, float filesize, float width, float height) {
+    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float filesize, float width, float height, float[] globalEmbeddedVector) {
         this.photoid = photoid;
         this.userid = userid;
         this.photoname = photoname;
@@ -36,6 +37,7 @@ public class PhotosTableEntity {
         this.filesize = filesize;
         this.width = width;
         this.height = height;
+        this.globalembeddedvector = globalEmbeddedVector;
     }
 
     public long getPhotoid() {
@@ -58,7 +60,7 @@ public class PhotosTableEntity {
         return category;
     }
 
-    public LocalDateTime getDateposted() {
+    public Date getDateposted() {
         return dateposted;
     }
 
@@ -82,4 +84,7 @@ public class PhotosTableEntity {
         return height;
     }
 
+    public float[] getGlobalEmbeddedVector() {
+        return globalembeddedvector;
+    }
 }

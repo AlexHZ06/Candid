@@ -9,32 +9,21 @@ import java.time.LocalDateTime;
 public class RefreshTokenTableEntity {
 
     @Id
+    private final long tokenid;
+    private final String jwttoken;
+    private final LocalDateTime expiresat;
+    private final LocalDateTime issuedat;
+    private final long userid;
+    @Column(unique = true)
+    private final String tokenuuid;
 
-    private long tokenid;
-    private String jwttoken;
-    private LocalDateTime expiresat;
-    private LocalDateTime issuedat;
-    private long userid;
-
-
-    public RefreshTokenTableEntity() {
-    }
-
-
-    public RefreshTokenTableEntity(String jwtToken, LocalDateTime expiresat, LocalDateTime issuedat, long userID) {
-        this.jwttoken = jwtToken;
-        this.expiresat = expiresat;
-        this.issuedat = issuedat;
-        this.userid = userID;
-    }
-
-
-    public RefreshTokenTableEntity(long tokenId, String jwtToken, LocalDateTime expiresat, LocalDateTime issuedat, long userID) {
+    public RefreshTokenTableEntity(long tokenId, String jwtToken, LocalDateTime expiresat, LocalDateTime issuedat, long userID, String tokenuuid) {
         this.tokenid = tokenId;
         this.jwttoken = jwtToken;
         this.expiresat = expiresat;
         this.issuedat = issuedat;
         this.userid = userID;
+        this.tokenuuid = tokenuuid;
     }
 
     public long getTokenid() {
@@ -55,5 +44,9 @@ public class RefreshTokenTableEntity {
 
     public long getUserid() {
         return userid;
+    }
+
+    public String getTokenuuid() {
+        return tokenuuid;
     }
 }

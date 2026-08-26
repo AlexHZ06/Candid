@@ -5,6 +5,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public class RefreshTokenTableRepo {
 
@@ -15,21 +17,24 @@ public class RefreshTokenTableRepo {
     }
 
 
-    public void saveRefreshToken(RefreshTokenTableEntity token) {
+    public String saveRefreshToken(String jwtToken, LocalDateTime expiresAt, LocalDateTime issuedAt, long userId, String uuid) {
 
         String sql = """
                 INSERT INTO refreshtokentable
-                (jwttoken, expiresat, issuedat, userid)
-                VALUES (?, ?, ?, ?)
+                (jwttoken, expiresat, issuedat, userid, tokenuuid)
+                VALUES (?, ?, ?, ?, ?)
+                returning tokenuuid
                 """;
 
 
-        jdbcTemplate.update(
+        return jdbcTemplate.queryForObject(
                 sql,
-                token.getJwttoken(),
-                token.getExpiresat(),
-                token.getIssuedat(),
-                token.getUserid()
+                String.class,
+                jwtToken,
+                expiresAt,
+                issuedAt,
+                userId,
+                uuid
         );
     }
 
@@ -50,7 +55,8 @@ public class RefreshTokenTableRepo {
                         rs.getString("jwttoken"),
                         rs.getTimestamp("expiresat").toLocalDateTime(),
                         rs.getTimestamp("issuedat").toLocalDateTime(),
-                        rs.getLong("userid")
+                        rs.getLong("userid"),
+                        rs.getString("tokenuuid")
                 );
 
             }, jwtToken);
@@ -79,7 +85,8 @@ public class RefreshTokenTableRepo {
                         rs.getString("jwttoken"),
                         rs.getTimestamp("expiresat").toLocalDateTime(),
                         rs.getTimestamp("issuedat").toLocalDateTime(),
-                        rs.getLong("userid")
+                        rs.getLong("userid"),
+                        rs.getString("tokenuuid")
                 );
 
             }, userId);

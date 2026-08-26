@@ -9,8 +9,8 @@ import jakarta.persistence.Table;
 public class TagsTableEntity {
 
     @Id
-    private long tagid;
-    private String tagname;
+    private final long tagid;
+    private final String tagname;
 
     public TagsTableEntity(long tagid, String tagname) {
         this.tagid = tagid;

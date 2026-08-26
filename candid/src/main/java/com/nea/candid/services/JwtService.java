@@ -26,7 +26,7 @@ public class JwtService {
         this.refreshTokenTableService = refreshTokenTableService;
     }
 
-    public ResponseBody requestJwt(long userid){
+    public ResponseBody requestJwt(long userid, String uuid){
 
         RefreshTokenTableEntity record = refreshTokenTableService.getTokenByUserId(userid);
 
@@ -46,8 +46,12 @@ public class JwtService {
         }
         else{
 
-            String jwt = buildJwt(userid, (String) jwtObject.getClaims().get("role"), false);
-            return ResponseBody.success(jwt, 252);
+            if(record.getTokenuuid().equals(uuid)){
+
+                String jwt = buildJwt(userid, (String) jwtObject.getClaims().get("role"), false);
+                return ResponseBody.success(jwt, 252);
+            }
+            return ResponseBody.error("invalid refresh token", 202);
 
         }
 
@@ -73,14 +77,12 @@ public class JwtService {
 
     }
 
-    public void addJwt(JwtObject jws, String jwt) {
+    public String addJwt(JwtObject jws, String jwt) {
 
         LocalDateTime issuedAt = LocalDateTime.ofInstant(jws.getClaims().getIssuedAt().toInstant(), ZoneId.systemDefault());
         LocalDateTime expiresAt = LocalDateTime.ofInstant(jws.getClaims().getExpiration().toInstant(), ZoneId.systemDefault());
 
-        RefreshTokenTableEntity record = new RefreshTokenTableEntity(jwt, expiresAt, issuedAt, Long.parseLong(jws.getClaims().getSubject()));
-
-        refreshTokenTableService.saveRefreshToken(record);
+        return refreshTokenTableService.saveRefreshToken(jwt, expiresAt, issuedAt, Long.parseLong(jws.getClaims().getSubject()));
 
     }
 

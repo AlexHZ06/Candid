@@ -2,6 +2,7 @@ package com.nea.candid.services;
 
 import com.nea.candid.data.dbEnties.UsersTableEntity;
 import com.nea.candid.data.dataObjects.JwtObject;
+import com.nea.candid.data.dto.LogInResponse;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.database.UsersTableService;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,17 @@ public class AuthService {
 
                 JwtObject refreshJwtObject = jwtService.decodeJwt(refreshJwt);
 
-                jwtService.addJwt(refreshJwtObject, refreshJwt);
+                try{
 
-                return ResponseBody.success(requestJwt, 151);
+                    String UUID = jwtService.addJwt(refreshJwtObject, refreshJwt);
+                    return ResponseBody.success(new LogInResponse(refreshJwt, UUID), 151);
+
+                }
+                catch(Exception e){
+
+                    return ResponseBody.error("Could not save Refresh Token ", 102);
+
+                }
 
             }
             else{

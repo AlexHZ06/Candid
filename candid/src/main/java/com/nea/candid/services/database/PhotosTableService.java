@@ -1,9 +1,8 @@
 package com.nea.candid.services.database;
 
-import com.nea.candid.data.dbEnties.EmbeddedVectorTableEntity;
-import com.nea.candid.data.dbEnties.TagsTableEntity;
-import com.nea.candid.repositories.EmbeddedVectorsTableRepo;
+import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.repositories.PhotosTableRepo;
+import com.nea.candid.repositories.SectionVectorsTableRepo;
 import com.nea.candid.repositories.TagsTableRepo;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -11,24 +10,24 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PhotosTableService {
 
     private final PhotosTableRepo photosTableRepo;
     private final TagsTableRepo tagsTableRepo;
-    private final EmbeddedVectorsTableRepo embeddedVectorsTableRepo;
+    private final SectionVectorsTableRepo sectionVectorsTableRepo;
 
-    public PhotosTableService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, EmbeddedVectorsTableRepo embeddedVectorsTableRepo) {
+
+    public PhotosTableService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, SectionVectorsTableRepo sectionVectorsTableRepo) {
         this.photosTableRepo = photosTableRepo;
         this.tagsTableRepo = tagsTableRepo;
-        this.embeddedVectorsTableRepo = embeddedVectorsTableRepo;
+        this.sectionVectorsTableRepo = sectionVectorsTableRepo;
     }
 
-    public Long addToPhotosTable(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float fileSize, float width, float height) {
+    public Long addToPhotosTable(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float fileSize, float width, float height, float[] globalVector) {
 
-        return photosTableRepo.addPhoto(userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, fileSize, width, height);
+        return photosTableRepo.addPhoto(userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, fileSize, width, height, globalVector);
 
     }
 
@@ -50,27 +49,31 @@ public class PhotosTableService {
 
     }
 
-    public void addEmbeddedVectors(ArrayList<EmbeddedVectorTableEntity> vectors){
+    public List<float[]> getSectionVectors(long ImageId){
 
-        int[] results = embeddedVectorsTableRepo.insertVector(vectors);
-        if(results.length != vectors.size()){
+        return sectionVectorsTableRepo.getSectionVectors(ImageId);
 
-            throw new DataIntegrityViolationException("Vectors where not saved");
+    }
 
-        }
-        else{
+    public void insertSectionVectors(long photoId, ArrayList<float[]> sectionVectors){
 
-            for(int i = 0; i < vectors.size(); i++){
+        int[] result = sectionVectorsTableRepo.insertSectionVectors(photoId, sectionVectors);
 
-                if(results[i] == 0){
+        for(int i = 0; i < result.length; i++){
 
-                    throw new DataIntegrityViolationException("Vectors where not saved");
+            if(result[i] == 0){
 
-                }
+                throw new DataIntegrityViolationException("Not all section Vectors where added");
 
             }
 
         }
+
+    }
+
+    public PhotosTableEntity getPhotosTableById(long photoid){
+
+        return  photosTableRepo.getPhotoById(photoid);
 
     }
 

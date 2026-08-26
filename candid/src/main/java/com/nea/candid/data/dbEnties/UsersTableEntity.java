@@ -9,15 +9,15 @@ import java.util.Date;
 public class UsersTableEntity {
 
     @Id
-    private Long userid;
+    private final Long userid;
     @Column(unique = true)
-    private String username;
-    private String firstname;
-    private String lastname;
-    private String usertype;
-    private String email;
-    private String hashedpassword;
-    private Date datejoined;
+    private final String username;
+    private final String firstname;
+    private final String lastname;
+    private final String usertype;
+    private final String email;
+    private final String hashedpassword;
+    private final Date datejoined;
 
     public UsersTableEntity(Long userid, String username, String firstname, String lastname, String usertype, String email, String hashedpassword, Date datejoined) {
         this.userid = userid;
