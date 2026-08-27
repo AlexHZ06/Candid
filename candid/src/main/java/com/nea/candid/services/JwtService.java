@@ -3,8 +3,8 @@ package com.nea.candid.services;
 import com.nea.candid.data.dbEnties.RefreshTokenTableEntity;
 import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.data.dto.ResponseBody;
-import com.nea.candid.services.database.RefreshTokenTableService;
-import com.nea.candid.services.database.UsersTableService;
+import com.nea.candid.services.database.RefreshTokenDbService;
+import com.nea.candid.services.database.UsersDbService;
 import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +20,9 @@ public class JwtService {
 
     private String key = "9f4c2d7b81e6a3f05d2c9b7e4a1f8d63c7e91a5b2d4f6c8e0b3a7d9f1c5e2a6";
 
-    private final RefreshTokenTableService refreshTokenTableService;
+    private final RefreshTokenDbService refreshTokenTableService;
 
-    public JwtService(RefreshTokenTableService refreshTokenTableService, UsersTableService usersTableService) {
+    public JwtService(RefreshTokenDbService refreshTokenTableService, UsersDbService usersTableService) {
         this.refreshTokenTableService = refreshTokenTableService;
     }
 

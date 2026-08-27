@@ -1,22 +1,30 @@
 package com.nea.candid.services;
 
+import com.nea.candid.data.dataObjects.ImageScore;
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dbEnties.ProfilesTableEntity;
-import com.nea.candid.services.database.PhotosTableService;
-import com.nea.candid.services.database.ProfilesTableService;
+import com.nea.candid.services.database.PhotosDbService;
+import com.nea.candid.services.database.ProfilesDbService;
+import com.nea.candid.services.database.UsersDbService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class RecommendationService {
 
-    private final PhotosTableService photosTableService;
-    private final ProfilesTableService profilesTableService;
+    private final PhotosDbService photosTableService;
+    private final ProfilesDbService profilesTableService;
+    private final UsersDbService usersTableService;
+    private final LocationService locationService;
 
-    public RecommendationService(PhotosTableService photosTableService, ProfilesTableService profilesTableService) {
+    public RecommendationService(PhotosDbService photosTableService, ProfilesDbService profilesTableService, UsersDbService usersTableService, LocationService locationService) {
         this.photosTableService = photosTableService;
         this.profilesTableService = profilesTableService;
+        this.usersTableService = usersTableService;
+        this.locationService = locationService;
     }
 
     private float calculateEuclideanDistanceSimilarity (float[] vector1, float[] vector2) {
@@ -34,18 +42,13 @@ public class RecommendationService {
 
     }
 
-    public float computeRecommendationScore (long imageId1, long imageId2) {
+    public float computeRecommendationScore (long imageId, float[][] preferenceVector) {
 
-        PhotosTableEntity photo1 = photosTableService.getPhotosTableById(imageId1);
-        PhotosTableEntity photo2 = photosTableService.getPhotosTableById(imageId2);
+        PhotosTableEntity photo = photosTableService.getPhotosTableById(imageId);
 
-        List<float[]> photo1Vectors = photosTableService.getSectionVectors(imageId1);
-        List<float[]> photo2Vectors = photosTableService.getSectionVectors(imageId2);
+        float[][] superVector = createSuperVector(photo.getGlobalEmbeddedVector(), photosTableService.getSectionVectors(photo.getPhotoid()));
 
-        float[][] superVector1 = createSuperVector(photo1.getGlobalEmbeddedVector(), photo1Vectors);
-        float[][] superVector2 = createSuperVector(photo2.getGlobalEmbeddedVector(), photo2Vectors);
-
-        return calculateRecommendationScore(superVector1, superVector2);
+        return calculateRecommendationScore(superVector, preferenceVector);
 
     }
 
@@ -402,9 +405,84 @@ public class RecommendationService {
 
     }
 
-    public void removeInteractionFromPreference(long profileId, long photoId, long interactionId) {
+    public List<List<PhotosTableEntity>> getFeed(long profileId, float radius, List<Long> exclude, String category, List<String> tags, int numberOfPhotos){
 
+        ProfilesTableEntity profile = profilesTableService.getProfileById(profileId);
+        List<Long> photographers = locationService.calculateDistanceBounds(profileId, radius);
+        if(photographers.isEmpty()){
 
+            throw new RuntimeException("No photographers within the radius");
+
+        }
+
+        List<List<PhotosTableEntity>> photos = new ArrayList<>();
+        int index = 0;
+        boolean exitLoop = false;
+        int photoCount = 0;
+        while(!exitLoop){
+
+            List<PhotosTableEntity> temp = photosTableService.getFeed(tags, photographers, category, tags.size() - index, exclude);
+            for(int i = 0; i < temp.size(); i++){
+
+                exclude.add(temp.get(i).getPhotoid());
+                photoCount++;
+
+            }
+            photos.add(temp);
+            if(tags.size() - index <= 1){
+
+                exitLoop = true;
+
+            }
+            if(photoCount >= numberOfPhotos){
+
+                exitLoop = true;
+
+            }
+
+            index++;
+
+        }
+
+        ArrayList<List<ImageScore>> imageScores = new ArrayList<>();
+        for(int i = 0; i < photos.size(); i++){
+
+            ArrayList<ImageScore> temp = new ArrayList<>();
+
+            for(int j = 0; j < photos.get(i).size(); j++){
+
+                float score = computeRecommendationScore(photos.get(i).get(j).getPhotoid(), profile.getPreferencevector());
+                temp.add(new ImageScore(photos.get(i).get(j), score));
+
+            }
+
+            imageScores.add(temp);
+
+        }
+
+        for(int j = 0; j < imageScores.size(); j++){
+
+            imageScores.get(j).sort(Comparator.comparing(ImageScore::getScore).reversed());
+
+        }
+
+        ArrayList<List<PhotosTableEntity>> feed = new ArrayList<>();
+
+        for(int i = 0; i < imageScores.size(); i++){
+
+            ArrayList<PhotosTableEntity> temp = new ArrayList<>();
+
+            for(int j = 0; j < photos.get(i).size(); j++){
+
+                temp.add(imageScores.get(i).get(j).getPhotosTableEntity());
+
+            }
+
+            feed.add(temp);
+
+        }
+
+        return feed;
 
     }
 

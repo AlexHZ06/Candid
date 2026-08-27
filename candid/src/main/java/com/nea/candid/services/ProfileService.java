@@ -1,16 +1,16 @@
 package com.nea.candid.services;
 
 import com.nea.candid.data.dto.ResponseBody;
-import com.nea.candid.services.database.ProfilesTableService;
+import com.nea.candid.services.database.ProfilesDbService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProfileService {
 
-    private final ProfilesTableService profilesTableService;
+    private final ProfilesDbService profilesTableService;
 
-    public ProfileService(ProfilesTableService profilesTableService) {
+    public ProfileService(ProfilesDbService profilesTableService) {
         this.profilesTableService = profilesTableService;
     }
 

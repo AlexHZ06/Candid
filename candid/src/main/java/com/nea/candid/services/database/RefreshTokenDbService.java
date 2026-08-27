@@ -5,16 +5,15 @@ import com.nea.candid.repositories.RefreshTokenTableRepo;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.sql.Ref;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class RefreshTokenTableService {
+public class RefreshTokenDbService {
 
     private final RefreshTokenTableRepo repository;
 
-    public RefreshTokenTableService(RefreshTokenTableRepo repository) {
+    public RefreshTokenDbService(RefreshTokenTableRepo repository) {
         this.repository = repository;
     }
 

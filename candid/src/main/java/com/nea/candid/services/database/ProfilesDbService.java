@@ -1,7 +1,9 @@
 package com.nea.candid.services.database;
 
+import com.nea.candid.data.dbEnties.InteractionsTableEntity;
 import com.nea.candid.data.dbEnties.ProfilesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
+import com.nea.candid.repositories.InteractionsTableRepo;
 import com.nea.candid.repositories.ProfilesTableRepo;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +11,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ProfilesTableService {
+public class ProfilesDbService {
 
     private final ProfilesTableRepo profilesTableRepo;
+    private final InteractionsTableRepo interactionsTableRepo;
 
-    public ProfilesTableService(ProfilesTableRepo profilesTableRepo) {
+    public ProfilesDbService(ProfilesTableRepo profilesTableRepo, InteractionsTableRepo interactionsTableRepo) {
         this.profilesTableRepo = profilesTableRepo;
+        this.interactionsTableRepo = interactionsTableRepo;
     }
 
     public ResponseBody createProfile(long userId, String profileName, String profileDescription, float minCost, float maxCost, String projectCatagory){
@@ -41,6 +45,30 @@ public class ProfilesTableService {
             throw new RuntimeException("Failed to set preference vector");
 
         }
+
+    }
+
+    public void addInteraction(long photoid, long profileid, String interaction){
+
+        int result =  interactionsTableRepo.addInteraction(photoid, profileid, interaction, LocalDateTime.now());
+
+        if(result == 0){
+
+            throw new RuntimeException("Failed to add interaction");
+
+        }
+
+    }
+
+    public List<InteractionsTableEntity> getInteractionsByProfile(long profileid){
+
+        return interactionsTableRepo.getInteractionsByProfile(profileid);
+
+    }
+
+    public List<InteractionsTableEntity> getInteractionsByPhoto(long photoid){
+
+        return interactionsTableRepo.getInteractionsByPhoto(photoid);
 
     }
 

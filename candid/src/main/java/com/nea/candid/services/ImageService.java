@@ -2,22 +2,18 @@ package com.nea.candid.services;
 
 import com.nea.candid.data.dataObjects.ImageProfileObject;
 import com.nea.candid.data.dto.ResponseBody;
-import com.nea.candid.services.database.PhotosTableService;
+import com.nea.candid.services.database.PhotosDbService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -25,10 +21,10 @@ import java.util.Random;
 @Service
 public class ImageService {
 
-    private final PhotosTableService photosTableService;
+    private final PhotosDbService photosTableService;
     private final ImageDecoderService imageDecoderService;
 
-    public ImageService(PhotosTableService photosTableService, ImageDecoderService imageDecoderService) {
+    public ImageService(PhotosDbService photosTableService, ImageDecoderService imageDecoderService) {
         this.photosTableService = photosTableService;
         this.imageDecoderService = imageDecoderService;
     }
@@ -126,6 +122,7 @@ public class ImageService {
             }
 
     }
+
 
     //TODO implement delete photo
     public void deletePhoto(){

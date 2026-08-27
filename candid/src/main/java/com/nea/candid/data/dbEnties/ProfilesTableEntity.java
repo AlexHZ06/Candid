@@ -1,16 +1,9 @@
 package com.nea.candid.data.dbEnties;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 import java.sql.Date;
 
-@Entity
-@Table(name = "profilestable")
 public class ProfilesTableEntity {
 
-    @Id
     private final  long profileid;
     private final  long userid;
     private final  String profilename;
@@ -22,8 +15,10 @@ public class ProfilesTableEntity {
     private final  String projectcatagory;
     private final float[][] preferencevector;
     private final int photointeractions;
+    private final double latitude;
+    private final double longitude;
 
-    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, Date creationdate, boolean active, float mincost, float maxcost, String projectcatagory, float[][] preferencevector, int photointeractions) {
+    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, Date creationdate, boolean active, float mincost, float maxcost, String projectcatagory, float[][] preferencevector, int photointeractions, double latitude, double longitude) {
         this.profileid = profileid;
         this.userid = userid;
         this.profilename = profilename;
@@ -35,6 +30,8 @@ public class ProfilesTableEntity {
         this.projectcatagory = projectcatagory;
         this.preferencevector = preferencevector;
         this.photointeractions = photointeractions;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public int getPhotointeractions() {
@@ -79,5 +76,13 @@ public class ProfilesTableEntity {
 
     public float[][] getPreferencevector() {
         return preferencevector;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }

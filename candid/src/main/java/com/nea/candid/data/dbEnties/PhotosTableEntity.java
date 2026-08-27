@@ -25,7 +25,7 @@ public class PhotosTableEntity {
     private final  float height;
     private final  float[] globalembeddedvector;
 
-    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float filesize, float width, float height, float[] globalEmbeddedVector) {
+    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float filesize, float width, float height, float[] globalembeddedvector) {
         this.photoid = photoid;
         this.userid = userid;
         this.photoname = photoname;
@@ -37,8 +37,10 @@ public class PhotosTableEntity {
         this.filesize = filesize;
         this.width = width;
         this.height = height;
-        this.globalembeddedvector = globalEmbeddedVector;
+        this.globalembeddedvector = globalembeddedvector;
     }
+
+
 
     public long getPhotoid() {
         return photoid;

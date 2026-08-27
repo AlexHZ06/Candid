@@ -16,14 +16,14 @@ public class ProfilesTableRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int insertProfile(long userId, String profileName, String profileDescription, LocalDateTime createdAt, float mincost, float maxcost, String projectCatagory){
+    public int insertProfile(long userId, String profileName, String profileDescription, LocalDateTime createdAt, float mincost, float maxcost, String projectCatagory, double latitude, double longitude){
 
         String sql = """
-                   insert into profilestable(userid, profilename, profiledescription, creationdate, active, mincost, maxcost, projectcatagory)
-                   values(?, ?, ?, ?, ?, ?, ?, ?);
+                   insert into profilestable(userid, profilename, profiledescription, creationdate, active, mincost, maxcost, projectcatagory, latitude, longitude
+                   values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """;
 
-        return jdbcTemplate.update(sql, userId, profileName, profileDescription, createdAt, false, mincost, maxcost, projectCatagory);
+        return jdbcTemplate.update(sql, userId, profileName, profileDescription, createdAt, false, mincost, maxcost, projectCatagory, latitude, longitude);
 
     }
 
@@ -50,7 +50,9 @@ public class ProfilesTableRepo {
                     rs.getFloat("maxcost"),
                     rs.getString("projectCatagory"),
                     vector,
-                    rs.getInt("photointeractions")
+                    rs.getInt("photointeractions"),
+                    rs.getDouble("latitude"),
+                    rs.getDouble("longitude")
             );
 
         }, userId, profileName);
@@ -80,7 +82,9 @@ public class ProfilesTableRepo {
                     rs.getFloat("maxcost"),
                     rs.getString("projectCatagory"),
                     vector,
-                    rs.getInt("photointeractions")
+                    rs.getInt("photointeractions"),
+                    rs.getDouble("latitude"),
+                    rs.getDouble("longitude")
             );
 
         }, profileId);
@@ -110,7 +114,9 @@ public class ProfilesTableRepo {
                     rs.getFloat("maxcost"),
                     rs.getString("projectCatagory"),
                     vector,
-                    rs.getInt("photointeractions")
+                    rs.getInt("photointeractions"),
+                    rs.getDouble("latitude"),
+                    rs.getDouble("longitude")
 
             );
 

@@ -1,6 +1,7 @@
 package com.nea.candid.data.dbEnties;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Date;
 @Table(name = "interactionstable")
 public class InteractionsTableEntity {
 
+    @Id
     private final long interactionid;
     private final long photoid;
     private final long profileid;

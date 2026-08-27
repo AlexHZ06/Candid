@@ -5,6 +5,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class UsersTableRepo {
 
@@ -27,8 +29,12 @@ public class UsersTableRepo {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
 
                 return new UsersTableEntity(rs.getLong("userid"), rs.getString("username"), rs.getString("firstname"),
-                        rs.getString("lastname"), rs.getString("usertype"), rs.getString("email"), rs.getString("hashedpassword"),
-                        rs.getDate("datejoined"));
+                        rs.getString("lastname"),
+                        rs.getString("usertype"),
+                        rs.getString("email"),
+                        rs.getString("hashedpassword"),
+                        rs.getDate("datejoined")
+                );
 
             }, userName);
         }
@@ -53,8 +59,12 @@ public class UsersTableRepo {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
 
                 return new UsersTableEntity(rs.getLong("userid"), rs.getString("username"), rs.getString("firstname"),
-                        rs.getString("lastname"), rs.getString("usertype"), rs.getString("email"), rs.getString("hashedpassword"),
-                        rs.getDate("datejoined"));
+                        rs.getString("lastname"),
+                        rs.getString("usertype"),
+                        rs.getString("email"),
+                        rs.getString("hashedpassword"),
+                        rs.getDate("datejoined")
+                );
 
             }, userId);
         }
@@ -63,6 +73,24 @@ public class UsersTableRepo {
             return null;
 
         }
+
+    }
+
+    public List<Long> getPhotographerByDistanceBounds(double minLat, double minLon, double maxLat, double maxLon){
+
+        String sql  = """
+                select userid
+                from userstable
+                where usertype = 'photographer'
+                and latitude between ? and ?
+                and longitude between ? and ?
+        """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            return rs.getLong("userid");
+
+        }, minLat, maxLat, minLon, maxLon);
 
     }
 

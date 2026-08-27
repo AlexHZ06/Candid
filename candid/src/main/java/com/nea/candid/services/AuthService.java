@@ -4,17 +4,17 @@ import com.nea.candid.data.dbEnties.UsersTableEntity;
 import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.data.dto.LogInResponse;
 import com.nea.candid.data.dto.ResponseBody;
-import com.nea.candid.services.database.UsersTableService;
+import com.nea.candid.services.database.UsersDbService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    private final UsersTableService usersTableService;
+    private final UsersDbService usersTableService;
     private final JwtService jwtService;
 
 
-    public AuthService(UsersTableService usersTableService, JwtService jwtService) {
+    public AuthService(UsersDbService usersTableService, JwtService jwtService) {
         this.usersTableService = usersTableService;
         this.jwtService = jwtService;
     }

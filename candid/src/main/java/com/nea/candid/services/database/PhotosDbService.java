@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PhotosTableService {
+public class PhotosDbService {
 
     private final PhotosTableRepo photosTableRepo;
     private final TagsTableRepo tagsTableRepo;
     private final SectionVectorsTableRepo sectionVectorsTableRepo;
 
 
-    public PhotosTableService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, SectionVectorsTableRepo sectionVectorsTableRepo) {
+    public PhotosDbService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, SectionVectorsTableRepo sectionVectorsTableRepo) {
         this.photosTableRepo = photosTableRepo;
         this.tagsTableRepo = tagsTableRepo;
         this.sectionVectorsTableRepo = sectionVectorsTableRepo;
@@ -74,6 +74,12 @@ public class PhotosTableService {
     public PhotosTableEntity getPhotosTableById(long photoid){
 
         return  photosTableRepo.getPhotoById(photoid);
+
+    }
+
+    public List<PhotosTableEntity> getFeed(List<String> tags, List<Long> userid, String category, int minTags, List<Long> excludeId){
+
+        return photosTableRepo.getPhotosForFeed(tags, userid, category, minTags, excludeId);
 
     }
 

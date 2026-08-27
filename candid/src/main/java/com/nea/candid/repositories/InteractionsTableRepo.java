@@ -4,7 +4,7 @@ import com.nea.candid.data.dbEnties.InteractionsTableEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -16,7 +16,7 @@ public class InteractionsTableRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int addInteraction(long photoId, long profileId, String interaction, Date interactionDate){
+    public int addInteraction(long photoId, long profileId, String interaction, LocalDateTime interactionDate){
 
         String sql = """
                 Insert Into interactionstable(photoid, profileid, interaction, interactiondate)
@@ -47,7 +47,7 @@ public class InteractionsTableRepo {
 
                     );
 
-        });
+        }, profileId);
 
     }
 
