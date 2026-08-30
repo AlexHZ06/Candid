@@ -1,6 +1,6 @@
 package com.nea.candid.api.controllers;
 
-import com.nea.candid.data.dto.ProfileBody;
+import com.nea.candid.data.dbEnties.ProfilesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.ProfileService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/profile/client")
@@ -50,18 +52,23 @@ public class ProfileController {
     }
 
     @PutMapping("/addprofile")
-    public ResponseEntity createProfile(HttpServletRequest request, @RequestBody ProfileBody body){
+    public ResponseEntity createProfile(HttpServletRequest request, @RequestBody ProfilesTableEntity body){
 
         try {
 
             ResponseBody responseBody = profileService.createProfile(
 
+
                     Long.parseLong(request.getAttribute("userId").toString()),
-                    body.getProfileName(),
-                    body.getGetProfileDescription(),
-                    body.getMinCost(),
-                    body.getMaxCost(),
-                    body.getPhotoCategory()
+                    body.getProfilename(),
+                    body.getProfiledescription(),
+                    LocalDateTime.now(),
+                    body.getMincost(),
+                    body.getMaxcost(),
+                    body.getProjectcatagory(),
+                    body.getLatitude(),
+                    body.getLongitude()
+
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);

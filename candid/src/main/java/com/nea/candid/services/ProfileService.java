@@ -5,6 +5,8 @@ import com.nea.candid.services.database.ProfilesDbService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class ProfileService {
 
@@ -42,9 +44,9 @@ public class ProfileService {
     }
 
     @Transactional
-    public ResponseBody createProfile(long userId, String profileName, String profileDescription, float minCost,  float maxCost, String projectCategory){
+    public ResponseBody createProfile(long userId, String profileName, String profileDescription, LocalDateTime createdAt, float mincost, float maxcost, String projectCatagory, double latitude, double longitude){
 
-            profilesTableService.createProfile(userId, profileName, profileDescription, minCost, maxCost, projectCategory);
+            profilesTableService.createProfile(userId, profileName, profileDescription, LocalDateTime.now(), mincost, maxcost, projectCatagory, latitude, longitude);
             return ResponseBody.success("profile made", 451);
 
     }

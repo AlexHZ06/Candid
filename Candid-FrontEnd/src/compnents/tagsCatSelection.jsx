@@ -1,0 +1,468 @@
+import Radial from "./radial"
+import { useState } from "react"
+
+function TagsCatSelection({hide}){
+
+    const [active, setActive] = useState("None selected")
+    const [macCost, setMaxCost] = useState(0)
+    const [lighting, setLighting] = useState([])
+    const [mood, setMood] = useState([])
+    const [style, setStyle] = useState([])
+    const [activeTag, setActiveTag] = useState("")
+
+    function clearTags(){
+
+        setStyle([])
+        setMood([])
+        setLighting([])
+
+    }
+
+    function lightingClick(text) {
+
+        setLighting(prev => {
+            if (prev.includes(text)) {
+                return prev.filter(tag => tag !== text);
+            } else {
+                return [...prev, text];
+            }
+        });
+    }
+
+    function moodClick(text) {
+
+        setMood(prev => {
+            if (prev.includes(text)) {
+                return prev.filter(tag => tag !== text);
+            } else {
+                return [...prev, text];
+            }
+        });
+    }
+
+    function styleClick(text) {
+
+        setStyle(prev => {
+            if (prev.includes(text)) {
+                return prev.filter(tag => tag !== text);
+            } else {
+                return [...prev, text];
+            }
+        });
+    }    
+
+    function categoryClick(text){
+
+        if(text === active){
+
+            setActive("None selected")
+
+        }
+        else{
+            setActive(text)
+        }
+
+    }
+
+    return(
+
+        <div className={`
+        
+            flex
+            flex-col
+            bg-white
+            rounded-md
+            w-[100vh]
+            h-fit
+            shadow-[0_0_10px_rgba(0,0,0,0.25)]
+            items-center
+            pb-5
+            ${hide === true ? "hidden": ""}
+        
+        `}>
+            <div className="
+            
+                w-[90vh]
+                mt-5
+
+            ">
+                <p className="
+                
+                    font-light
+                
+                ">Category: {active}</p>
+            </div>
+            <div className="
+            
+                border-b-2
+                w-[90vh]
+                border-neutral-300
+                h-[8vh]
+                flex
+                gap-1
+                shrink-0
+                flex-row
+                overflow-y-auto
+                items-center
+
+            
+            ">  
+                <Radial active={active} onClick={()=>categoryClick("Wedding")} text={"Wedding"}/>
+                <Radial active={active} onClick={()=>categoryClick("Street")} text={"Street"}/>
+                <Radial active={active} onClick={()=>categoryClick("Portrait")} text={"Portrait"}/>
+                <Radial active={active} onClick={()=>categoryClick("Event")} text={"Event"}/>
+                <Radial active={active} onClick={()=>categoryClick("Fine Art")} text={"Fine Art"}/>
+                <Radial active={active} onClick={()=>categoryClick("Landscape")} text={"Landscape"}/>
+                <Radial active={active} onClick={()=>categoryClick("Wild Life")} text={"Wild Life"}/>  
+                <Radial active={active} onClick={()=>categoryClick("Fashion")} text={"Fashion"}/>  
+                <Radial active={active} onClick={()=>categoryClick("Comercial")} text={"Comercial"}/>  
+                <Radial active={active} onClick={()=>categoryClick("Architectural")} text={"Architectural"}/>  
+                <Radial active={active} onClick={()=>categoryClick("Food")} text={"Food"}/>  
+                <Radial active={active} onClick={()=>categoryClick("Product")} text={"Product"}/> 
+                <Radial active={active} onClick={()=>categoryClick("Sports")} text={"Sports"}/>
+                <Radial active={active} onClick={()=>categoryClick("Documentary")} text={"Documentary"}/>
+                <Radial active={active} onClick={()=>categoryClick("Photojournalism")} text={"Photo Journalism"}/>
+                <Radial active={active} onClick={()=>categoryClick("Macro")} text={"Macro"}/>
+                <Radial active={active} onClick={()=>categoryClick("Astrophotography")} text={"Astrophotography"}/>
+                <Radial active={active} onClick={()=>categoryClick("Aerial")} text={"Aerial"}/>
+                <Radial active={active} onClick={()=>categoryClick("Underwater")} text={"Underwater"}/>
+                <Radial active={active} onClick={()=>categoryClick("Night")} text={"Night"}/>
+                <Radial active={active} onClick={()=>categoryClick("Long-Exposure")} text={"Long-Exposure"}/>
+                <Radial active={active} onClick={()=>categoryClick("Black & White")} text={"Black & White"}/>
+                <Radial active={active} onClick={()=>categoryClick("Scientific")} text={"Scientific"}/>
+                <Radial active={active} onClick={()=>categoryClick("Medical")} text={"Medical"}/>
+                <Radial active={active} onClick={()=>categoryClick("Real-Estate")} text={"Real-Estate"}/>
+                <Radial active={active} onClick={()=>categoryClick("Automotive")} text={"Automotive"}/>
+                <Radial active={active} onClick={()=>categoryClick("Pet")} text={"Pet"}/>
+                <Radial active={active} onClick={()=>categoryClick("Newborn & Maternity")} text={"Newborn & Maternity"}/>
+                <Radial active={active} onClick={()=>categoryClick("Industrial")} text={"Industrial"}/>
+                <Radial active={active} onClick={()=>categoryClick("Still-Life")} text={"Still-Life"}/>
+                <Radial active={active} onClick={()=>categoryClick("Experimental")} text={"Experimental"}/>
+            </div>
+            <div className="
+            
+                flex
+                flex-col
+                border-b-2
+                border-neutral-300
+                pb-5
+                w-[90vh]
+            
+            ">
+                <div className="
+                
+                    pt-5
+                    flex
+                    flex-row
+                    justify-center
+                    items-center
+                    gap-3
+                
+                ">   
+                    <select defaultValue={"Select a Orientation"} name="" className="
+                    
+                        border
+                        border-neutral-400
+                        rounded-xl
+                        hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                        focus:outline-none
+                        focus:ring-0
+                        focus:border-neutral-400    
+                    ">
+                        <option disabled value="Select a Orientation">Select a Orientation</option>
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                        <option value="square">square</option>
+                        <option value="all">all</option>
+                    </select>
+                    <select defaultValue={""} name="" className="
+                        border
+                        border-neutral-400
+                        rounded-xl
+                        hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                        focus:outline-none
+                        focus:ring-0
+                        focus:border-neutral-400    
+                    ">
+                        <option disabled value="">Photographer Rating</option>
+                        <option value="1">1 star</option>
+                        <option value="2">2 star</option>
+                        <option value="3">3 star</option>
+                        <option value="4">4 star</option>
+                        <option value="5">5 star</option>
+                        <option value="0">Mixed</option>
+                    </select>
+                    <select defaultValue={""} name="" className="
+                        border
+                        border-neutral-400
+                        rounded-xl
+                        hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                        focus:outline-none
+                        focus:ring-0
+                        focus:border-neutral-400    
+                    ">
+                        <option disabled value="">Order By</option>
+                        <option value="Newest">Newest</option>
+                        <option value="Oldest">Oldest</option>
+                        <option value="Price">Price</option>
+                        <option value="Rating">Rating</option>
+                        <option value="none">none</option>
+                    </select>
+                    <select defaultValue={""} name="" className="
+                        border
+                        border-neutral-400
+                        rounded-xl
+                        hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                        focus:outline-none
+                        focus:ring-0
+                        focus:border-neutral-400    
+                    ">
+                        <option disabled value="">Price Range</option>
+                        <option value="portrait">10-50</option>
+                        <option value="landscape">50-100</option>
+                        <option value="square">100-150</option>
+                        <option value="all">150-200</option>
+                        <option value="all">200-250</option>
+                        <option value="portrait">250-300</option>
+                        <option value="landscape">350-400</option>
+                        <option value="square">450-500</option>
+                        <option value="all">550-600</option>
+                        <option value="all">650-700+</option>
+                        
+                    </select>
+                    
+                </div>
+                <div className="
+                
+                    pt-5
+                    flex
+                    flex-row
+                    justify-center
+                    items-center
+                    gap-3
+                
+                ">   
+                    <div className="
+                    
+                        flex
+                        flex-row
+                        justify-center
+                        
+                    ">
+                        <label className="
+                            
+                            pr-3
+                            
+                        ">Distance Radius: {macCost} km</label>
+                        <input type="range" min="1" max="1000" value={macCost} onChange={(e)=> setMaxCost(Number(e.target.value))} className="
+                            
+                            accent-neutral-500
+                            
+                        "/>
+                    </div> 
+                </div>
+            </div>
+            <div className="
+            
+                pt-5
+                flex
+                flex-col
+                justify-center
+                items-center
+
+            ">
+                <div className="
+                
+                    w-[90vh]
+                    flex
+                    justify-between
+                
+                ">
+                    <div className="
+                    
+                        flex
+                        flex-row
+                    
+                    ">
+
+                    
+                        <select onChange={(e) => setActiveTag(e.target.value)} defaultValue={""} name="" className="
+                            border
+                            border-neutral-400
+                            rounded-xl
+                            hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
+                            focus:outline-none
+                            focus:ring-0
+                            focus:border-neutral-400
+                            mb-5    
+                        ">
+                            <option disabled value="">Tags</option>
+                            <option value="Style">Style</option>
+                            <option value="Lighting">Lighting</option>
+                            <option value="Mood">Mood</option>
+                            <option value="Setting">Setting</option>
+                            
+                        </select>
+                        <p className="
+                        
+                            pl-5
+                        
+                        ">total Tags: {mood.length + lighting.length + style.length} selected</p>
+                    </div>
+                    <div>
+                        <button onClick={clearTags} className="
+                        
+                            bg-red-600
+                            text-white
+                            rounded-xl
+                            w-[10vh]
+                            h-6
+                            flex
+                            items-center
+                            justify-center
+                             hover:bg-red-800
+      
+                            transition
+                            duration-100
+
+                            shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+
+                            active:bg-white
+                            active:text-black
+                        
+                        ">
+                            
+                        clear tags</button>
+                    </div>
+
+                </div>
+                <div className={`
+                
+                    border-b-2
+                    border-neutral-300
+                    ${activeTag === "Style" ? "":"hidden"}
+                
+                `}>
+                    <div className="
+                    
+                        w-[90vh]
+                    
+                    ">
+                        <label className="
+                        
+                            font-light
+                        
+                        ">Style: {style.length} selected</label>
+                    </div>
+                    <div className="
+                    
+                        flex
+                        flex-row
+                        gap-1 
+                        justify-center
+                        pb-5
+                    
+                    ">
+                        <Radial active={style} onClick={()=>styleClick("Cinematic")} text={"Cinematic"}/>
+                        <Radial active={style} onClick={()=>styleClick("Minimalist")} text={"Minimalist"}/>
+                        <Radial active={style} onClick={()=>styleClick("Vintage")} text={"Vintage"}/>
+                        <Radial active={style} onClick={()=>styleClick("Dramatic")} text={"Dramatic"}/>
+                        <Radial active={style} onClick={()=>styleClick("Stylized")} text={"Stylized"}/>
+                        <Radial active={style} onClick={()=>styleClick("Contemporary")} text={"Contemporary"}/>
+                    </div>
+                </div>
+                <div className={`
+                
+                        border-b-2
+                         border-neutral-300
+                         ${activeTag === "Lighting" ? "":"hidden"}
+                
+                `}>
+                    <div className="
+                    
+                        w-[90vh]
+                        
+                        pb-5
+                    
+                    ">
+                        <label className="
+                        
+                            font-light
+                        
+                        ">Lighting: {lighting.length} selected</label>
+                    </div>
+                    <div className="
+                    
+                        flex
+                        flex-row
+                        gap-1 
+                        h-15
+                        shrink-0
+                        overflow-y-auto
+                        w-[90vh]
+                        items-center
+                    
+                    ">
+                        <Radial active={lighting} onClick={()=>lightingClick("Natural-Light")} text={"Natural-Light"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Golden-Hour")} text={"Golden-Hour"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Blue-Hour")} text={"Blue-Hour"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Low-Light")} text={"Low-Light"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("High-Key")} text={"High-Key"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Low-Key")} text={"Low-Key"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Backlit")} text={"Backlit"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Flash")} text={"Flash"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Studio-Lighting")} text={"Studio-Lighting"}/>
+                        <Radial active={lighting} onClick={()=>lightingClick("Moody")} text={"Moody"}/>
+                    </div>
+                </div>
+                <div className={`
+                
+                    border-b-2
+                     border-neutral-300
+                     ${activeTag === "Mood" ? "":"hidden"}
+                
+                `}>
+                    <div className="
+                    
+                        w-[90vh]
+                        
+                        pb-5
+                    
+                    ">
+                        <label className="
+                        
+                            font-light
+                        
+                        ">Mood: {mood.length} selected</label>
+                    </div>
+                    <div className="
+                    
+                        flex
+                        flex-row
+                        gap-1 
+                        h-15
+                        shrink-0
+                        overflow-y-auto
+                        w-[90vh]
+                        items-center
+                    
+                    ">
+                        <Radial active={mood} onClick={()=>moodClick("Joyful")} text={"Joyful"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Emotional")} text={"Emotional"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Energetic")} text={"Energetic"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Mysterious")} text={"Mysterious"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Peaceful")} text={"Peaceful"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Serious")} text={"Serious"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Intimate")} text={"Intimate"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Dramatic")} text={"Dramatic"}/>
+                        <Radial active={mood} onClick={()=>moodClick("Playful")} text={"Playful"}/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    )
+
+}
+
+export default TagsCatSelection
