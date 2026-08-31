@@ -10,6 +10,7 @@ import Album from './pages/album'
 import AlbumEdit from './pages/albumEdit'
 import ImageSearch from './pages/imageSearch'
 import SignUp from './pages/signup'
+import AddImage from './pages/addimage'
 
 const router = createBrowserRouter([
 
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
   {path:"/album", element:<Album/>},
   {path:"/albumedit", element:<AlbumEdit/>},
   {path:"/imageSearch", element:<ImageSearch/>},
-  {path:"/signup", element:<SignUp/>}
+  {path:"/signup", element:<SignUp/>},
+  {path:"/addimage", element:<AddImage/>}
 
 ])
 

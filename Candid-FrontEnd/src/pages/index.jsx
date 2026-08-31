@@ -50,7 +50,7 @@ function Index(){
                     duration-200
                 
                 ">Log In</Link>
-                <Link className="
+                <Link to="/signup" className="
                 
                     text-white
                     text-2xl
@@ -109,7 +109,7 @@ function Index(){
 
                     
                     ">Find the perfect Photographer for you</p>
-                    <Link className="
+                    <Link to="/signup" className="
                     
                         text-2xl
                        

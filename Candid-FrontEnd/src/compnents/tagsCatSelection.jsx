@@ -218,16 +218,16 @@ function TagsCatSelection({hide}){
                         focus:border-neutral-400    
                     ">
                         <option disabled value="">Price Range</option>
-                        <option value="portrait">10-50</option>
-                        <option value="landscape">50-100</option>
-                        <option value="square">100-150</option>
-                        <option value="all">150-200</option>
-                        <option value="all">200-250</option>
-                        <option value="portrait">250-300</option>
-                        <option value="landscape">350-400</option>
-                        <option value="square">450-500</option>
-                        <option value="all">550-600</option>
-                        <option value="all">650-700+</option>
+                        <option value="10-50">10-50</option>
+                        <option value="50-100">50-100</option>
+                        <option value="100-150">100-150</option>
+                        <option value="150-200">150-200</option>
+                        <option value="200-250">200-250</option>
+                        <option value="250-300">250-300</option>
+                        <option value="350-400">350-400</option>
+                        <option value="450-500">450-500</option>
+                        <option value="550-600">550-600</option>
+                        <option value="650-700+">650-700+</option>
                         
                     </select>
                     
