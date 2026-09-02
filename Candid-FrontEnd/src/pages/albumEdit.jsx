@@ -1,27 +1,247 @@
-import Header from "../compnents/pheader"
+import PHeader from "../compnents/pheader"
+import { useEffect, useState, useRef } from "react"
+import { jwtService } from "../logic/jwt"
+import { useParams, useNavigate } from "react-router-dom"
+import imageIcon from "../resources/Image--Streamline-Rounded-Streamline-Material-Free.svg"
 
 function AlbumEdit(){
+
+    const [image, setImage] = useState(null)
+    const [existingImage, setExistingImage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState("")
+    const title = useRef()
+    const [saving, setSaving] = useState(false)
+    const description = useRef()
+    const { albumId, albumName } = useParams()
+    const [desc, setDesc] = useState("")
+    const [thumbNailChanged, setThumbNailChanged] = useState(false);
+
+    const navigate = useNavigate()
+    const tokenService = new jwtService()
+    
+    useEffect(() => {
+
+        tokenService.checkTokenPhotographer()
+
+        fetch("/api/album/photographer/getalbum", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+            },
+            body: JSON.stringify({
+                albumId: albumId
+            })
+        })
+        .then(response => {
+
+            return response.json()
+        })
+        .then(data => {
+
+            setExistingImage(data.thumnail)
+            setDesc(data.description)
+                
+        })
+
+    }, [albumId])
+
+    function deleteAlbum(){
+
+
+        fetch("/api/album/photographer/deletealbum", {
+
+            method:"POST",
+            headers:{
+
+                "Content-Type": "application/json",
+                auth:localStorage.getItem("jwt")
+
+            },
+            body:JSON.stringify({
+
+                albumId:albumId
+
+            })
+            
+        }).then(response => response.json()).then(data =>{
+
+                console.log(data)
+                if(data.sucsess){
+                    
+                    console.log("d")
+                    navigate('/gallery')
+
+                }
+                else{
+
+                    if(data.internalCode === 401){
+
+                        result = tokenService.requestJwt
+                        if(result){
+
+                            fetch("/api/album/photographer/deletealbum", {
+
+                                method:"POST",
+                                headers:{
+
+                                    "Content-Type": "application/json",
+                                    auth:localStorage.getItem("jwt")
+
+                                },
+                                body:JSON.stringify({
+
+                                    albumId:albumId
+
+                                })
+                            }).then(res => res.json()).then(async dat => {
+
+                                if(dat.sucsess){
+
+                                    navigate("/gallery")
+
+                                }
+                                else{
+
+                                    setErrorMessage(dat.error)
+
+                                }
+
+                            })
+
+                        }
+
+                    }
+                    else{
+
+                        setErrorMessage(data.error)
+
+                    }
+
+                }
+
+            })
+
+        }    
+
+    
+
+    function uploadImage(image){
+
+        setErrorMessage("")
+
+        if (!image || !image.type.startsWith("image/")){
+
+            setImage(null)
+            setErrorMessage("not valid file type")
+
+        } else {
+
+            setImage(image)
+            setThumbNailChanged(true)
+
+
+        }
+    }
+
+    async function submit() {
+
+        setErrorMessage("")
+
+        if(title.current.value === "" && description.current.value === "") {
+            setErrorMessage("Must enter details")
+        }
+        else if(title.current.value === "") {
+            setErrorMessage("Must enter a title")
+        }
+        else if(description.current.value === "") {
+            setErrorMessage("Must enter description")
+        }
+        else if(image === null && thumbNailChanged === true) {
+            setErrorMessage("Image must be uploaded")
+        }
+        else {
+            
+            const formData = new FormData()
+            if (image) {
+                formData.append("file", image)
+            } else {
+                formData.append(
+                    "file",
+                    new File([], "empty.jpg", { type: "image/jpeg" })
+                )
+            }
+            formData.append("name", title.current.value)
+            formData.append("description", description.current.value)
+            formData.append("updateThumbnail", thumbNailChanged)
+            formData.append("url", existingImage)
+            formData.append("albumId", albumId)
+            setSaving(true)
+            fetch("/api/album/photographer/editalbum", {
+                method:"POST",
+                headers:{ auth:localStorage.getItem("jwt") },
+                body:formData
+            }).then(response => response.json()).then(async data => {
+
+                if(data.sucsess) {
+                    navigate("/gallery")
+                }
+                else {
+                    setSaving(false)
+                    if(data.internalCode === 401) {
+
+                        const result = await tokenService.requestJwt()
+
+                        if(result) {
+                            
+                            fetch("/api/album/photographer/editalbum", {
+                                method:"POST",
+                                headers:{ auth:localStorage.getItem("jwt") },
+                                body:formData
+                            }).then(res => res.json()).then(d => {
+
+                                if(d.sucsess) {
+                                    navigate("/gallery")
+                                }
+                                else {
+                                    setErrorMessage(d.error)
+                                }
+
+                            })
+
+                        }
+                        else {
+                            return
+                        }
+
+                    }
+                    else {
+                        setErrorMessage(data.error)
+                    }
+                }
+
+            })
+        }
+    }
 
     return(
 
         <div className="
-        
-            w-screen 
-            min-h-screen 
-        
+            w-screen
+            min-h-screen
         ">
-            <Header active="Gallery"/>
+
+            <PHeader active="Gallery"/>
+
             <div className="
-            
                 w-full
                 h-full
                 flex
                 justify-center
                 mt-20
-            
             ">
+
                 <div className="
-                
                     border-2
                     border-neutral-300
                     shadow-[0_0px_10px_rgba(0,0,0,0.25)]
@@ -31,88 +251,154 @@ function AlbumEdit(){
                     flex
                     flex-col
                     items-center
-               
-                
                 ">
+
                     <div className="
-                    
                         flex
                         flex-row
                         w-[80vh]
                         justify-between
                         mt-10
-                    
                     ">
-                        <input placeholder="Title" type="text" className="
-                        
-                            border-2
-                      
-                            h-10
-                            rounded-md
-                            w-6/10
-                            pl-2
-                            border-neutral-500
-                            hover:border-black
 
-                            transition
-                            duration-200
-                          
+                        <input
+                            ref={title}
+                            defaultValue={albumName}
+                            placeholder="Title"
+                            type="text"
+                            className="
+                                border-2
+                                h-10
+                                rounded-md
+                                w-6/10
+                                pl-2
+                                border-neutral-500
+                                hover:border-black
+                                transition
+                                duration-200
+                            "
+                        />
 
-                        
-                        "/>
                         <div className="
-                        
                             w-3/10
                             border-2
-                       
-                     
                             rounded-md
                             pl-2
                             border-neutral-500
-
-                        
                         ">
-
-                            
-
                         </div>
-                    </div>
-                    <textarea placeholder="Desctiption" className="
-                    
-                        w-[80vh]
-                        border-2
-                        rounded-md
-                         border-neutral-500
-                         hover:border-black
-                        transition
-                        duration-200
-                        mt-5
-                        h-[6vh]
-                        pl-2
-                        resize-none
 
-                    
-                    "/>
-                    <div className="
-                    
-                        w-[80vh]
-                        border-2
-                        rounded-md
-                         border-neutral-500
-                         hover:border-black
-                        transition
-                        duration-200
-                        mt-5
-                        h-[40vh]
+                    </div>
+
+                    <textarea
+                        ref={description}
+                        value={desc}
+                        onChange={(e) => setDesc(e.target.value)}
+                        placeholder="Description"
+                        className="
+                            w-[80vh]
+                            border-2
+                            rounded-md
+                            border-neutral-500
+                            hover:border-black
+                            transition
+                            duration-200
+                            mt-5
+                            h-[6vh]
+                            pl-2
+                            resize-none
+                        "
+                    />
+
+                    <label className="
                         flex
+                        flex-col
                         items-center
                         justify-center
-                        text-neutral-500
+                        w-[80vh]
+                        h-[40vh]
+                        mt-5
+                        border-2
+                        rounded-md
+                        border-neutral-500
+                        hover:border-black
+                        transition
+                        duration-200
+                        cursor-pointer
+                        text-neutral-600
+                        hover:text-black
+                        active:text-neutral-600
                     ">
-                        Cover
-                    </div>
-                    <div className="
+
+                        <div className={`
+                            flex
+                            flex-col
+                            items-center
+                            ${image === null && existingImage === null ? "" : "hidden"}
+                        `}>
+
+                            <div>
+                                <img src={imageIcon} alt="Upload"/>
+                            </div>
+
+                            <p className="mt-2 text-gray-600">
+                                Click to upload an image
+                            </p>
+
+                        </div>
+
+                        <div className={`
+                            w-[80vh]
+                            h-[40vh]
+                            p-30
+                            flex
+                            justify-center
+                            items-center
+                            flex-col
+                            ${image === null && existingImage === null ? "hidden" : ""}
+                        `}>
+
+                            {image ? (
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    className="h-[30vh]"
+                                    alt="Selected album"
+                                />
+                            ) : existingImage ? (
+                                <img
+                                    src={"/api" + existingImage}
+                                    className="h-[30vh]"
+                                    alt="Current album"
+                                />
+                            ) : null}
+
+                            <p>
+                                Click to change image
+                            </p>
+
+                        </div>
+
+                        <input
+                            disabled={saving}
+                            onChange={(e) => uploadImage(e.target.files[0])}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                        />
+
+                    </label>
+
+                    {errorMessage && (
+                        <p className="text-red-500 mt-2">
+                            {errorMessage}
+                        </p>
+                    )}
+                    <p className={`
                     
+                        ${saving === true ? "": "hidden"}
+                        
+                    `}>Saving ...</p>
+                    <div className={`
                         flex
                         flex-row
                         w-[80vh]
@@ -120,10 +406,10 @@ function AlbumEdit(){
                         justify-center
                         gap-10
                         mt-7
-                    
-                    ">
-                        <button className="
-                        
+                        ${saving === true ? "hidden": ""}
+                    `}>
+
+                        <button onClick={submit} className="
                             bg-neutral-700
                             text-white
                             rounded-xl
@@ -132,20 +418,17 @@ function AlbumEdit(){
                             flex
                             items-center
                             justify-center
-                             hover:bg-gray-900
-      
+                            hover:bg-gray-900
                             transition
                             duration-100
-
                             shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
                             active:bg-white
                             active:text-black
+                        ">
+                            Submit
+                        </button>
 
-                        
-                        ">Submit</button>
-                        <button className="
-                        
+                        <button onClick={deleteAlbum} className="
                             bg-red-500
                             text-white
                             rounded-xl
@@ -154,25 +437,24 @@ function AlbumEdit(){
                             flex
                             items-center
                             justify-center
-                             hover:bg-red-700
-      
+                            hover:bg-red-700
                             transition
                             duration-100
-
                             shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
                             active:bg-white
                             active:text-black
-                        
-                        ">Delete</button>
+                        ">
+                            Delete
+                        </button>
+
                     </div>
 
                 </div>
+
             </div>
+
         </div>
-
     )
-
 }
 
 export default AlbumEdit

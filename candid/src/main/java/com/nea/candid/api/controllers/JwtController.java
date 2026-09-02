@@ -1,5 +1,6 @@
 package com.nea.candid.api.controllers;
 
+import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +37,43 @@ public class JwtController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
 
         }
+
+    }
+
+    @PostMapping("/public/checkjwtphotographer")
+    public boolean checkPhotographerJwt(HttpServletRequest request) {
+
+        String token =  request.getHeader("auth");
+        JwtObject jwt = jwtServices.decodeJwt(token);
+        if(jwt == null){
+
+            return false;
+
+        }
+        try{
+            return jwt.getExpired() == false && jwt.getInvalid() == false && jwt.getClaims().get("role").equals("photographer");
+        }catch(Exception e){
+
+            return false;
+
+        }
+
+
+    }
+
+    @PostMapping("/public/checkjwtclient")
+    public boolean checkClientJwt(HttpServletRequest request) {
+
+        String token =  request.getHeader("auth");
+        JwtObject jwt = jwtServices.decodeJwt(token);
+        try{
+            return jwt.getExpired() == false &&  jwt.getInvalid() == false && jwt.getClaims().get("role").equals("client");
+        }catch(Exception e){
+
+            return false;
+
+        }
+
 
     }
 

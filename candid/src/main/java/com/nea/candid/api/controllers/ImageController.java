@@ -19,12 +19,13 @@ public class ImageController {
     }
 
     @PostMapping("/photographer/uploadimage")
-    public ResponseEntity uploadImage(HttpServletRequest request, @RequestPart MultipartFile file, @RequestPart String imageName, @RequestParam String[] tags) {
+    public ResponseEntity uploadImage(HttpServletRequest request, @RequestPart MultipartFile file, @RequestParam String imageName, @RequestParam String[] tags, @RequestParam String category, @RequestParam long albumId, @RequestParam String description) {
+
 
         long longUserId = Long.parseLong((String) request.getAttribute("userId"));
 
         try {
-            ResponseBody responseBody = imageService.saveImage(file, imageName, longUserId, tags);
+            ResponseBody responseBody = imageService.saveImage(file, imageName,category, description,  longUserId, tags, albumId);
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
         }
         catch (Exception e) {

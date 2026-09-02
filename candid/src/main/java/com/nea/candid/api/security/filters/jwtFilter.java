@@ -1,6 +1,8 @@
 package com.nea.candid.api.security.filters;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nea.candid.data.dataObjects.JwtObject;
+import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +28,7 @@ public class jwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String jwt = request.getHeader("auth");
-        if(jwt == null){
+        if(jwt == null || jwt.isEmpty()){
 
             if(request.getRequestURI().contains("public")){
 
@@ -36,7 +38,9 @@ public class jwtFilter extends OncePerRequestFilter {
             }
             else{
 
-                response.sendError(401);
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
                 return;
 
             }
@@ -45,6 +49,13 @@ public class jwtFilter extends OncePerRequestFilter {
         else{
 
             JwtObject jwtObject = jwtService.decodeJwt(jwt);
+
+            if (jwtObject.getExpired() == null || jwtObject.getInvalid() == null) {
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
+                return;
+            }
 
             if((jwtObject.getExpired() && !jwtObject.getInvalid()) && request.getRequestURI().contains("public")){
 
@@ -64,7 +75,9 @@ public class jwtFilter extends OncePerRequestFilter {
                 }
                 else{
 
-                    response.sendError(401);
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
 
                 }
 

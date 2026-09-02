@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-function Header({active, classNameExtra}){
+function PHeader({active}){
 
     return(
 
@@ -14,7 +14,6 @@ function Header({active, classNameExtra}){
             pr-4
             h-15
             items-center
-            ${classNameExtra}
         
         `}>
 
@@ -35,7 +34,7 @@ function Header({active, classNameExtra}){
                
             
             "></p>
-            <Link className={`
+            <Link to={"/Phome"} className={`
             
                 flex-1
                 active:text-neutral-500
@@ -44,7 +43,7 @@ function Header({active, classNameExtra}){
                 ${active === "Home" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Home</Link>
-            <Link className={`
+            <Link to={"/gallery"} className={`
             
                 flex-1
                 active:text-neutral-500
@@ -87,4 +86,4 @@ function Header({active, classNameExtra}){
 
 }
 
-export default Header
+export default PHeader

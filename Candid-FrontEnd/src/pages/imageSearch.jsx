@@ -1,7 +1,17 @@
 import CHeader from "../compnents/cheader copy"
 import SearchBar from "../compnents/searchBar"
+import { useEffect } from "react"
+import { jwtService } from "../logic/jwt"
 
 function ImageSearch(){
+
+    const tokenService = new jwtService()
+
+    useEffect(() => {
+
+        tokenService.checkTokenClient()
+
+    }, [])
 
     return(
 

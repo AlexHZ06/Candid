@@ -1,6 +1,8 @@
 package com.nea.candid.api.security.filters;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nea.candid.data.dataObjects.JwtObject;
+import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,7 +45,13 @@ public class roleFilter extends OncePerRequestFilter {
                 return;
 
             }
-            else {response.sendError(401); return;}
+            else {
+
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
+
+            }
 
         }
         else if(request.getRequestURI().contains("photogrpaher")){
@@ -54,7 +62,13 @@ public class roleFilter extends OncePerRequestFilter {
                 return;
 
             }
-            else {response.sendError(401); return;}
+            else {
+
+                response.setStatus(401);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
+
+            }
 
         }
 

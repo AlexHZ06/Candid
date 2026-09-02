@@ -3,6 +3,7 @@ package com.nea.candid.services;
 import com.nea.candid.data.dataObjects.ImageProfileObject;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -709,6 +710,49 @@ public class ImageDecoderService {
         }
 
         return entropy;
+
+    }
+
+    public BufferedImage createThumbnail(ImageProfileObject imageProfileObject, int maxWidth){
+
+        int originalWidth = imageProfileObject.getImage().getWidth();
+        int originalHeight = imageProfileObject.getImage().getHeight();
+
+        double scale = (double) maxWidth / originalWidth;
+        int newWidth = maxWidth;
+        int newHeight = (int) (originalHeight * scale);
+
+        BufferedImage thumbnail = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = thumbnail.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+
+        g2d.drawImage(imageProfileObject.getImage(), 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+        return thumbnail;
+
+    }
+
+    public BufferedImage createThumbnailSquare(ImageProfileObject imageProfileObject, int size){
+
+        int width =  imageProfileObject.getImage().getWidth();
+        int height = imageProfileObject.getImage().getHeight();
+
+        int cropSize = Math.min(width, height);
+        int x = (width - cropSize) / 2;
+        int y = (height - cropSize) / 2;
+
+        BufferedImage thumbnail = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g2d = thumbnail.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+
+        g2d.drawImage(imageProfileObject.getImage(), 0, 0, size, size, x, y, x + cropSize, y + cropSize, null);
+        g2d.dispose();
+
+        return thumbnail;
 
     }
 

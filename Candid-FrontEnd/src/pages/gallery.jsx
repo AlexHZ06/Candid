@@ -1,8 +1,36 @@
-import Header from "../compnents/pheader"
+import PHeader from "../compnents/pheader"
 import { Link } from "react-router-dom"
 import AlbumFolder from "../compnents/albumFolder"
+import {useEffect } from "react"
+import { jwtService } from "../logic/jwt"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 function Gallery(){
+
+    const tokenService = new jwtService()
+    const [albums, setAlbums] = useState([])
+
+    useEffect(() => {
+
+        tokenService.checkTokenPhotographer()
+
+        fetch("/api/album/photographer/getallalbums", {
+
+            method:"GET",
+            headers:{
+
+                auth: localStorage.getItem("jwt")
+
+            }
+        }).then(response => response.json()).then(data => {
+
+            setAlbums(data)
+            console.log(data)
+
+        })
+
+    }, [])
 
     return(
 
@@ -12,7 +40,7 @@ function Gallery(){
             min-h-screen 
         
         ">
-            <Header active="Gallery"/>
+            <PHeader active="Gallery"/>
             <div className="
 
                 flex
@@ -41,7 +69,7 @@ function Gallery(){
                         flex
                         mt-5
                         justify-center
-                        
+                        items-center
                     
                     ">
                         <p className="
@@ -62,35 +90,29 @@ function Gallery(){
                         rounded-xl
                         w-9/10
                         h-[80%]
-                        mt-5
+                        pt-5
                         shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
                         flex
                         flex-row
-                        pt-10
+                        
                         gap-4
                         overflow-y-auto
-                        justify-between
+              
+                        justify-center
                         shrink-0
                         flex-wrap
-                        pl-5
-                        pr-5
+                        
+                        
+                        content-start
+           
                     
                     ">
                         
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
-                        <AlbumFolder/>
+                        {albums.map(album => (
 
+                            <AlbumFolder title={album.albumname} photos={album.numofphotos} id={album.albumid} thumbnail={"/api" + album.thumnail}/>
+
+                        ))}
 
                     </div>
                     <div className="
@@ -103,7 +125,7 @@ function Gallery(){
                         mt-5
                     ">
 
-                        <Link className="
+                        <Link to={"/albumcreate"} className="
                         
                             bg-black
                             text-white

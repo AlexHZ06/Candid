@@ -1,9 +1,18 @@
 import PHeader from "../compnents/pheader"
 import BookingNotif from "../compnents/bookingNotif"
 import MessageNotif from "../compnents/MessageNotif copy"
-
+import { useEffect } from "react"
+import { jwtService } from "../logic/jwt"
 
 function PhotographerHome(){
+
+    const tokenService = new jwtService()
+
+    useEffect(() => {
+
+        tokenService.checkTokenPhotographer()
+
+    }, [])
 
     return(
 

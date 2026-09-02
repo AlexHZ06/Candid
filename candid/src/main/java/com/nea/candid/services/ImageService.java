@@ -29,20 +29,25 @@ public class ImageService {
         this.imageDecoderService = imageDecoderService;
     }
 
+
     @Transactional
-    public ResponseBody saveImage(MultipartFile file, String photoName, long userId, String[] tags) {
+    public ResponseBody saveImage(MultipartFile file, String photoName, String category,String description, long userId, String[] tags, long albumId) {
 
         final String[] characters = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
         String newName = photoName + ".jpg";
+        String newThumbName = photoName + "Thumbnail.jpg";
 
         Path path = null;
+        Path thumbnailPath = null;
 
 
 
         try{
 
             path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
-            boolean pathExists = Files.exists(path);
+            thumbnailPath = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\TestThumbnails\\" + newThumbName);
+            boolean pathExists = Files.exists(thumbnailPath) || Files.exists(path);
+
 
             String addon = "";
             Random random = new Random();
@@ -56,21 +61,31 @@ public class ImageService {
                 }
 
                 newName = photoName + addon + ".jpg";
+                newThumbName = photoName + addon + "Thumbnail.jpg";
                 path = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\Test\\" + newName);
-                pathExists = Files.exists(path);
+                thumbnailPath = Paths.get("C:\\Users\\Alexander Hernandez\\Desktop\\Programing\\Projects\\Candid\\Storage\\TestThumbnails\\" + newThumbName);
+                pathExists = Files.exists(thumbnailPath) || Files.exists(path);
 
             }
 
             Files.createDirectories(path.getParent());
+            Files.createDirectories(thumbnailPath.getParent());
+
             BufferedImage image = ImageIO.read(file.getInputStream());
 
+
             ImageIO.write(image, "jpg", path.toFile());
+
             ImageProfileObject imageProfileObject = new ImageProfileObject(image);
+
+            BufferedImage thumbnail = imageDecoderService.createThumbnail(imageProfileObject, 600);
+            ImageIO.write(thumbnail, "jpg", thumbnailPath.toFile());
 
             imageDecoderService.calculateValues(imageProfileObject);
             imageDecoderService.printImageValues(imageProfileObject);
-            long photoId = photosTableService.addToPhotosTable(userId, photoName, "", "", LocalDateTime.now(), path.toString(), "", file.getSize(), image.getWidth(), image.getHeight(), imageProfileObject.getGlobalVector());
+            long photoId = photosTableService.addToPhotosTable(userId, photoName, description, category, LocalDateTime.now(), "/storage/public/Test/" + newName, "/storage/public/TestThumbnails/" + newThumbName, file.getSize(), image.getWidth(), image.getHeight(), imageProfileObject.getGlobalVector());
             photosTableService.insertSectionVectors(photoId, imageProfileObject.getSectionVectors());
+            photosTableService.addPhotoToAlbum(albumId, photoId);
 
             List<Long> tagids = saveTags(tags);
             addPhotoTags(photoId, tagids);

@@ -1,16 +1,105 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import PHeader from "../compnents/pheader"
 import Radial from "../compnents/radial"
 import { Link } from "react-router-dom"
+import { jwtService } from "../logic/jwt"
+import { useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import AlbumFolder from "../compnents/albumFolder"
 
 function AddImage(){
 
+    const [activeAlbum, setActiveAlbum] = useState(-1);
+    const [image, setImage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState("")
+    const title = useRef();
+    const [saving, setSaving] = useState(false)
+    const description = useRef();
     const [active, setActive] = useState("None selected")
-    const [macCost, setMaxCost] = useState(0)
     const [lighting, setLighting] = useState([])
     const [mood, setMood] = useState([])
     const [style, setStyle] = useState([])
     const [activeTag, setActiveTag] = useState("")
+    const[activePage, setActiePage] = useState("details")
+    const navigate = useNavigate()
+    const [activeAlbumName, setActiveAlbumName] = useState("");
+    const tokenService = new jwtService()
+    
+
+    const [albums, setAlbums] = useState([])
+
+    useEffect(() => {
+
+        tokenService.checkTokenPhotographer()
+
+        fetch("/api/album/photographer/getallalbums", {
+
+            method:"GET",
+            headers:{
+
+                auth: localStorage.getItem("jwt")
+
+            }
+        }).then(response => response.json()).then(data => {
+
+            setAlbums(data)
+            console.log(data)
+
+        })
+
+    }, [])
+
+    function selectAlbum(id, name){
+
+        setActiveAlbum(id)
+        setActiveAlbumName(name)
+
+    }
+
+    function uploadImage(image){
+
+        setErrorMessage("")
+
+        if (!image || !image.type.startsWith("image/")){
+
+            setImage(null)
+            setErrorMessage("not valid file type")
+
+        }
+        else{
+
+            setImage(image)
+
+        }
+
+    }
+
+    async function submitDetails() {
+
+        
+        setErrorMessage("")
+
+        if(title.current.value === "" && description.current.value === "") {
+            setErrorMessage("Must enter details")
+        }
+        else if(title.current.value === "") {
+            setErrorMessage("Must enter a title")
+        }
+        else if(description.current.value === "") {
+            setErrorMessage("Must enter description")
+        }
+        else if(image === null) {
+            setErrorMessage("Image must be uploaded")
+        }
+        else {
+            const formData = new FormData()
+            formData.append("file", image)
+            formData.append("name", title.current.value)
+            formData.append("description", description.current.value)
+            setActiePage("tags")
+           
+        }
+    }
 
     function clearTags(){
 
@@ -66,6 +155,142 @@ function AddImage(){
 
     }
 
+    function submitTags(){
+
+        if(active == "None selected"){
+
+            setErrorMessage("Must select a catgegory")
+
+        }
+        else if(lighting.length + mood.length + style.length === 0){
+
+            setErrorMessage("Must select at least 1 tag")
+
+        }
+        else{
+            
+            setActiePage("album")
+
+        }
+        
+
+    }
+
+    function back(){
+        
+        setErrorMessage("")
+
+        if(activePage === "album"){
+
+            setActiePage("tags")
+
+        }
+        else if(activePage === "tags"){
+
+            setActiePage("details")
+
+        }
+
+    }
+
+    function submitAlbum(){
+
+        if(activeAlbum === -1){
+
+            setErrorMessage("Must select a album")
+
+        }
+        else{
+
+            console.log("Doods")
+
+            const formData = new FormData()
+            const tags = [];
+
+            if (lighting.length > 0) {
+                tags.push(...lighting);
+            }
+
+            if (mood.length > 0) {
+                tags.push(...mood);
+            }
+
+            if (style.length > 0) {
+                tags.push(...style);
+            }
+            setSaving(true)
+            formData.append("file", image)
+            formData.append("imageName", title.current.value)
+            formData.append("tags", tags)
+            formData.append("category", active)
+            formData.append("albumId", activeAlbum)
+            formData.append("description", description.current.value)
+
+            console.log("gooo")
+
+            fetch("/api/image/photographer/uploadimage", {
+
+                
+                method:"POST",
+                headers:{
+
+                    auth:localStorage.getItem("jwt")
+
+                },
+                body:formData
+            
+            }).then(response => response.json()).then(async data => {
+
+                if(data.sucsess) {
+                    navigate(`/album/${activeAlbum}/${activeAlbumName}`)
+                }
+                else {
+                    setSaving(false)
+                    if(data.internalCode === 401) {
+
+                        const result = await tokenService.requestJwt()
+
+                        if(result) {
+                            
+                            fetch("/api/image/photographer/uploadimage", {
+
+                                method:"POST",
+                                headers:{
+
+                                    auth:localStorage.getItem("jwt")
+
+                                },
+                                body:formData
+                            
+                            }).then(res => res.json()).then(d => {
+
+                                if(d.sucsess) {
+                                    navigate(`/album/${activeAlbum}/${activeAlbumName}`)
+                                }
+                                else {
+                                    setErrorMessage(d.error)
+                                    setSaving(false)
+                                }
+
+                            })
+
+                        }
+                        else {
+                            return
+                        }
+
+                    }
+                    else {
+                        setErrorMessage(data.error)
+                        setSaving(false)
+                    }
+                }
+
+            })
+
+        }
+
+    }
 
     return(
         <div className="
@@ -78,7 +303,7 @@ function AddImage(){
                   
         ">
             <PHeader active="Gallery"/>
-            <div className="
+            <div className={`
             
                 flex
                 border
@@ -90,11 +315,10 @@ function AddImage(){
                 items-center
                 rounded-md
                 mt-10
-                hidden  
-                
+                ${activePage === "details" ? "": "hidden"}
             
-            ">
-                <input placeholder="Title" type="text" className="
+            `}>
+                <input ref={title} placeholder="Name" type="text" className="
                 
                     border-2
                     mt-10
@@ -109,7 +333,7 @@ function AddImage(){
                     duration-100
 
                 "/>  
-                    <textarea placeholder="Desctiption" className="
+                    <textarea ref={description} placeholder="Desctiption" className="
                     
                         w-[80vh]
                         border-2
@@ -140,30 +364,59 @@ function AddImage(){
                         transition
                         duration-200
                         cursor-pointer
+                        text-neutral-600
+                        hover:text-black
+                        active:text-neutral-600
                     "
                     >
-                    <div className="text-4xl">
-                        <img src="src\resources\Image--Streamline-Rounded-Streamline-Material-Free.svg" className="
+                    <div className={`
+                    
+                        flex
+                        flex-col
+                        items-center
+                        ${image === null ? "": "hidden"}
                         
+                    
+                    `}>
+                        <div>
+                            <img src="src/resources/Image--Streamline-Rounded-Streamline-Material-Free.svg" className="
                             
+                                
+        
+                            "/>
+                        </div>
+
+                        <p className="mt-2 text-gray-600">
+                            Click to upload an image
+                        </p>
+                    </div>
+                    <div className={`
+                    
+                        w-[80vh]
+                        h-[40vh]
+                        p-30
+                        flex
+                        justify-center
+                        items-center
+                        flex-col
+                        ${image === null ? "hidden" : ""}
+                    
+                    `}>
+                        <img src={image ? URL.createObjectURL(image) : ""} className="
+                        
+                            h-[30vh]
                         
                         "/>
+                        <p>Click to change image</p>
                     </div>
 
-                    <p className="mt-2 text-gray-600">
-                        Click to upload an image
-                    </p>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                    />
+                    <input disabled={saving} onChange={(e) => uploadImage(e.target.files[0])} type="file" accept="image/*" className="hidden"/>
                     </label>
                     <p className="
                     
                         text-red-600
                     
-                    ">Error Message</p>   
+                    ">{errorMessage}</p>   
                 <div className="
                 
                         flex
@@ -171,7 +424,7 @@ function AddImage(){
                         gap-10
                 
                 ">
-                    <button className="
+                    <button onClick={submitDetails} className="
                 
                         bg-black
                         w-[20vh]
@@ -193,8 +446,8 @@ function AddImage(){
                         
 
                     
-                    ">Submit</button>
-                    <button className="
+                    ">Continue</button>
+                    <button  className="
                 
                         bg-black
                         w-[20vh]
@@ -226,12 +479,13 @@ function AddImage(){
                 border-neutral-300
                 w-5/10
                 
-                hidden
+             
                 shadow-[0_0px_10px_rgba(0,0,0,0.25)]
                 flex-col
                 items-center
                 rounded-md
                 mt-20
+                ${activePage === "tags" ? "": "hidden"}
             
             `}>
                 <div className="
@@ -292,96 +546,6 @@ function AddImage(){
                     <Radial active={active} onClick={()=>categoryClick("Industrial")} text={"Industrial"}/>
                     <Radial active={active} onClick={()=>categoryClick("Still-Life")} text={"Still-Life"}/>
                     <Radial active={active} onClick={()=>categoryClick("Experimental")} text={"Experimental"}/>
-                </div>
-                <div className="
-                
-                    flex
-                    flex-col
-                    border-b-2
-                    border-neutral-300
-                    pb-5
-                    w-[90vh]
-                
-                ">
-                    <div className="
-                    
-                        pt-5
-                        flex
-                        flex-row
-                        justify-center
-                        items-center
-                        gap-15
-                    
-                    ">   
-                        <select defaultValue={""} name="" className="
-                            border
-                            border-neutral-400
-                            rounded-xl
-                            hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
-                            focus:outline-none
-                            focus:ring-0
-                            focus:border-neutral-400    
-                        ">
-                            <option disabled value="">Order By</option>
-                            <option value="Newest">Newest</option>
-                            <option value="Oldest">Oldest</option>
-                            <option value="Price">Price</option>
-                            <option value="Rating">Rating</option>
-                            <option value="none">none</option>
-                        </select>
-                        <select defaultValue={""} name="" className="
-                            border
-                            border-neutral-400
-                            rounded-xl
-                            hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
-                            focus:outline-none
-                            focus:ring-0
-                            focus:border-neutral-400    
-                        ">
-                            <option disabled value="">Price Range</option>
-                            <option value="10-50">10-50</option>
-                            <option value="50-100">50-100</option>
-                            <option value="100-150">100-150</option>
-                            <option value="150-200">150-200</option>
-                            <option value="200-250">200-250</option>
-                            <option value="250-300">250-300</option>
-                            <option value="350-400">350-400</option>
-                            <option value="450-500">450-500</option>
-                            <option value="550-600">550-600</option>
-                            <option value="650-700+">650-700+</option>
-                            
-                        </select>
-                        
-                    </div>
-                    <div className="
-                    
-                        pt-5
-                        flex
-                        flex-row
-                        justify-center
-                        items-center
-                        gap-3
-                    
-                    ">   
-                        <div className="
-                        
-                            flex
-                            flex-row
-                            justify-center
-                            
-                        ">
-                            <label className="
-                                
-                                pr-3
-                                
-                            ">Distance Radius: {macCost} km</label>
-                            <input type="range" min="1" max="1000" value={macCost} onChange={(e)=> setMaxCost(Number(e.target.value))} className="
-                                
-                                accent-neutral-500
-                                
-                            "/>
-                        </div> 
-                    </div>
                 </div>
                 <div className="
                 
@@ -585,7 +749,7 @@ function AddImage(){
                     
                         text-red-600
                     
-                    ">Error message</p>
+                    ">{errorMessage}</p>
                     <div className="
                     
                         mt-10
@@ -594,7 +758,7 @@ function AddImage(){
                         gap-5
                     
                     ">
-                        <button className="
+                        <button onClick={submitTags} className="
                         
                             bg-black
                             w-[20vh]
@@ -615,7 +779,7 @@ function AddImage(){
                             active:text-black
 
                         ">continue</button>  
-                        <button className="
+                        <button onClick={back} className="
                         
                             bg-black
                             w-[20vh]
@@ -640,7 +804,7 @@ function AddImage(){
                 </div>
             </div>
             
-            <div className="
+            <div className={`
             
                 flex
                 border
@@ -652,8 +816,9 @@ function AddImage(){
                 items-center
                 rounded-md
                 mt-10
+                ${activePage === "album" ? "": "hidden"}
                   
-            ">
+            `}>
                 <p className="
                 
                     flex
@@ -684,202 +849,58 @@ function AddImage(){
                 pl-5
                 pr-5
                     
-            ">
-                <button className="
+            ">                   
+                {albums.map(album => (
+
+                    <button disabled={saving} onClick={() =>{selectAlbum(album.albumid, album.albumname)}} key={album.albumid} className="
                     
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
+                        bg-neutral-200
+                        w-[200px]
+                        h-[200px]
+                        rounded-xl
+                        shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+                        pl-2
+                        pt-2
 
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
+                        hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
+                        transition
+                        duration-100
 
-                ">
+                        active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
+                        relative
 
-                    <p className="
+                    ">
+
+                        <img src={"/api" + album.thumnail} className={`
                         
-                        text-2xl
+                        absolute
+                        w-[200px]
+                        rounded-xl
+                        top-0
+                        left-0
+                        ${activeAlbum === album.albumid ? "border-2 border-amber-500" : ""}
                         
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
-
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-
-                ">
-
-                    <p className="
+                        `}/>
+                        <p className="
                         
-                        text-2xl
+                            absolute
+                            text-2xl
+                            text-white
+                            top-0
+                            
                         
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
+                        ">{album.albumname}</p>
 
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
 
-                ">
+                    </button>
 
-                    <p className="
-                        
-                        text-2xl
-                        
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
-
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-
-                ">
-
-                    <p className="
-                        
-                        text-2xl
-                        
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
-
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-
-                ">
-
-                    <p className="
-                        
-                        text-2xl
-                        
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
-
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-
-                ">
-
-                    <p className="
-                        
-                        text-2xl
-                        
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
-                <button className="
-                    
-                    bg-neutral-200
-                    w-50
-                    h-50
-                    rounded-xl
-                    shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                    pl-2
-                    pt-2
-
-                    hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                    transition
-                    duration-100
-                    flex
-                    flex-col
-                    items-start
-                    active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-
-                ">
-
-                    <p className="
-                        
-                        text-2xl
-                        
-                    ">Title</p>
-                    <p>100 photos</p> 
-                </button>
+                ))}
             </div>   
             <p className="
             
                 text-red-600
             
-            ">Error message</p>
+            ">{errorMessage}</p>
             <div className="
             
                 w-[68vh]
@@ -895,14 +916,21 @@ function AddImage(){
                 
                 ">Add album</Link>
             </div>
-                <div className="
+                <p className={`
+                    
+                    ${saving === true ? "": "hidden"}   
+                    
+                `}>
+                Saving ...</p>
+                <div className={`
                 
                         flex
                         flex-row
                         gap-10
+                        ${saving === true ? "hidden" : ""}
                 
-                ">
-                    <button className="
+                `}>
+                    <button onClick={submitAlbum} className="
                 
                         bg-black
                         w-[20vh]
@@ -925,7 +953,7 @@ function AddImage(){
 
                     
                     ">Submit</button>
-                    <button className="
+                    <button onClick={back} className="
                 
                         bg-black
                         w-[20vh]

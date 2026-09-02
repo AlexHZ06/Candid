@@ -6,8 +6,8 @@ public class JwtObject {
 
     private String jwt;
     private Claims claims;
-    private Boolean expired;
-    private Boolean invalid;
+    private Boolean expired = false;
+    private Boolean invalid = false;
 
     public JwtObject(String jwt, Claims claims, Boolean expired, Boolean invalid) {
         this.jwt = jwt;

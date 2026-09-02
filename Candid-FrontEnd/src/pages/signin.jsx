@@ -1,6 +1,79 @@
 import { Link } from "react-router-dom"
+import { useRef, useState} from "react"
+import { jwtDecode } from "jwt-decode"
+import { useNavigate } from "react-router-dom"
 
 function SignIn() {
+
+    const userName = useRef("")
+    const password = useRef("")
+    const [response, setResponse] = useState("")
+    const navigate = useNavigate()
+
+    function submit(){
+
+        fetch("/api/auth/public/login",{
+
+            method:"POST",
+            headers:{
+
+                "Content-Type":"application/json"
+
+            },
+            body:JSON.stringify({
+
+                "userName":userName.current.value,
+                "password":password.current.value
+
+            })
+
+        }).then(response => response.json()).then(data =>{
+
+            console.log(data)
+
+            if(!data.sucsess){
+                if(data.internalCode === 102){
+
+                    setResponse("incorrect details")
+
+                }
+                else if(data.internalCode === 101){
+
+                    setResponse("user does not exist")
+
+                }
+                else{
+
+                    setResponse("internal error try again")
+
+                }
+            }
+            else{
+
+                localStorage.setItem("jwt", data.data.jwt)
+                localStorage.setItem("refreshUUID", data.data.refreshUUID)
+                const token = localStorage.getItem("jwt")
+                const decoded = jwtDecode(token)
+
+                if(decoded.role === "client"){
+
+                    alert("clinet")
+
+                }
+                else{
+
+                    navigate("/PHome")
+
+                }
+
+            }
+            
+            
+
+        })
+
+    }
+
     return (
         <div
             className="
@@ -46,7 +119,7 @@ function SignIn() {
                     pt-8
                 
                 ">Enter Your Details</p>
-                <input placeholder="UserName" type="text" className="
+                <input ref={userName} placeholder="UserName" type="text" className="
                 
                     border-2
                     mt-10
@@ -61,7 +134,7 @@ function SignIn() {
                     duration-100
 
                 "/>
-                <input placeholder="Password" type="password" className="
+                <input ref={password} placeholder="Password" type="password" className="
                 
                     border-2
                     mt-10
@@ -78,6 +151,11 @@ function SignIn() {
 
                 
                 "/>
+                <p className="
+                
+                    text-red-600
+                
+                ">{response}</p>
                 <Link className="
                 
                     text-gray-500
@@ -90,7 +168,7 @@ function SignIn() {
                     duration-100
                 
                 ">Forgot Password</Link>
-                <button className="
+                <button onClick={submit} className="
             
                     bg-black
                     w-[30vh]
@@ -99,7 +177,7 @@ function SignIn() {
                     text-white
 
                     hover:bg-gray-900
-                    mt-10
+                    mt-5
 
                     transition
                     duration-100
