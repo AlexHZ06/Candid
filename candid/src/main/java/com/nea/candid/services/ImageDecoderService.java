@@ -11,6 +11,8 @@ import java.util.Collections;
 @Service
 public class ImageDecoderService {
 
+    //This is my favourite class as it has all the interesting maths and embedded vectorisation
+
     private final EmbeddedVectorService imageProfileService;
 
     private final float hueThreshold = 0.25F;

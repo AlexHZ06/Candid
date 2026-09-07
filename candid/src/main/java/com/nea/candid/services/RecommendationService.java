@@ -21,6 +21,8 @@ public class RecommendationService {
     private final UsersDbService usersTableService;
     private final LocationService locationService;
 
+    //this class is also fun it contains the similarity calcs
+
     public RecommendationService(PhotosDbService photosTableService, ProfilesDbService profilesTableService, UsersDbService usersTableService, LocationService locationService) {
         this.photosTableService = photosTableService;
         this.profilesTableService = profilesTableService;
