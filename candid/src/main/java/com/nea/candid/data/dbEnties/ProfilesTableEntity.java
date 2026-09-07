@@ -8,35 +8,31 @@ public class ProfilesTableEntity {
     private final  long userid;
     private final  String profilename;
     private final  String profiledescription;
-    private final  Date creationdate;
     private final  boolean active;
     private final  float mincost;
     private final  float maxcost;
     private final  String projectcatagory;
     private final float[][] preferencevector;
-    private final int photointeractions;
+    private final float[][] dislikesvector;
     private final double latitude;
     private final double longitude;
 
-    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, Date creationdate, boolean active, float mincost, float maxcost, String projectcatagory, float[][] preferencevector, int photointeractions, double latitude, double longitude) {
+    public ProfilesTableEntity(long profileid, long userid, String profilename, String profiledescription, boolean active, float mincost, float maxcost, String projectcatagory, float[][] preferencevector, float[][] dislikesvector, double latitude, double longitude) {
         this.profileid = profileid;
         this.userid = userid;
         this.profilename = profilename;
         this.profiledescription = profiledescription;
-        this.creationdate = creationdate;
         this.active = active;
         this.mincost = mincost;
         this.maxcost = maxcost;
         this.projectcatagory = projectcatagory;
         this.preferencevector = preferencevector;
-        this.photointeractions = photointeractions;
+        this.dislikesvector = dislikesvector;
+
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public int getPhotointeractions() {
-        return photointeractions;
-    }
 
     public long getProfileid() {
         return profileid;
@@ -54,10 +50,6 @@ public class ProfilesTableEntity {
         return profiledescription;
     }
 
-    public Date getCreationdate() {
-        return creationdate;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -68,6 +60,10 @@ public class ProfilesTableEntity {
 
     public float getMaxcost() {
         return maxcost;
+    }
+
+    public float[][] getDislikesvector() {
+        return dislikesvector;
     }
 
     public String getProjectcatagory() {

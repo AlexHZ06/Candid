@@ -2,6 +2,7 @@ package com.nea.candid.services.database;
 
 import com.nea.candid.data.dbEnties.AlbumsTableEntity;
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
+import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.repositories.AlbumsTableRepo;
 import com.nea.candid.repositories.PhotosTableRepo;
 import com.nea.candid.repositories.SectionVectorsTableRepo;
@@ -152,6 +153,18 @@ public class PhotosDbService {
     public AlbumsTableEntity getAlbum(long albumId){
 
         return albumsTableRepo.getAlbum(albumId);
+
+    }
+
+    public List<PhotosTableEntity> getPreferencePhotos(int amount){
+
+        return photosTableRepo.getPreferencePhotos(amount);
+
+    }
+
+    public List<PhotosTableEntity> getAllPhotosFromAlbum(long albumId){
+
+        return albumsTableRepo.getAllImagesFromAlbum(albumId);
 
     }
 

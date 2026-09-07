@@ -19,10 +19,18 @@ export class jwtService{
 
         }).then(response => response.json()).then(data =>{
             
-            if(data === true){
+            console.log(data)
 
-                return
+            if(data.sucsess){
+                if(data.data === true){
 
+                    return
+
+                }
+                if(data.data == false){
+                    
+                    this.navigation("/rejectedjwt")
+                }
             }
             else{
 
@@ -38,10 +46,43 @@ export class jwtService{
 
                 }).then(res => res.json()).then(dat =>{
 
-                    if(dat.sucsess === true){
+                    if(dat.success === true){
 
                         localStorage.setItem("jwt", dat.data)
-                        return
+                        fetch("/api/jwt/public/requestjwt",{
+
+                            method:"POST",
+                            headers:{
+
+                                auth:localStorage.getItem("jwt"),
+                                refreshTokenUUID:localStorage.getItem("refreshUUID")                   
+
+                            }
+
+                        }).then(r => r.json()).then(d => {
+
+                            if(d.success){
+
+                                if(data.sucsess){
+                                    if(data.data === true){
+
+                                        return
+
+                                    }
+                                    if(data.data == false){
+                                        
+                                        this.navigation("/rejectedjwt")
+                                    }
+                                }
+
+                            }
+                            else{
+
+                                this.navigation("/rejectedjwt")
+
+                            }
+
+                        })
 
                     }
                     else{
@@ -61,7 +102,7 @@ export class jwtService{
 
     requestJwt(){
 
-        return fetch("/jwt/public/requestjwt", {
+        return fetch("/api/jwt/public/requestjwt", {
 
             method:"POST",
             headers:{
@@ -105,10 +146,18 @@ export class jwtService{
 
         }).then(response => response.json()).then(data =>{
             
-            if(data === true){
+            console.log(data)
 
-                return
+            if(data.sucsess){
+                if(data.data === true){
 
+                    return
+
+                }
+                if(data.data == false){
+                    
+                    this.navigation("/rejectedjwt")
+                }
             }
             else{
 
@@ -124,10 +173,43 @@ export class jwtService{
 
                 }).then(res => res.json()).then(dat =>{
 
-                    if(dat.sucsess === true){
+                    if(dat.success === true){
 
                         localStorage.setItem("jwt", dat.data)
-                        return
+                        fetch("/api/jwt/public/requestjwt",{
+
+                            method:"POST",
+                            headers:{
+
+                                auth:localStorage.getItem("jwt"),
+                                refreshTokenUUID:localStorage.getItem("refreshUUID")                   
+
+                            }
+
+                        }).then(r => r.json()).then(d => {
+
+                            if(d.success){
+
+                                if(data.sucsess){
+                                    if(data.data === true){
+
+                                        return
+
+                                    }
+                                    if(data.data == false){
+                                        
+                                        this.navigation("/rejectedjwt")
+                                    }
+                                }
+
+                            }
+                            else{
+
+                                this.navigation("/rejectedjwt")
+
+                            }
+
+                        })
 
                     }
                     else{
@@ -144,6 +226,7 @@ export class jwtService{
         })
 
     }
+
 
 }
 

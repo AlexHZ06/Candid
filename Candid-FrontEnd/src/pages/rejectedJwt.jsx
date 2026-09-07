@@ -1,5 +1,6 @@
 
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 function RejectedJwt(){
 
@@ -11,6 +12,13 @@ function RejectedJwt(){
         navigate("/")
         
     }
+
+    useEffect(() => {
+
+        localStorage.clear
+
+    }, [])
+
 
     return(
 

@@ -25,7 +25,7 @@ function Gallery(){
             }
         }).then(response => response.json()).then(data => {
 
-            setAlbums(data)
+            setAlbums(data.data)
             console.log(data)
 
         })
@@ -108,7 +108,7 @@ function Gallery(){
                     
                     ">
                         
-                        {albums.map(album => (
+                        {albums?.map(album => (
 
                             <AlbumFolder title={album.albumname} photos={album.numofphotos} id={album.albumid} thumbnail={"/api" + album.thumnail}/>
 

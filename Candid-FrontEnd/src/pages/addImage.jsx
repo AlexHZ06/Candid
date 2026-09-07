@@ -6,10 +6,11 @@ import { jwtService } from "../logic/jwt"
 import { useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import AlbumFolder from "../compnents/albumFolder"
+import { useParams } from "react-router-dom"
+import uploadIcon from "../resources/Image--Streamline-Rounded-Streamline-Material-Free.svg"
 
 function AddImage(){
 
-    const [activeAlbum, setActiveAlbum] = useState(-1);
     const [image, setImage] = useState(null)
     const [errorMessage, setErrorMessage] = useState("")
     const title = useRef();
@@ -22,39 +23,17 @@ function AddImage(){
     const [activeTag, setActiveTag] = useState("")
     const[activePage, setActiePage] = useState("details")
     const navigate = useNavigate()
-    const [activeAlbumName, setActiveAlbumName] = useState("");
+    const { albumId } = useParams()
+    const {albumName} = useParams()
+
     const tokenService = new jwtService()
     
-
-    const [albums, setAlbums] = useState([])
-
     useEffect(() => {
 
         tokenService.checkTokenPhotographer()
 
-        fetch("/api/album/photographer/getallalbums", {
-
-            method:"GET",
-            headers:{
-
-                auth: localStorage.getItem("jwt")
-
-            }
-        }).then(response => response.json()).then(data => {
-
-            setAlbums(data)
-            console.log(data)
-
-        })
-
     }, [])
 
-    function selectAlbum(id, name){
-
-        setActiveAlbum(id)
-        setActiveAlbumName(name)
-
-    }
 
     function uploadImage(image){
 
@@ -169,7 +148,8 @@ function AddImage(){
         }
         else{
             
-            setActiePage("album")
+            setActiePage("saving")
+            submitImage()
 
         }
         
@@ -179,8 +159,12 @@ function AddImage(){
     function back(){
         
         setErrorMessage("")
+        if(activePage === "details"){
 
-        if(activePage === "album"){
+            navigate(`/albums/${albumId}/${albumName}`)
+
+        }
+        else if(activePage === "album"){
 
             setActiePage("tags")
 
@@ -193,14 +177,7 @@ function AddImage(){
 
     }
 
-    function submitAlbum(){
-
-        if(activeAlbum === -1){
-
-            setErrorMessage("Must select a album")
-
-        }
-        else{
+    function submitImage(){
 
             console.log("Doods")
 
@@ -223,7 +200,7 @@ function AddImage(){
             formData.append("imageName", title.current.value)
             formData.append("tags", tags)
             formData.append("category", active)
-            formData.append("albumId", activeAlbum)
+            formData.append("albumId", albumId)
             formData.append("description", description.current.value)
 
             console.log("gooo")
@@ -242,7 +219,7 @@ function AddImage(){
             }).then(response => response.json()).then(async data => {
 
                 if(data.sucsess) {
-                    navigate(`/album/${activeAlbum}/${activeAlbumName}`)
+                    navigate(`/album/${albumId}/${albumName}`)
                 }
                 else {
                     setSaving(false)
@@ -265,7 +242,7 @@ function AddImage(){
                             }).then(res => res.json()).then(d => {
 
                                 if(d.sucsess) {
-                                    navigate(`/album/${activeAlbum}/${activeAlbumName}`)
+                                    navigate(`/album/${albumId}/${albumName}`)
                                 }
                                 else {
                                     setErrorMessage(d.error)
@@ -287,8 +264,6 @@ function AddImage(){
                 }
 
             })
-
-        }
 
     }
 
@@ -379,7 +354,7 @@ function AddImage(){
                     
                     `}>
                         <div>
-                            <img src="src/resources/Image--Streamline-Rounded-Streamline-Material-Free.svg" className="
+                            <img src={uploadIcon} className="
                             
                                 
         
@@ -447,13 +422,17 @@ function AddImage(){
 
                     
                     ">Continue</button>
-                    <button  className="
+                    <Link to={`/album/${albumId}/${albumName}`} className="
                 
                         bg-black
                         w-[20vh]
                         h-10
                         rounded-md
                         text-white
+                        
+                        flex
+                        items-center
+                        justify-center
 
                         hover:bg-gray-900
                         mt-10
@@ -469,7 +448,7 @@ function AddImage(){
                         
 
                     
-                    ">Back</button> 
+                    ">Back</Link> 
                 </div>                         
             </div>
             <div className={`
@@ -801,184 +780,92 @@ function AddImage(){
 
                         ">Back</button>  
                     </div>
+
                 </div>
             </div>
-            
-            <div className={`
-            
-                flex
-                border
-                border-neutral-300
-                w-5/10
-                h-[80vh]
-                shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                flex-col
-                items-center
-                rounded-md
-                mt-10
-                ${activePage === "album" ? "": "hidden"}
-                  
-            `}>
-                <p className="
-                
-                    flex
-                    flex-col
-                    items-center
-                    gap-3
-                    mt-5
-                    text-2xl
-                
-                ">Add to which album ?</p>
-                <div className="
+                    <div className={`
                     
-                border
-                border-neutral-300
-                rounded-xl
-                w-[70vh]
-                h-[50vh]
-                mt-5
-                shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-                flex
-                flex-row
-                pt-5
-                gap-4
-                overflow-y-auto
-                justify-between
-                shrink-0
-                flex-wrap
-                pl-5
-                pr-5
-                    
-            ">                   
-                {albums.map(album => (
-
-                    <button disabled={saving} onClick={() =>{selectAlbum(album.albumid, album.albumname)}} key={album.albumid} className="
-                    
-                        bg-neutral-200
-                        w-[200px]
-                        h-[200px]
-                        rounded-xl
-                        shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-                        pl-2
-                        pt-2
-
-                        hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
-                        transition
-                        duration-100
-
-                        active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
-                        relative
-
-                    ">
-
-                        <img src={"/api" + album.thumnail} className={`
-                        
-                        absolute
-                        w-[200px]
-                        rounded-xl
-                        top-0
-                        left-0
-                        ${activeAlbum === album.albumid ? "border-2 border-amber-500" : ""}
-                        
-                        `}/>
-                        <p className="
-                        
-                            absolute
-                            text-2xl
-                            text-white
-                            top-0
-                            
-                        
-                        ">{album.albumname}</p>
-
-
-                    </button>
-
-                ))}
-            </div>   
-            <p className="
-            
-                text-red-600
-            
-            ">{errorMessage}</p>
-            <div className="
-            
-                w-[68vh]
-                mt-5
-                
-            
-            ">
-                <Link  className="
-                
-                    text-neutral-600
-                    hover:text-black
-                    active:text-neutral-600
-                
-                ">Add album</Link>
-            </div>
-                <p className={`
-                    
-                    ${saving === true ? "": "hidden"}   
-                    
-                `}>
-                Saving ...</p>
-                <div className={`
-                
                         flex
-                        flex-row
-                        gap-10
-                        ${saving === true ? "hidden" : ""}
-                
-                `}>
-                    <button onClick={submitAlbum} className="
-                
-                        bg-black
-                        w-[20vh]
-                        h-10
-                        rounded-md
-                        text-white
-
-                        hover:bg-gray-900
-                        mt-10
-
-                        transition
-                        duration-100
-
+                        border
+                        border-neutral-300
+                        w-5/10
+                        h-[80vh]
                         shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
-                        active:bg-white
-                        active:text-black
-
-                        
-
-                    
-                    ">Submit</button>
-                    <button onClick={back} className="
-                
-                        bg-black
-                        w-[20vh]
-                        h-10
+                        flex-col
+                        items-center
+                        justify-center
+                        text-2xl
                         rounded-md
-                        text-white
-
-                        hover:bg-gray-900
                         mt-10
-
-                        transition
-                        duration-100
-
-                        shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
-                        active:bg-white
-                        active:text-black
-
-                        
-
+                        ${activePage === "saving"  ? "": "hidden"}
+               
                     
-                    ">Back</button> 
+                    `}>
+                        <p>saving...</p>
+                        <button to={`/album/${albumId}/${albumName}`} onClick={submitTags} className={`
+                        
+                            bg-black
+                            w-[20vh]
+                            h-10
+                            rounded-md
+                            text-white
+                            mb-10
+
+                            hover:bg-gray-900
+                            mt-3
+
+                            transition
+                            duration-100
+
+                            shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+
+                            active:bg-white
+                            active:text-black
+                            ${activePage === "savingError" ? "": "hidden"}
+
+                        `}>continue</button>  
+                    </div>
+                    <div className={`
+                    
+                        flex
+                        border
+                        border-neutral-300
+                        w-5/10
+                        h-[80vh]
+                        shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+                        flex-col
+                        items-center
+                        justify-center
+                        text-2xl
+                        rounded-md
+                        mt-10
+                        ${activePage === "savingError"  ? "": "hidden"}
+               
+                    
+                    `}>
+                        <p>{errorMessage}</p>
+                        <button to={`/album/${albumId}/${albumName}`} onClick={submitTags} className={`
+                        
+                            bg-black
+                            w-[20vh]
+                            h-10
+                            rounded-md
+                            text-white
+                            mb-10
+
+                            hover:bg-gray-900
+                            mt-3
+
+                            transition
+                            duration-100
+
+                            shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+
+                            active:bg-white
+                            active:text-black
+
+                        `}>continue</button>  
                 </div>
-            </div>
-
         </div>
     )
     

@@ -14,6 +14,7 @@
     "jwt-decode": "^4.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-masonry-css": "^1.0.16",
     "react-router-dom": "^7.18.3",
     "tailwindcss": "^4.3.2"
   },

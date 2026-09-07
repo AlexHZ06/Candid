@@ -1,9 +1,12 @@
 package com.nea.candid.repositories;
 
 import com.nea.candid.data.dbEnties.AlbumsTableEntity;
+import com.nea.candid.data.dbEnties.PhotosTableEntity;
+import com.nea.candid.data.dto.ResponseBody;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -113,6 +116,47 @@ public class AlbumsTableRepo {
                     rs.getString("thumnail"),
                     rs.getBoolean("visible"),
                     rs.getString("description")
+            );
+
+        }, albumId);
+
+    }
+
+    public List<PhotosTableEntity> getAllImagesFromAlbum(long albumId){
+
+        String sql = """
+            SELECT photostable.*
+            FROM photostable
+            JOIN albumphotostable
+                ON photostable.photoid = albumphotostable.photoid
+            JOIN albumstable
+                ON albumstable.albumid = albumphotostable.albumid
+            where albumstable.albumid = ?;
+            """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            Float[] array = (Float[])rs.getArray("globalembeddedvector").getArray();
+            float[] list = new float[array.length];
+            for(int i = 0; i < list.length; i++){
+
+                list[i] = array[i].floatValue();
+
+            }
+
+            return new  PhotosTableEntity(
+                    rs.getLong("photoid"),
+                    rs.getLong("userid"),
+                    rs.getString("photoname"),
+                    rs.getString("description"),
+                    rs.getString("category"),
+                    rs.getDate("dateposted"),
+                    rs.getString("photourl"),
+                    rs.getString("thumbnailurl"),
+                    rs.getFloat("filesize"),
+                    rs.getFloat("width"),
+                    rs.getFloat("height"),
+                    list
             );
 
         }, albumId);

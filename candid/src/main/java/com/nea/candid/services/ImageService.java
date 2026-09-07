@@ -78,7 +78,7 @@ public class ImageService {
 
             ImageProfileObject imageProfileObject = new ImageProfileObject(image);
 
-            BufferedImage thumbnail = imageDecoderService.createThumbnail(imageProfileObject, 600);
+            BufferedImage thumbnail = imageDecoderService.createThumbnail(imageProfileObject, 900);
             ImageIO.write(thumbnail, "jpg", thumbnailPath.toFile());
 
             imageDecoderService.calculateValues(imageProfileObject);

@@ -22,6 +22,14 @@ public class AlbumController {
         this.albumService = albumService;
     }
 
+
+    @PostMapping("/photographer/getphotos")
+    public ResponseBody getAllPhotoFromAlbum(@RequestBody Map<String, Long> body){
+
+        return albumService.getAllPhotosFromAlbum(body.get("albumId"));
+
+    }
+
     @DeleteMapping("/photographer/deletephoto")
     public ResponseBody removeFromAlbum(@RequestBody Map<String, Long> body){
 
@@ -44,14 +52,14 @@ public class AlbumController {
     }
 
     @GetMapping("/photographer/getallalbums")
-    public List<AlbumsTableEntity> getAllAlbums(HttpServletRequest request){
+    public ResponseBody getAllAlbums(HttpServletRequest request){
 
         return albumService.getAllAlbums(Long.parseLong((String) request.getAttribute("userId")));
 
     }
 
     @PostMapping("/photographer/getalbum")
-    public AlbumsTableEntity getAlbum(@RequestBody Map<String, Long> body){
+    public ResponseBody getAlbum(@RequestBody Map<String, Long> body){
 
         return albumService.getAlbum(body.get("albumId"));
 

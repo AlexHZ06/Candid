@@ -2,6 +2,7 @@ package com.nea.candid.services;
 
 import com.nea.candid.data.dataObjects.ImageProfileObject;
 import com.nea.candid.data.dbEnties.AlbumsTableEntity;
+import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.database.PhotosDbService;
 import org.springframework.stereotype.Service;
@@ -112,6 +113,22 @@ public class AlbumService {
 
     }
 
+    public ResponseBody getAllPhotosFromAlbum(long albumId){
+
+        List<PhotosTableEntity> photos = photosDbService.getAllPhotosFromAlbum(albumId);
+        if(photos.isEmpty()){
+
+            return ResponseBody.error("no photos found", 904);
+
+        }
+        else {
+
+            return ResponseBody.success(photos, 953);
+
+        }
+
+    }
+
 
     public ResponseBody deleteAlbum(long albumId){
 
@@ -144,15 +161,34 @@ public class AlbumService {
 
     }
 
-    public List<AlbumsTableEntity> getAllAlbums(long userId){
+    public ResponseBody getAllAlbums(long userId){
 
-        return photosDbService.getAllAlbumsOfPhotographer(userId);
+        List<AlbumsTableEntity> albums = photosDbService.getAllAlbumsOfPhotographer(userId);
+        if(albums.isEmpty()){
+
+            return ResponseBody.error("no albums found", 904);
+
+        }
+        else{
+
+            return ResponseBody.success(albums, 903);
+
+        }
 
     }
 
-    public AlbumsTableEntity getAlbum(long albumId){
+    public ResponseBody getAlbum(long albumId){
 
-        return photosDbService.getAlbum(albumId);
+        AlbumsTableEntity album =  photosDbService.getAlbum(albumId);
+        if(album == null){
+
+            return ResponseBody.error("no album found", 904);
+
+        }
+        else {
+
+            return ResponseBody.success(album, 903);
+        }
 
     }
 

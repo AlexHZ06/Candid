@@ -25,18 +25,19 @@ public class AuthController {
     }
 
     @PostMapping("/public/login")
-    public ResponseEntity logUserIn(@RequestBody Map<String, String> body) {
+    public ResponseBody logUserIn(@RequestBody Map<String, String> body) {
 
         ResponseBody responseBody = authService.logInUser(body.get("userName"), body.get("password"));
 
-        if(responseBody.isSucsess()){
+        if(responseBody.isSuccess()){
 
-            return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+            System.out.println("all good");
+            return responseBody;
 
         }
         else{
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
+            return responseBody;
 
         }
 

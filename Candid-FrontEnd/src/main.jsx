@@ -12,7 +12,11 @@ import ImageSearch from './pages/imageSearch'
 import SignUp from './pages/signup'
 import AddImage from './pages/addimage'
 import AlbumCreate from './pages/albumCreate'
+import CHeader from './compnents/cheader'
 import RejectedJwt from './pages/rejectedJwt'
+import ClientHome from './pages/ClientHome'
+import Profiles from './pages/profiles'
+import CreateProfile from './pages/createProflie'
 
 const router = createBrowserRouter([
 
@@ -24,9 +28,13 @@ const router = createBrowserRouter([
   {path:"/albumedit/:albumId/:albumName", element:<AlbumEdit/>},
   {path:"/imageSearch", element:<ImageSearch/>},
   {path:"/signup", element:<SignUp/>},
-  {path:"/addimage", element:<AddImage/>},
+  {path:"/addimage/:albumId/:albumName", element:<AddImage/>},
   {path:"/rejectedjwt", element:<RejectedJwt/>},
-  {path:"/albumcreate", element:<AlbumCreate/>}
+  {path:"/albumcreate", element:<AlbumCreate/>},
+  {path:"/chome", element:<ClientHome/>},
+  {path:"/profiles", element:<Profiles/>},
+  {path:"/createprofile", element:<CreateProfile/>}
+  
 
 ])
 

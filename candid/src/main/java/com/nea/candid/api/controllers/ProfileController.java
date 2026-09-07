@@ -1,6 +1,7 @@
 package com.nea.candid.api.controllers;
 
 import com.nea.candid.data.dbEnties.ProfilesTableEntity;
+import com.nea.candid.data.dto.ProfileRequest;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.ProfileService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class ProfileController {
     public ResponseEntity getProfile(HttpServletRequest request, String profileName){
 
         ResponseBody responseBody = profileService.getProfileFromTable(Long.parseLong(request.getAttribute("userId").toString()), profileName);
-        if(responseBody.isSucsess()){
+        if(responseBody.isSuccess()){
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
 
@@ -40,7 +41,7 @@ public class ProfileController {
     public ResponseEntity getAllProfiles(HttpServletRequest request){
 
         ResponseBody responseBody = profileService.getAllProfiles(Long.parseLong(request.getAttribute("userId").toString()));
-        if(responseBody.isSucsess()){
+        if(responseBody.isSuccess()){
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
 
@@ -51,8 +52,8 @@ public class ProfileController {
 
     }
 
-    @PutMapping("/addprofile")
-    public ResponseEntity createProfile(HttpServletRequest request, @RequestBody ProfilesTableEntity body){
+    @PostMapping("/addprofile")
+    public ResponseEntity createProfile(HttpServletRequest request, @RequestBody ProfileRequest body){
 
         try {
 
@@ -67,7 +68,9 @@ public class ProfileController {
                     body.getMaxcost(),
                     body.getProjectcatagory(),
                     body.getLatitude(),
-                    body.getLongitude()
+                    body.getLongitude(),
+                    body.getLikes(),
+                    body.getDislikes()
 
             );
 

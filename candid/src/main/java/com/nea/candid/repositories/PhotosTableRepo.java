@@ -69,7 +69,7 @@ public class PhotosTableRepo {
 
             Array sqlArray = rs.getArray("globalembeddedvector");
             Float[] boxed = (Float[]) sqlArray.getArray();
-            float[] vector = new float[19];
+            float[] vector = new float[23];
             for(int i = 0; i < vector.length; i++){
 
                 vector[i] = boxed[i].floatValue();
@@ -205,7 +205,7 @@ public class PhotosTableRepo {
 
             Array sqlArray = rs.getArray("globalembeddedvector");
             Float[] boxed = (Float[]) sqlArray.getArray();
-            float[] vector = new float[19];
+            float[] vector = new float[23];
             for(int i = 0; i < vector.length; i++){
 
                 vector[i] = boxed[i].floatValue();
@@ -228,6 +228,46 @@ public class PhotosTableRepo {
             );
 
         });
+
+    }
+
+    public List<PhotosTableEntity> getPreferencePhotos(int amount){
+
+        String sql = """
+                select *
+                from photostable
+                where userid = 4
+                order by random()
+                limit ?
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            Array sqlArray = rs.getArray("globalembeddedvector");
+            Float[] boxed = (Float[]) sqlArray.getArray();
+            float[] vector = new float[23];
+            for(int i = 0; i < vector.length; i++){
+
+                vector[i] = boxed[i].floatValue();
+
+            }
+
+            return new PhotosTableEntity(
+                    rs.getLong("photoid"),
+                    rs.getLong("userid"),
+                    rs.getString("photoname"),
+                    rs.getString("description"),
+                    rs.getString("category"),
+                    rs.getDate("dateposted"),
+                    rs.getString("photourl"),
+                    rs.getString("thumbnailurl"),
+                    rs.getFloat("filesize"),
+                    rs.getFloat("width"),
+                    rs.getFloat("height"),
+                    vector
+            );
+
+        },amount);
 
     }
 

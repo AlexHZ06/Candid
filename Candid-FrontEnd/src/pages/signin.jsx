@@ -31,7 +31,7 @@ function SignIn() {
 
             console.log(data)
 
-            if(!data.sucsess){
+            if(!data.success){
                 if(data.internalCode === 102){
 
                     setResponse("incorrect details")
@@ -57,12 +57,12 @@ function SignIn() {
 
                 if(decoded.role === "client"){
 
-                    alert("clinet")
+                    navigate("/chome")
 
                 }
                 else{
 
-                    navigate("/PHome")
+                    navigate("/phome")
 
                 }
 

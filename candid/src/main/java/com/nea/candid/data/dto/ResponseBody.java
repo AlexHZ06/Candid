@@ -35,7 +35,7 @@ public class ResponseBody<T> {
         return internalCode;
     }
 
-    public boolean isSucsess() {
+    public boolean isSuccess() {
         return success;
     }
 

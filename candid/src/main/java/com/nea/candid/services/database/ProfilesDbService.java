@@ -21,9 +21,9 @@ public class ProfilesDbService {
         this.interactionsTableRepo = interactionsTableRepo;
     }
 
-    public ResponseBody createProfile(long userId, String profileName, String profileDescription, LocalDateTime createdAt, float mincost, float maxcost, String projectCatagory, double latitude, double longitude){
+    public long createProfile(long userId, String profileName, String profileDescription, LocalDateTime createdAt, float mincost, float maxcost, String projectCatagory, double latitude, double longitude){
 
-        int result = profilesTableRepo.insertProfile(userId, profileName, profileDescription, LocalDateTime.now(), mincost, mincost, projectCatagory,latitude,longitude );
+        long result = profilesTableRepo.insertProfile(userId, profileName, profileDescription, LocalDateTime.now(), mincost, mincost, projectCatagory,latitude,longitude );
         if(result == 0){
 
             throw new RuntimeException("Failed to insert profile");
@@ -31,7 +31,7 @@ public class ProfilesDbService {
         }
         else{
 
-            return ResponseBody.success("Profile inserted", 451);
+            return result;
 
         }
 
@@ -55,6 +55,17 @@ public class ProfilesDbService {
         if(result == 0){
 
             throw new RuntimeException("Failed to add interaction");
+
+        }
+
+    }
+
+    public void setDislikesVector(long profileid, float[][] vector){
+
+        int result = profilesTableRepo.setDislikeVector(profileid, vector);
+        if(result == 0){
+
+            throw new RuntimeException("Failed to set dislike vector");
 
         }
 

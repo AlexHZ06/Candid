@@ -1,4 +1,4 @@
-import CHeader from "../compnents/cheader copy"
+import CHeader from "../compnents/cheader"
 import SearchBar from "../compnents/searchBar"
 import { useEffect } from "react"
 import { jwtService } from "../logic/jwt"

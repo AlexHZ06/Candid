@@ -1,16 +1,17 @@
 package com.nea.candid.services;
 
+import com.nea.candid.data.dataObjects.FeedImage;
 import com.nea.candid.data.dataObjects.ImageScore;
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dbEnties.ProfilesTableEntity;
+import com.nea.candid.data.dto.ResponseBody;
+import com.nea.candid.repositories.ProfilesTableRepo;
 import com.nea.candid.services.database.PhotosDbService;
 import com.nea.candid.services.database.ProfilesDbService;
 import com.nea.candid.services.database.UsersDbService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class RecommendationService {
@@ -142,6 +143,8 @@ public class RecommendationService {
 
         }
 
+        System.out.println(sectionVectors.get(0).length);
+
         return new float[][]{
                 brightnessMean,
                 brightnessDeviance,
@@ -247,18 +250,14 @@ public class RecommendationService {
 //        float brightnessMeanWeight = 3f / 23f;
 //        float brightnessDevianceWeight = 1.5f / 23f;
 //        float dynamicRangeWeight = 1.5f / 23f;
-//
 //        float saturationMeanWeight = 2f / 23f;
 //        float saturationDevianceWeight = 2f / 23f;
 //        float colourSpreadWeight = 1f / 23f;
-//
 //        float sharpnessWeight = 1f / 23f;
 //        float edgeDensityWeight = 1f / 23f;
 //        float entropyWeight = 1f / 23f;
-//
 //        float shadowsWeight = 2f / 23f;
 //        float highlightsWeight = 2f / 23f;
-//
 //        float redWeight = ((float) 5 /12) / 23f;
 //        float orangeWeight = ((float) 5 /12)  / 23f;
 //        float yellowWeight = ((float) 5 /12)  / 23f;
@@ -275,18 +274,14 @@ public class RecommendationService {
 //        float brightnessMeanWeight = 3f / 23f;
 //        float brightnessDevianceWeight = 1.5f / 23f;
 //        float dynamicRangeWeight = 1.5f / 23f;
-//
 //        float saturationMeanWeight = 3f / 23f;
 //        float saturationDevianceWeight = 2f / 23f;
 //        float colourSpreadWeight = 1f / 23f;
-//
 //        float sharpnessWeight = ((float)2/3) / 23f;
 //        float edgeDensityWeight = ((float)2/3) / 23f;
 //        float entropyWeight = ((float)2/3) / 23f;
-//
 //        float shadowsWeight = 2f / 23f;
 //        float highlightsWeight = 2f / 23f;
-//
 //        float redWeight = ((float) 5 /12) / 23f;
 //        float orangeWeight = ((float) 5 /12)  / 23f;
 //        float yellowWeight = ((float) 5 /12)  / 23f;
@@ -303,18 +298,14 @@ public class RecommendationService {
         float brightnessMeanWeight = 2f / 23f;
         float brightnessDevianceWeight = 1.25f / 23f;
         float dynamicRangeWeight = 1.25f / 23f;
-
         float saturationMeanWeight = 3f / 23f;
         float saturationDevianceWeight = 1f / 23f;
         float colourSpreadWeight = 1f / 23f;
-
         float sharpnessWeight = 1.5f / 23f;
         float edgeDensityWeight = 1f / 23f;
         float entropyWeight = 1f / 23f;
-
         float shadowsWeight = 1.5f / 23f;
         float highlightsWeight = 1.5f / 23f;
-
         float redWeight = ((float) 7 /12) / 23f;
         float orangeWeight = ((float) 7 /12) / 23f;
         float yellowWeight = ((float) 7 /12)  / 23f;
@@ -355,7 +346,7 @@ public class RecommendationService {
 
     }
 
-    public void reCalcPreferenceVector(long profileId, long photoId, String interaction) {
+    public ResponseBody reCalcPreferenceVector(long profileId, long photoId, String interaction) {
 
         float interactionWeight = 1;
         switch (interaction) {
@@ -372,6 +363,11 @@ public class RecommendationService {
                 interactionWeight = 0.3f;
                 break;
             }
+            case "dislike": {
+
+                interactionWeight = -0.5f;
+                break;
+            }
             default: {
                 interactionWeight = 0f;
                 break;
@@ -383,25 +379,58 @@ public class RecommendationService {
         ProfilesTableEntity profile = profilesTableService.getProfileById(profileId);
 
         List<float[]> sectionVectors = photosTableService.getSectionVectors(photoId);
-
         float[][] superVector = createSuperVector(photo.getGlobalEmbeddedVector(), sectionVectors);
         float[][] preferenceVector = profile.getPreferencevector();
+        float[][] dislikeVector = profile.getDislikesvector();
+
         float[][] newPreferenceVector = profile.getPreferencevector();
+        float[][] newDislikeVector = profile.getDislikesvector();
 
-        float firstPart = 0;
-        for (int i = 0; i < sectionVectors.size(); i++) {
+        try{
+            if(interactionWeight > 0){
 
-            for (int j = 0; j < sectionVectors.get(i).length; j++) {
+                for (int i = 0; i < superVector.length; i++) {
 
-                preferenceVector[i][j] = preferenceVector[i][j] * (1 - interactionWeight);
-                superVector[i][j] = superVector[i][j] * interactionWeight;
-                newPreferenceVector[i][j] = superVector[i][j] + preferenceVector[i][j];
+                    for (int j = 0; j < superVector[i].length; j++) {
+
+                        preferenceVector[i][j] = preferenceVector[i][j] * (1 - interactionWeight);
+                        superVector[i][j] = superVector[i][j] * interactionWeight;
+                        newPreferenceVector[i][j] = superVector[i][j] + preferenceVector[i][j];
+
+                    }
+                }
+
+                profilesTableService.setPreferenceVector(profileId, newPreferenceVector);
+                return ResponseBody.success(true, 952);
+
+            }
+            else if(interactionWeight < 0){
+
+                for (int i = 0; i < superVector.length; i++) {
+
+                    for (int j = 0; j < superVector[i].length; j++) {
+
+                        dislikeVector[i][j] = dislikeVector[i][j] * (1 - Math.abs(interactionWeight));
+                        superVector[i][j] = superVector[i][j] * Math.abs(interactionWeight);
+                        newDislikeVector[i][j] = superVector[i][j] + dislikeVector[i][j];
+
+                    }
+
+                }
+
+                profilesTableService.setDislikesVector(profileId, newDislikeVector);
+                return ResponseBody.success(true, 952);
 
             }
 
+
+        }catch(Exception e){
+
+            return ResponseBody.error("could not save vectors", 903);
+
         }
 
-        profilesTableService.setPreferenceVector(profileId, newPreferenceVector);
+        return ResponseBody.error("could not save vectors", 903);
 
     }
 
@@ -444,45 +473,88 @@ public class RecommendationService {
 
         }
 
-        ArrayList<List<ImageScore>> imageScores = new ArrayList<>();
+        List<List<FeedImage>> feed = new ArrayList<>();
         for(int i = 0; i < photos.size(); i++){
 
-            ArrayList<ImageScore> temp = new ArrayList<>();
+            List<FeedImage> temp = new ArrayList<>();
 
             for(int j = 0; j < photos.get(i).size(); j++){
 
-                float score = computeRecommendationScore(photos.get(i).get(j).getPhotoid(), profile.getPreferencevector());
-                temp.add(new ImageScore(photos.get(i).get(j), score));
+                PhotosTableEntity image = photos.get(i).get(j);
+                float likeScore = computeRecommendationScore(image.getPhotoid(), profile.getPreferencevector());
+                float dislikeScore = computeRecommendationScore(image.getPhotoid(), profile.getDislikesvector());
+                if(likeScore > dislikeScore){
 
+                    float finalScore = likeScore - dislikeScore;
+                    temp.add(new FeedImage(image, finalScore));
+
+                }
             }
 
-            imageScores.add(temp);
-
-        }
-
-        for(int j = 0; j < imageScores.size(); j++){
-
-            imageScores.get(j).sort(Comparator.comparing(ImageScore::getScore).reversed());
-
-        }
-
-        ArrayList<List<PhotosTableEntity>> feed = new ArrayList<>();
-
-        for(int i = 0; i < imageScores.size(); i++){
-
-            ArrayList<PhotosTableEntity> temp = new ArrayList<>();
-
-            for(int j = 0; j < photos.get(i).size(); j++){
-
-                temp.add(imageScores.get(i).get(j).getPhotosTableEntity());
-
-            }
-
+            temp.sort(Comparator.comparingDouble(FeedImage::getLikeScore).reversed());
             feed.add(temp);
 
         }
 
-        return feed;
+        List<List<PhotosTableEntity>> finalFeed =  new ArrayList<>();
+        for(int i = 0; i < feed.size(); i++){
+
+            List<PhotosTableEntity> temp = new ArrayList<>();
+
+            for(int j = 0; j < feed.get(i).size(); j++){
+
+                temp.add(feed.get(i).get(j).getPhoto());
+
+            }
+
+            finalFeed.add(temp);
+
+        }
+
+        return finalFeed;
+
+    }
+
+    public ResponseBody getPreferencePhotos(int amount){
+
+        List<PhotosTableEntity> photos = photosTableService.getPreferencePhotos(amount);
+        if(photos.isEmpty()){
+
+            return ResponseBody.error("no response from database", 904);
+
+        }
+        else {
+            return ResponseBody.success(photos, 955);
+        }
+
+    }
+
+    public ResponseBody completeProfileVectors(long profileId, long[] likes,  long[] dislikes){
+
+        try{
+
+            for(int i = 0; i < likes.length; i++){
+
+                reCalcPreferenceVector(profileId, likes[i], "like");
+
+
+            }
+            for(int i = 0; i < dislikes.length; i++){
+
+                reCalcPreferenceVector(profileId, dislikes[i], "dislike");
+
+            }
+
+            return ResponseBody.success(true, 952);
+
+        }catch(Exception e){
+
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return ResponseBody.error("could not save vectors", 903);
+
+        }
+
 
     }
 

@@ -4,7 +4,7 @@ import TagsCatSelection from "../compnents/tagsCatSelection"
 import { useEffect, useState } from "react"
 import { jwtService } from "../logic/jwt"
 import { useParams } from "react-router-dom"
-
+import Masonry from "react-masonry-css"
 
 function Album(){
 
@@ -12,6 +12,7 @@ function Album(){
     const [albums, setAlbums] = useState([])
     const { albumId } = useParams()
     const {albumName} = useParams()
+    const [images, setImages] = useState([])
 
     useEffect(() => {
 
@@ -24,15 +25,36 @@ function Album(){
 
                 auth: localStorage.getItem("jwt")
 
-            },
+            }
         }).then(response => response.json()).then(data => {
 
-            setAlbums(data)
-            console.log(data)
+            setAlbums(data.data)
+            console.log(data.data)
 
         })
 
-    }, [])
+        fetch("/api/album/photographer/getphotos",{
+
+            method:"POST",
+            headers:{
+                
+                "Content-Type": "application/json",
+                auth:localStorage.getItem("jwt")
+
+            },
+            body:JSON.stringify({
+
+                albumId:albumId
+
+            })
+
+        }).then(response => response.json()).then(data =>{
+
+            setImages(data.data)
+
+        })
+
+    }, [albumId])
 
     return(
 
@@ -115,7 +137,7 @@ function Album(){
                         mt-10
                     
                     ">
-                        <Link className="
+                        <Link to={`/addimage/${albumId}/${albumName}`} className="
                         
                             bg-neutral-700
                             text-white
@@ -209,11 +231,37 @@ function Album(){
                        
                         w-[140vh]
                         h-9/10
-                        
+                        flex
+                        overflow-y-auto
                     
                     
                     ">
-                    
+                        <Masonry
+                            breakpointCols={{
+                                default: 3,
+                                1100: 3,
+                                700: 2,
+                                500: 1
+                            }}
+                            className="flex gap-4"
+                            columnClassName="flex flex-col gap-4"
+                        >
+                            {images?.length > 0 ? (
+
+                                images.map(image => (
+
+                                    <img src={"/api" + image.thumbnailurl} className="
+
+                                        m-1
+                                        rounded-xl
+                                        shadow-[0_0px_10px_rgba(0,0,0,0.10)]
+                                    
+                                    "/>
+
+                                ))
+
+                            ): ""}
+                        </Masonry>
                     </div>
                 </div>
 

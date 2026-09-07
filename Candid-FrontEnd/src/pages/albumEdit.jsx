@@ -39,8 +39,8 @@ function AlbumEdit(){
         })
         .then(data => {
 
-            setExistingImage(data.thumnail)
-            setDesc(data.description)
+            setExistingImage(data.data.thumnail)
+            setDesc(data.data.description)
                 
         })
 

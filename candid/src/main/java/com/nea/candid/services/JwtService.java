@@ -62,7 +62,7 @@ public class JwtService {
         Instant now = Instant.now();
         int expiryTime;
 
-        if(refresh) {expiryTime = 10;}
+        if(refresh) {expiryTime = 60;}
         else { expiryTime = 5; }
 
         String jwt = Jwts.builder()

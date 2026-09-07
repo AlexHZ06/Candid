@@ -4,6 +4,7 @@ import com.nea.candid.data.dataObjects.JwtObject;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class JwtController {
 
         ResponseBody responseBody = jwtServices.requestJwt(Long.parseLong((String) request.getAttribute("userId")), request.getHeader("refreshTokenUUID"));
 
-        if(responseBody.isSucsess()){
+        if(responseBody.isSuccess()){
 
             return ResponseEntity.status(HttpStatus.OK).body(responseBody);
 
@@ -41,20 +42,20 @@ public class JwtController {
     }
 
     @PostMapping("/public/checkjwtphotographer")
-    public boolean checkPhotographerJwt(HttpServletRequest request) {
+    public ResponseBody checkPhotographerJwt(HttpServletRequest request) {
 
         String token =  request.getHeader("auth");
         JwtObject jwt = jwtServices.decodeJwt(token);
         if(jwt == null){
 
-            return false;
+            return ResponseBody.error("invalid jwt", 201);
 
         }
         try{
-            return jwt.getExpired() == false && jwt.getInvalid() == false && jwt.getClaims().get("role").equals("photographer");
+            return ResponseBody.success(jwt.getExpired() == false && jwt.getInvalid() == false && jwt.getClaims().get("role").equals("photographer"), 251) ;
         }catch(Exception e){
 
-            return false;
+            return ResponseBody.error("invalid jwt", 201);
 
         }
 
@@ -62,15 +63,20 @@ public class JwtController {
     }
 
     @PostMapping("/public/checkjwtclient")
-    public boolean checkClientJwt(HttpServletRequest request) {
+    public ResponseBody checkClientJwt(HttpServletRequest request) {
 
         String token =  request.getHeader("auth");
         JwtObject jwt = jwtServices.decodeJwt(token);
+        if(jwt == null){
+
+            return ResponseBody.error("invalid jwt", 201);
+
+        }
         try{
-            return jwt.getExpired() == false &&  jwt.getInvalid() == false && jwt.getClaims().get("role").equals("client");
+            return ResponseBody.success(jwt.getExpired() == false &&  jwt.getInvalid() == false && jwt.getClaims().get("role").equals("client"), 251);
         }catch(Exception e){
 
-            return false;
+            return ResponseBody.error("invalid jwt", 201);
 
         }
 

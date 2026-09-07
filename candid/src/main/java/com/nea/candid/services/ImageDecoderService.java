@@ -474,7 +474,7 @@ public class ImageDecoderService {
                     }
 
                 }
-                else if(highestIndex == 2) {
+                if(highestIndex == 2) {
 
                     hue = (
 
@@ -494,7 +494,7 @@ public class ImageDecoderService {
                     }
 
                 }
-                else if(highestIndex == 3) {
+                if(highestIndex == 3) {
 
                     hue = (
 
@@ -709,7 +709,7 @@ public class ImageDecoderService {
             }
         }
 
-        return entropy;
+        return entropy / 8;
 
     }
 
