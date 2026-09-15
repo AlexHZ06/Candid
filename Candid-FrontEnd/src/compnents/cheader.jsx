@@ -55,6 +55,7 @@ function CHeader({active}){
             <Link className={`
             
                 flex-1
+                xl:pr-4
                 active:text-neutral-500
                 transition
                 duration-100

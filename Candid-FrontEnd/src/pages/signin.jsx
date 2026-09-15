@@ -102,6 +102,9 @@ function SignIn() {
                 h-[50vh]
                 shadow-[0_0_10px_rgba(0,0,0,0.25)]
                 items-center
+
+                xl:w-[60vh]
+                xl:h-[70vh]
             
             ">
                 <p className="
@@ -117,6 +120,9 @@ function SignIn() {
                     text-2xl
                     tracking-wide
                     pt-8
+
+                    xl:pt-3
+                    xl:text-[3vh]
                 
                 ">Enter Your Details</p>
                 <input ref={userName} placeholder="UserName" type="text" className="
@@ -132,6 +138,9 @@ function SignIn() {
 
                     transition
                     duration-100
+                    
+                    xl:mt-7
+                    xl:w-[40vh]
 
                 "/>
                 <input ref={password} placeholder="Password" type="password" className="
@@ -149,11 +158,16 @@ function SignIn() {
                     transition
                     duration-100
 
+                    xl:mt-7
+                    xl:w-[40vh]
+                    
                 
                 "/>
                 <p className="
                 
                     text-red-600
+                    xl:absolute
+                    xl:mt-[40vh]
                 
                 ">{response}</p>
                 <Link className="
@@ -166,6 +180,8 @@ function SignIn() {
 
                     transition
                     duration-100
+
+                    xl:mt-8
                 
                 ">Forgot Password</Link>
                 <button onClick={submit} className="
@@ -187,7 +203,7 @@ function SignIn() {
                     active:bg-white
                     active:text-black
 
-                    
+                     xl:w-[40vh]    
 
                 
                 ">Submit</button>

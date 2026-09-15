@@ -21,15 +21,15 @@ public class BookingDbService {
         this.schedulesTableRepo = schedulesTableRepo;
     }
 
-    public List<SchedulesTableEntity> getScheduleByDay(int day) {
+    public List<SchedulesTableEntity> getScheduleByDay(int day, long photographerId) {
 
-        return schedulesTableRepo.getScheduleByDay(day);
+        return schedulesTableRepo.getScheduleByDay(day, photographerId);
 
     }
 
-    public void insertIntoSchedule(int start, int end, int dayOfWeek){
+    public void insertIntoSchedule(int start, int end, int dayOfWeek, long photographerId) {
 
-        int result = schedulesTableRepo.insertSchedule(start,end,dayOfWeek);
+        int result = schedulesTableRepo.insertSchedule(start,end,dayOfWeek,photographerId);
         if(result == 0) {
 
             throw new RuntimeException("insert schedule failed");
@@ -55,6 +55,30 @@ public class BookingDbService {
         int result = bookingSlotsTableRepo.addSlot(startslot,endslot,dayofshoot,clinetid,photographerid,status);
         if(result == 0)
             throw new RuntimeException("insert slot failed");
+
+    }
+
+    public void clearSchedule(long photographerid){
+
+        int result = schedulesTableRepo.clearSchedule(photographerid);
+
+    }
+
+    public void addSchedules(List<SchedulesTableEntity> schedulesTableEntities){
+
+        System.out.println("ran");
+        int[] result = schedulesTableRepo.insertNewSchedules(schedulesTableEntities);
+        for(int i = 0; i < result.length; i++){
+
+            System.out.println( result[i]);
+
+            if(result[i] == 0){
+
+                throw new RuntimeException("insert schedule failed");
+
+            }
+
+        }
 
     }
 

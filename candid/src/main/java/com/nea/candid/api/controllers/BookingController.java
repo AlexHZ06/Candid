@@ -1,12 +1,14 @@
 package com.nea.candid.api.controllers;
 
+import com.nea.candid.data.dbEnties.BookingSlotsTableEntity;
+import com.nea.candid.data.dbEnties.SchedulesTableEntity;
 import com.nea.candid.services.BookingService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
+import org.springframework.web.bind.annotation.*;
 import com.nea.candid.data.dto.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,17 +22,47 @@ public class BookingController {
     }
 
     @PostMapping("/photographer/addschedule")
-    public ResponseBody addScheduleSlot(@RequestBody Map<String, Integer> body){
+    public ResponseBody addScheduleSlot(HttpServletRequest request, @RequestBody Map<String, Integer> body){
 
         try{
 
-            return bookingService.addScheduleBlock(body.get("startSlot"), body.get("endSlot"), body.get("dayOfShoot"));
+            return bookingService.addScheduleBlock(body.get("startSlot"), body.get("endSlot"), body.get("dayOfShoot"), Long.parseLong(request.getAttribute("userId").toString()));
 
         }catch(Exception e){
 
             return ResponseBody.error(e.getMessage(), 999);
 
         }
+
+    }
+
+    @PostMapping("/getschedule")
+    public ResponseBody getSchedule(@RequestBody Map<String, Long> body){
+
+        return bookingService.getSchedule(body.get("userId"));
+
+    }
+
+    @PostMapping("/photographer/saveschedule")
+    public ResponseBody saveSchedule(HttpServletRequest request, @RequestBody Map<String, List<List<SchedulesTableEntity>>> body){
+
+
+        return bookingService.addChangesToSchedule(body.get("data"), Long.parseLong(request.getAttribute("userId").toString()));
+
+    }
+
+    @PostMapping("/getbookingslots")
+    public ResponseBody getBookingSlots(@RequestBody Map<String, Long> body){
+
+        return bookingService.getBookingSlots(body.get("userId"));
+
+    }
+
+    @PostMapping("/client/requestslot")
+    public ResponseBody requestSlot(HttpServletRequest request, @RequestBody BookingSlotsTableEntity entity){
+        System.out.println("hi");
+        return bookingService.requestBookingSlot(entity, Long.parseLong(request.getAttribute("userId").toString()));
+
 
     }
 

@@ -1,5 +1,7 @@
 package com.nea.candid.data.dbEnties;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -15,7 +17,14 @@ public class SchedulesTableEntity {
     private final int dayofweek;
     private final long photographerid;
 
-    public SchedulesTableEntity(long scheduleid, int startSlot, int endSlot, int dayofweek, long photographerid) {
+    @JsonCreator
+    public SchedulesTableEntity(
+            @JsonProperty("scheduleid") long scheduleid,
+            @JsonProperty("startslot") int startSlot,
+            @JsonProperty("endslot") int endSlot,
+            @JsonProperty("dayofweek") int dayofweek,
+            @JsonProperty("photographerid") long photographerid
+    ) {
         this.scheduleid = scheduleid;
         this.startslot = startSlot;
         this.endslot = endSlot;

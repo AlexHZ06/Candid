@@ -21,13 +21,13 @@ export class jwtService{
             
             console.log(data)
 
-            if(data.sucsess){
+            if(data.success){
                 if(data.data === true){
 
                     return
 
                 }
-                if(data.data == false){
+                if(data.data === false){
                     
                     this.navigation("/rejectedjwt")
                 }
@@ -63,7 +63,7 @@ export class jwtService{
 
                             if(d.success){
 
-                                if(data.sucsess){
+                                if(data.success){
                                     if(data.data === true){
 
                                         return
@@ -114,7 +114,7 @@ export class jwtService{
 
         }).then(response => response.json()).then(data => {
 
-            if(!data.sucsess){
+            if(!data.success){
 
                 localStorage.clear()
                 this.navigation("/rejectedjwt")
@@ -148,7 +148,7 @@ export class jwtService{
             
             console.log(data)
 
-            if(data.sucsess){
+            if(data.success){
                 if(data.data === true){
 
                     return
@@ -190,7 +190,7 @@ export class jwtService{
 
                             if(d.success){
 
-                                if(data.sucsess){
+                                if(data.success){
                                     if(data.data === true){
 
                                         return

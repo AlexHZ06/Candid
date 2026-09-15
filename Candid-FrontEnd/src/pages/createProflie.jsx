@@ -54,7 +54,9 @@
 
             }).then(response => response.json()).then(async data => {
 
-                if(!data.sucsess){
+                console.log(data)
+
+                if(!data.success){
 
                     if(data.internalCode === 401){
                         let result = await tokenService.requestJwt()
@@ -77,7 +79,9 @@
 
                             }).then(res => res.json()).then(d => {
 
-                                if(!d.sucsess){
+                                console.log(data)
+
+                                if(!d.success){
 
                                     //ERROR 
 
@@ -168,7 +172,7 @@
 
                 }).then(response => response.json()).then(async data => {
                     console.log(data)
-                    if(!data.sucsess){
+                    if(!data.success){
 
                         if(data.internalCode === 401){
 
@@ -200,7 +204,7 @@
 
                                 }).then(res => res.json()).then(d => {
 
-                                    if(!d.sucsess){
+                                    if(!d.success){
 
                                         //error
 
@@ -252,9 +256,9 @@
 
             }).then(response => response.json()).then(async data => {
 
-                
+                console.log(data)
 
-                if(!data.sucsess){
+                if(!data.success){
 
                     if(data.internalCode === 401){
 
@@ -281,7 +285,7 @@
 
                             }).then(res => res.json()).then(d => {
 
-                                if(d.sucsess){
+                                if(d.success){
 
                                     setCoord(d.data)
                                     setActivePage("preference")
@@ -392,6 +396,9 @@
                     justify-center
                     mt-20
                     ${activePage === "details"? "":"hidden"}
+
+                    xl:mt-10
+            
                 
                 `}>
                     <div className="
@@ -405,7 +412,7 @@
                         flex
                         flex-col
                         items-center
-
+                        
                     
                     ">
         
@@ -533,7 +540,7 @@
                         </div>
                         <div className="
                         
-                            pt-5
+                            pt-5    
                             flex
                             flex-col    
                             justify-center
@@ -542,7 +549,9 @@
                             border-b-2
                             border-neutral-300
                             
-                            w-[80vh]
+                            xl:w-[90vh]
+                            xl:pb-3
+                            
                         
                         ">   
                             <p className="
@@ -587,7 +596,9 @@
                             flex
                             flex-col
                             items-center   
-                        
+                            
+                            xl:pb-3
+
                         ">
                             <p className="
                             
@@ -606,6 +617,8 @@
                                 gap-10
                                 mt-7
                                 pt-4
+
+                                
                             
                             `}>
                                 <button onClick={submitDetails} className="
@@ -662,6 +675,8 @@
                     flex
                     justify-center
                     mt-20
+
+                    xl:mt-10
                 
                 ">
                     <div className={`
@@ -677,12 +692,16 @@
                         items-center
                         ${activePage === "address"? "":"hidden"}
 
+                        
+
                     
                     `}>
                         <p className="
 
                             mt-10
-                            text-2xl
+                            text-2xl    
+
+                            xl:mt-3
                         
                         ">Enter base location of profile</p>
                         <div className="
@@ -692,6 +711,8 @@
                             items-center
                             gap-7
                             mt-10
+                            xl:mt-5 
+                            xl:gap-2
                         
                         ">
                             <input ref={addressLine1} placeholder="Adress line 1" type="text" className="
@@ -709,6 +730,8 @@
                                 transition
                                 duration-100
 
+                                xl:w-[40vh]
+                                
 
                             "/>       
                             <input ref={addressLine2} placeholder="Adress line 2" type="text" className="
@@ -726,6 +749,7 @@
                                 transition
                                 duration-100
 
+                                xl:w-[40vh]
 
                             "/>    
                             <input ref={townCity} placeholder="Town/City" type="text" className="
@@ -743,6 +767,7 @@
                                 transition
                                 duration-100
 
+                                xl:w-[40vh]
 
                             "/>   
                             <input ref={postCode} placeholder="PostCode" type="text" className="
@@ -760,6 +785,7 @@
                                 transition
                                 duration-100
 
+                                xl:w-[40vh]
 
                             "/>   
                             <input ref={country} placeholder="Country" type="text" className="
@@ -777,6 +803,7 @@
                                 transition
                                 duration-100
 
+                                xl:w-[40vh]
 
                             "/>   
                         </div> 
@@ -798,6 +825,7 @@
                                 mt-10
                                 flex
                                 gap-5
+                                xl:mt-5
                         
                         ">
                             <button onClick={submitAddress} className="
@@ -880,6 +908,8 @@
                             flex-row
                             gap-5
                             pt-10
+
+                            xl:pt-5
                         
                         ">
                             <button onClick={() => {imageReaction("like")}} className="

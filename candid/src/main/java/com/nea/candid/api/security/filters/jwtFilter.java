@@ -38,6 +38,7 @@ public class jwtFilter extends OncePerRequestFilter {
             }
             else{
 
+                System.out.println("null");
                 response.setStatus(401);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
@@ -51,6 +52,7 @@ public class jwtFilter extends OncePerRequestFilter {
             JwtObject jwtObject = jwtService.decodeJwt(jwt);
 
             if (jwtObject.getExpired() == null || jwtObject.getInvalid() == null) {
+                System.out.println("null");
                 response.setStatus(401);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
@@ -75,6 +77,7 @@ public class jwtFilter extends OncePerRequestFilter {
                 }
                 else{
 
+                    System.out.println("invalid");
                     response.setStatus(401);
                     response.setContentType("application/json");
                     response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));

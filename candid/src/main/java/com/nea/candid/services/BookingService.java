@@ -3,6 +3,7 @@ package com.nea.candid.services;
 import com.nea.candid.data.dbEnties.BookingSlotsTableEntity;
 import com.nea.candid.data.dbEnties.SchedulesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
+import com.nea.candid.repositories.SchedulesTableRepo;
 import com.nea.candid.services.database.BookingDbService;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +25,83 @@ public class BookingService {
         this.bookingDbService = bookingDbService;
     }
 
-    public ResponseBody addScheduleBlock(int start, int end, int dayofshoot){
+    public ResponseBody addChangesToSchedule(List<List<SchedulesTableEntity>> schedules, long photographerId) {
+
+        for(int i = 0; i < schedules.size(); i++) {
+
+            for(int j = 0; j < schedules.get(i).size(); j++) {
+
+                System.out.println(schedules.get(i).get(j).getStartSlot());
+
+            }
+
+        }
+
+        List<SchedulesTableEntity> newSlots = new ArrayList<>();
+
+        for(int i = 0; i < schedules.size(); i++) {
+
+
+            if(schedules.get(i).isEmpty()) {
+                continue;
+            }
+
+            schedules.get(i).sort(Comparator.comparingInt(SchedulesTableEntity::getStartSlot));
+            boolean consec = false;
+            int start = schedules.get(i).getFirst().getStartSlot();
+            int end = 0;
+
+            for(int j = 1; j < schedules.get(i).size(); j++) {
+
+                if(schedules.get(i).get(j).getStartSlot() - schedules.get(i).get(j - 1).getStartSlot() == 1) {
+
+                    consec = true;
+                    end = schedules.get(i).get(j).getStartSlot();
+
+                }
+                else{
+
+                    if(consec) {
+
+                        newSlots.add(new SchedulesTableEntity(0, start, end, i, photographerId));
+
+                    }
+                    consec = false;
+
+                }
+
+                if(!consec){
+
+                    start = schedules.get(i).get(j).getStartSlot();
+
+                }
+
+
+            }
+
+            if(consec) {
+                newSlots.add(new SchedulesTableEntity(0, start, end, i, photographerId));
+            }
+
+        }
+
+        try{
+
+            bookingDbService.clearSchedule(photographerId);
+            bookingDbService.addSchedules(newSlots);
+            return ResponseBody.success("saved schedule", 952);
+
+        }catch(Exception e){
+
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseBody.error("could not save schedule", 903);
+
+        }
+
+    }
+
+    public ResponseBody addScheduleBlock(int start, int end, int dayofshoot, long photographerId){
 
         if(start < 0 || start == 48){
 
@@ -50,7 +129,7 @@ public class BookingService {
 
         }
 
-        List<SchedulesTableEntity> schedule = bookingDbService.getScheduleByDay(dayofshoot);
+        List<SchedulesTableEntity> schedule = bookingDbService.getScheduleByDay(dayofshoot, photographerId);
         boolean clash = false;
         if(!schedule.isEmpty()){
 
@@ -90,7 +169,7 @@ public class BookingService {
 
             if(!clash){
 
-                bookingDbService.insertIntoSchedule(start, end, dayofshoot);
+                bookingDbService.insertIntoSchedule(start, end, dayofshoot, photographerId);
                 return ResponseBody.success("Slot added", 505);
 
             }
@@ -103,7 +182,7 @@ public class BookingService {
 
         }
         else {
-            bookingDbService.insertIntoSchedule(start, end, dayofshoot);
+            bookingDbService.insertIntoSchedule(start, end, dayofshoot, photographerId);
             return ResponseBody.success("Slot added", 505);
         }
 
@@ -117,9 +196,13 @@ public class BookingService {
 
 
 
-    public ResponseBody requestBookingSlot(int duration, int start, long photographer, LocalDate dayOfShoot, long client){
+    public ResponseBody requestBookingSlot(BookingSlotsTableEntity bookingSlotsTableEntity, long client){
 
-        //Check if the schedule has that slot
+        int start = bookingSlotsTableEntity.getStartslot();
+        int end = bookingSlotsTableEntity.getEndslot();
+        long photographer = bookingSlotsTableEntity.getPhotographerid();
+        LocalDate dateOfShoot = bookingSlotsTableEntity.getDayofshoot().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
         List<SchedulesTableEntity> schedule = bookingDbService.getPhotographerSchedule(photographer);
         if(schedule.isEmpty()){
 
@@ -127,13 +210,12 @@ public class BookingService {
 
         }
 
-        int end = start + duration;
         boolean valid = false;
         int index = 0;
 
         while(index < schedule.size() && !valid){
 
-            if((start >= schedule.get(index).getStartSlot() && end <= schedule.get(index).getEndSlot() && schedule.get(index).getDayofweek() == dayOfShoot.getDayOfWeek().getValue())){
+            if((start >= schedule.get(index).getStartSlot() && end <= schedule.get(index).getEndSlot() && schedule.get(index).getDayofweek() == dateOfShoot.getDayOfWeek().getValue())){
 
                 valid = true;
 
@@ -149,7 +231,7 @@ public class BookingService {
 
             if(slots.isEmpty()){
 
-                Date date = Date.from(dayOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                Date date = Date.from(dateOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
                 bookingDbService.addSlot(start, end, date, client, photographer, "pending");
                 return ResponseBody.success("Slot added", 556);
@@ -161,27 +243,27 @@ public class BookingService {
 
                 LocalDate shootDate = slots.get(index).getDayofshoot().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-                if(start <= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && shootDate.equals(dayOfShoot)){
+                if(start <= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
 
                     valid = false;
 
                 }
-                else if(start >= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && shootDate.equals(dayOfShoot)){
+                else if(start >= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
 
                     valid = false;
 
                 }
-                else if(start <= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && end >= slots.get(index).getStartslot() && shootDate.equals(dayOfShoot)){
+                else if(start <= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && end >= slots.get(index).getStartslot() && shootDate.equals(dateOfShoot)){
 
                     valid = false;
 
                 }
-                else if(start >= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && start <= slots.get(index).getEndslot() && shootDate.equals(dayOfShoot)){
+                else if(start >= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && start <= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
 
                     valid = false;
 
                 }
-                else if(slots.get(index).getStartslot() == start && slots.get(index).getEndslot() == end && shootDate.equals(dayOfShoot)){
+                else if(slots.get(index).getStartslot() == start && slots.get(index).getEndslot() == end && shootDate.equals(dateOfShoot)){
 
                     valid = false;
 
@@ -193,7 +275,7 @@ public class BookingService {
 
             if(valid){
 
-                Date date = Date.from(dayOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                Date date = Date.from(dateOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
                 bookingDbService.addSlot(start, end, date, client, photographer, "pending");
                 return ResponseBody.success("Slot added", 556);
@@ -211,5 +293,26 @@ public class BookingService {
         }
     }
 
+    public ResponseBody getSchedule(long userId){
+
+        try{
+
+            return ResponseBody.success(bookingDbService.getPhotographerSchedule(userId), 955);
+
+        }catch(Exception e){
+
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return ResponseBody.error("no schedule", 905);
+
+        }
+    }
+
+    public ResponseBody getBookingSlots(long userId){
+
+        List<BookingSlotsTableEntity> bookingSlots = bookingDbService.getPhotographersSlots(userId);
+        return ResponseBody.success(bookingSlots, 955);
+
+    }
 
 }

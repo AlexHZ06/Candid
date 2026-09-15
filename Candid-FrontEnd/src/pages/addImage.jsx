@@ -291,6 +291,8 @@ function AddImage(){
                 rounded-md
                 mt-10
                 ${activePage === "details" ? "": "hidden"}
+
+                xl:mt-8
             
             `}>
                 <input ref={title} placeholder="Name" type="text" className="
@@ -307,6 +309,8 @@ function AddImage(){
                     transition
                     duration-100
 
+                    xl:mt-5
+
                 "/>  
                     <textarea ref={description} placeholder="Desctiption" className="
                     
@@ -322,10 +326,9 @@ function AddImage(){
                         pl-2
                         resize-none
 
-                    
+                        xl:mt-3
                     "/> 
-                    <label
-                    className="
+                    <label className="
                         flex flex-col
                         items-center
                         justify-center
@@ -342,6 +345,7 @@ function AddImage(){
                         text-neutral-600
                         hover:text-black
                         active:text-neutral-600
+                        xl:h-[40vh]
                     "
                     >
                     <div className={`
@@ -397,6 +401,7 @@ function AddImage(){
                         flex
                         flex-row
                         gap-10
+                        pb-5
                 
                 ">
                     <button onClick={submitDetails} className="
@@ -594,6 +599,8 @@ function AddImage(){
 
                                 active:bg-white
                                 active:text-black
+
+                                xl:w-[15vh]
                             
                             ">
                                 

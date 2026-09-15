@@ -1,7 +1,70 @@
 import CHeader from "../compnents/cheader"
 import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { jwtService } from "../logic/jwt";
 
 function Profiles(){
+
+    const tokenService = new jwtService()
+    const [profiles, setProfiles] = useState();
+
+    useEffect(() =>{
+
+        fetch("/api/profile/client/getprofiles",{
+
+            method:"GET",
+            headers:{
+
+                "Content-Type":"application/json",
+                auth:localStorage.getItem("jwt")
+
+            }
+
+        }).then(response => response.json()).then(async data => {
+
+            if(data.success){
+
+                setProfiles(data.data)
+                console.log(data.data)
+
+            }
+            else{
+
+                if(data.internalCode === 401){
+
+                    let result = await tokenService.requestJwt()
+                    if(result){
+
+                        fetch("/api/profile/client/getprofiles",{
+
+                            method:"GET",
+                            headers:{
+
+                                "Content-Type":"application/json",
+                                auth:localStorage.getItem("jwt")
+
+                            }
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(data.success){
+
+                                setProfiles(d.data)
+                                console.log(d.data)
+
+                            }
+
+                        })                        
+
+                    }
+
+                }
+
+            }
+
+        })
+
+    }, [])
 
     return(
 
@@ -41,6 +104,8 @@ function Profiles(){
                         mt-5
                         justify-center
                         items-center
+                        xl:mt-2
+                        xl:mb-2
                     
                     ">
                         <p className="
@@ -78,7 +143,32 @@ function Profiles(){
            
                     
                     ">
-    
+                        
+                        {profiles?.map(profile => (
+
+                            <Link className="
+                            
+                                w-[20vh]
+                                bg-neutral-50
+                                h-[20vh]
+                                rounded-xl
+                                shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+                                hover:shadow-[0_0px_10px_rgba(0,0,0,0.35)]
+                                active:shadow-[0_0px_5px_rgba(0,0,0,0.15)_inset]
+                                flex
+                                justify-center
+                                
+                            "
+                            >
+                                <p className="
+                                
+                                    mt-10
+                                    
+
+                                ">{profile.profilename}</p>
+                            </Link>
+
+                        ))}
 
                     </div>
                     <div className="
@@ -89,6 +179,8 @@ function Profiles(){
                         items-center
                         justify-center
                         mt-5
+
+                        xl:mt-2
                     ">
 
                         <Link to={"/createprofile"} className="
@@ -111,6 +203,8 @@ function Profiles(){
                             active:bg-white
                             active:text-black
 
+                            xl:h-[5vh]
+                            xl:w-[15vh]
                         
                         ">Add Profile</Link>
 

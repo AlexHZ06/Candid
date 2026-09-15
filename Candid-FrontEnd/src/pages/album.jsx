@@ -87,6 +87,8 @@ function Album(){
                     w-[15vh]
                     items-center
                     pt-3
+
+                    xl:w-[30vh]
                     
                     
                 
@@ -103,6 +105,8 @@ function Album(){
                         w-[15vh]
                         shrink-0
                         overflow-y-auto
+
+                        xl:w-[30vh]
                     
                     ">
                         
@@ -135,6 +139,8 @@ function Album(){
                         gap-5
                         h-3/10
                         mt-10
+
+                        xl:mt-5
                     
                     ">
                         <Link to={`/addimage/${albumId}/${albumName}`} className="
@@ -157,7 +163,7 @@ function Album(){
                             active:bg-white
                             active:text-black
 
-                        
+                            xl:w-[20vh]
                         
                         ">Add Photo</Link>
                         <Link to={`/albumedit/${albumId}/${albumName}`} className="
@@ -180,7 +186,7 @@ function Album(){
                             active:bg-white
                             active:text-black
 
-                        
+                            xl:w-[20vh]
                         
                         ">Edit Album
                         </Link>
@@ -204,7 +210,7 @@ function Album(){
                             active:bg-white
                             active:text-black
 
-                        
+                            xl:w-[20vh]
                         
                         ">back</Link>
 

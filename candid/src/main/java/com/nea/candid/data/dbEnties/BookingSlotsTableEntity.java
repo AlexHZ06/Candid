@@ -15,16 +15,16 @@ public class BookingSlotsTableEntity {
     private final long slotid;
     private final int startslot;
     private final int endslot;
-    private final Date dayofshoot;
+    private final Date dateofshoot;
     private final long clientid;
     private final long photographerid;
     private final String status;
 
-    public BookingSlotsTableEntity(long slotid, int startslot, int endslot, Date dayofshoot, long clientid, long photographerid, String status) {
+    public BookingSlotsTableEntity(long slotid, int startslot, int endslot, Date dateofshoot, long clientid, long photographerid, String status) {
         this.slotid = slotid;
         this.startslot = startslot;
         this.endslot = endslot;
-        this.dayofshoot = dayofshoot;
+        this.dateofshoot = dateofshoot;
         this.clientid = clientid;
         this.photographerid = photographerid;
         this.status = status;
@@ -43,7 +43,7 @@ public class BookingSlotsTableEntity {
     }
 
     public Date getDayofshoot() {
-        return dayofshoot;
+        return dateofshoot;
     }
 
     public long getClientid() {

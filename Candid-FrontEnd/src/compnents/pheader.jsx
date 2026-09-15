@@ -55,6 +55,7 @@ function PHeader({active}){
             <Link className={`
             
                 flex-1
+                xl:pr-3
                 active:text-neutral-500
                 transition
                 duration-100
@@ -64,13 +65,14 @@ function PHeader({active}){
             <Link className={`
             
                 flex-1
+                
                 active:text-neutral-500
                 transition
                 duration-100
                 ${active === "Clients" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Clients</Link>
-                        <Link className={`
+            <Link className={`
             
                 flex-1
                 active:text-neutral-500

@@ -32,12 +32,7 @@ function AlbumEdit(){
             body: JSON.stringify({
                 albumId: albumId
             })
-        })
-        .then(response => {
-
-            return response.json()
-        })
-        .then(data => {
+        }).then(response => response.json()).then(data => {
 
             setExistingImage(data.data.thumnail)
             setDesc(data.data.description)
@@ -96,7 +91,7 @@ function AlbumEdit(){
                                 })
                             }).then(res => res.json()).then(async dat => {
 
-                                if(dat.sucsess){
+                                if(dat.success){
 
                                     navigate("/gallery")
 
@@ -183,7 +178,7 @@ function AlbumEdit(){
                 body:formData
             }).then(response => response.json()).then(async data => {
 
-                if(data.sucsess) {
+                if(data.success) {
                     navigate("/gallery")
                 }
                 else {
@@ -200,7 +195,7 @@ function AlbumEdit(){
                                 body:formData
                             }).then(res => res.json()).then(d => {
 
-                                if(d.sucsess) {
+                                if(d.success) {
                                     navigate("/gallery")
                                 }
                                 else {
@@ -239,6 +234,8 @@ function AlbumEdit(){
                 flex
                 justify-center
                 mt-20
+
+                xl:mt-7
             ">
 
                 <div className="
@@ -251,6 +248,9 @@ function AlbumEdit(){
                     flex
                     flex-col
                     items-center
+
+                    xl:h-[80vh]
+                    
                 ">
 
                     <div className="
@@ -261,22 +261,18 @@ function AlbumEdit(){
                         mt-10
                     ">
 
-                        <input
-                            ref={title}
-                            defaultValue={albumName}
-                            placeholder="Title"
-                            type="text"
-                            className="
-                                border-2
-                                h-10
-                                rounded-md
-                                w-6/10
-                                pl-2
-                                border-neutral-500
-                                hover:border-black
-                                transition
-                                duration-200
-                            "
+                        <input ref={title} defaultValue={albumName} placeholder="Title" type="text" className="
+                            border-2
+                            h-10
+                            rounded-md
+                            w-6/10
+                            pl-2
+                            border-neutral-500
+                            hover:border-black
+                            transition            
+                            duration-200
+                            xl:h-8
+                        "
                         />
 
                         <div className="
@@ -290,24 +286,24 @@ function AlbumEdit(){
 
                     </div>
 
-                    <textarea
-                        ref={description}
-                        value={desc}
-                        onChange={(e) => setDesc(e.target.value)}
-                        placeholder="Description"
-                        className="
-                            w-[80vh]
-                            border-2
-                            rounded-md
-                            border-neutral-500
-                            hover:border-black
-                            transition
-                            duration-200
-                            mt-5
-                            h-[6vh]
-                            pl-2
-                            resize-none
-                        "
+                    <textarea ref={description} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description"className="
+
+                        w-[80vh]
+                        border-2
+                        rounded-md
+                        border-neutral-500
+                        hover:border-black
+                        transition
+                        duration-200
+                        mt-5
+                        h-[6vh]
+                        pl-2
+                        resize-none
+
+                        xl:mt-5
+                        xl:h-[10vh]
+                       
+                    "
                     />
 
                     <label className="
@@ -328,6 +324,8 @@ function AlbumEdit(){
                         text-neutral-600
                         hover:text-black
                         active:text-neutral-600
+
+                        
                     ">
 
                         <div className={`

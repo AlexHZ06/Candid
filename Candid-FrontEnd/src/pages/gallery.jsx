@@ -71,6 +71,9 @@ function Gallery(){
                         justify-center
                         items-center
                     
+                        xl:mt-2
+                        xl:pb-2
+
                     ">
                         <p className="
                         
@@ -123,6 +126,8 @@ function Gallery(){
                         items-center
                         justify-center
                         mt-5
+
+                        xl:mt-2
                     ">
 
                         <Link to={"/albumcreate"} className="
@@ -145,6 +150,8 @@ function Gallery(){
                             active:bg-white
                             active:text-black
 
+                            xl:h-[5vh]
+                            xl:w-[15vh]
                         
                         ">Add Album</Link>
 

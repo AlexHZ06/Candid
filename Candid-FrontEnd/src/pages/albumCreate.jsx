@@ -128,6 +128,8 @@ function AlbumCreate(){
                 flex
                 justify-center
                 mt-20
+
+                xl:mt-7
             
             ">
                 <div className="
@@ -141,7 +143,8 @@ function AlbumCreate(){
                     flex
                     flex-col
                     items-center
-               
+
+                    xl:h-[80vh]
                 
                 ">
                     <div className="

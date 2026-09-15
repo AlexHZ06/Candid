@@ -47,6 +47,7 @@ public class roleFilter extends OncePerRequestFilter {
             }
             else {
 
+                System.out.println(jwtObject.getClaims().get("role"));
                 response.setStatus(401);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));
@@ -64,6 +65,7 @@ public class roleFilter extends OncePerRequestFilter {
             }
             else {
 
+                System.out.println(jwtObject.getClaims().get("role"));
                 response.setStatus(401);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseBody.error("Unauthorized", 401)));

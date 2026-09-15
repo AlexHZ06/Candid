@@ -17,6 +17,8 @@ import RejectedJwt from './pages/rejectedJwt'
 import ClientHome from './pages/ClientHome'
 import Profiles from './pages/profiles'
 import CreateProfile from './pages/createProflie'
+import MakeBooking from './pages/makeBooking'
+import EditSchedule from './pages/editSchedule'
 
 const router = createBrowserRouter([
 
@@ -33,7 +35,9 @@ const router = createBrowserRouter([
   {path:"/albumcreate", element:<AlbumCreate/>},
   {path:"/chome", element:<ClientHome/>},
   {path:"/profiles", element:<Profiles/>},
-  {path:"/createprofile", element:<CreateProfile/>}
+  {path:"/createprofile", element:<CreateProfile/>},
+  {path:"/makebooking", element:<MakeBooking/>},
+  {path:"/editschedule", element:<EditSchedule/>}
   
 
 ])

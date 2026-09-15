@@ -35,7 +35,7 @@ public class GeoCodingService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("User-Agent", "YourNEAProject/1.0")
+                .header("User-Agent", "CandidNeaProject/1.0")
                 .GET()
                 .build();
 

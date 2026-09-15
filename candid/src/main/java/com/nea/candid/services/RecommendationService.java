@@ -551,8 +551,6 @@ public class RecommendationService {
 
         }catch(Exception e){
 
-            System.out.println(e.toString());
-            e.printStackTrace();
             return ResponseBody.error("could not save vectors", 903);
 
         }

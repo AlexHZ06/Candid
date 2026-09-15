@@ -15,18 +15,7 @@ public class BookingSlotsTableRepo {
     public BookingSlotsTableRepo(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    public int addBookingSlot(int startslot, int endslot, Date dayofshoot, long clinetid, long photographerid, String status) {
-
-        String sql = """
-                insert into bookingslotstable(startslot, endslot, dayofshoot, clientid, photographerid, status)
-                values(?,?,?,?,?,?)
-                """;
-
-        return jdbcTemplate.update(sql, startslot, endslot, dayofshoot, clinetid, photographerid, status);
-
-    }
-
+    
     public List<BookingSlotsTableEntity> getSlotsOfPhotographer(long photographerid){
 
         String sql = """
@@ -41,7 +30,7 @@ public class BookingSlotsTableRepo {
                     rs.getLong("slotid"),
                     rs.getInt("startslot"),
                     rs.getInt("endslot"),
-                    rs.getDate("dayofshoot"),
+                    rs.getDate("dateofshoot"),
                     rs.getLong("clientid"),
                     rs.getLong("photographerid"),
                     rs.getString("status")
@@ -51,14 +40,14 @@ public class BookingSlotsTableRepo {
 
     }
 
-    public int addSlot(int startslot, int endslot, Date dayofshoot, long clinetid, long photographerid, String status) {
+    public int addSlot(int startslot, int endslot, Date dateofshoot, long clinetid, long photographerid, String status) {
 
         String sql = """
-                Insert into bookingslotstabl(startslot, endslot, dayofshoot, clinetid, photographerid, status)
+                Insert into bookingslotstabl(startslot, endslot, dateofshoot, clinetid, photographerid, status)
                 values(?,?,?,?,?,?)
                 """;
 
-        return jdbcTemplate.update(sql, startslot, endslot, dayofshoot, clinetid, photographerid, status);
+        return jdbcTemplate.update(sql, startslot, endslot, dateofshoot, clinetid, photographerid, status);
 
     }
 

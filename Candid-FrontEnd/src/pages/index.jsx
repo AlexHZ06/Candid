@@ -22,6 +22,10 @@ function Index(){
                 items-center
                 pl-10
                 pr-10
+
+                xl:h-25
+    
+                
             
             ">
 
@@ -36,6 +40,7 @@ function Index(){
                 <p className="
                 
                     flex-5
+                    xl:flex-7
                 
                 "></p>
                 <Link to={"/signin"} className="
@@ -71,6 +76,8 @@ function Index(){
                     transition
                     duration-100
 
+                    
+
                 
                 ">Sign Up</Link>
 
@@ -96,6 +103,8 @@ function Index(){
                    
                     top-40
 
+                    xl:top-25
+
                 
                 ">
                     <p className="
@@ -104,7 +113,8 @@ function Index(){
                         font-black
                         text-7xl
 
-                        xl:text-8xl
+                        xl:text-5xl
+
                    
 
                     
