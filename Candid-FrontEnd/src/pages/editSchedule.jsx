@@ -36,7 +36,7 @@ function EditSchedule(){
 
         tokenService.checkTokenPhotographer()
 
-        fetch("/api/booking/getschedule", {
+        fetch("/api/booking/photographer/getschedule", {
 
             method:"POST",
             headers:{
@@ -44,12 +44,7 @@ function EditSchedule(){
                 "Content-Type":"application/json",
                 auth:localStorage.getItem("jwt")
 
-            },
-            body:JSON.stringify({
-
-                userId:photographerId
-
-            })
+            }
 
         }).then(response => response.json()).then(async data => {
 
@@ -60,7 +55,7 @@ function EditSchedule(){
                     let result = await tokenService.requestJwt()
                     if(result){
 
-                        fetch("/api/booking/getschedule", {
+                        fetch("/api/booking/photographer/getschedule", {
 
                             method:"POST",
                             headers:{
@@ -68,12 +63,7 @@ function EditSchedule(){
                                 "Content-Type":"application/json",
                                 auth:localStorage.getItem("jwt")
 
-                            },
-                            body:JSON.stringify({
-
-                                userId:photographerId
-
-                            })
+                            }
 
                         }).then(r => r.json()).then(d => {
 
@@ -385,6 +375,7 @@ function EditSchedule(){
                             else{
 
                                  console.log(d.data)
+                                 navigate("/editschedule")
 
                             }
                                 
@@ -401,6 +392,7 @@ function EditSchedule(){
             }else{
 
                 console.log(data.data)
+                navigate("/editschedule")
 
             }
 
@@ -410,8 +402,7 @@ function EditSchedule(){
 
     return(
 
-        <div className="
-        
+        <div className=" 
             w-screen 
             min-h-screen 
             flex

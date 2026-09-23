@@ -43,7 +43,7 @@ public class BookingSlotsTableRepo {
     public int addSlot(int startslot, int endslot, Date dateofshoot, long clinetid, long photographerid, String status) {
 
         String sql = """
-                Insert into bookingslotstabl(startslot, endslot, dateofshoot, clinetid, photographerid, status)
+                Insert into bookingslotstable(startslot, endslot, dateofshoot, clinetid, photographerid, status)
                 values(?,?,?,?,?,?)
                 """;
 

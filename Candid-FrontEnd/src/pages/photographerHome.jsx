@@ -11,6 +11,7 @@ function PhotographerHome(){
     useEffect(() => {
 
         tokenService.checkTokenPhotographer()
+        
 
     }, [])
 

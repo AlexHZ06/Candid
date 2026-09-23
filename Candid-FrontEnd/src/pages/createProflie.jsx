@@ -349,32 +349,86 @@
             if(title.current.value === ""){
 
                 setErrorMessage("Must enter a title")
+                return
 
             }
             else if(description.current.value === ""){
 
                 setErrorMessage("must enter a description")
+                return
 
             }
             else if(active === "None selected"){
 
                 setErrorMessage("must select a category")
+                return
 
             }
-            else if(minCost > maxCost && (!maxCost === 0)){
+            
+            else if(minCost > maxCost && (maxCost !== 0)){
 
                 setErrorMessage("Min Cost cannot be more than Max Cost")
+                return
 
             }
-            else if(minCost === maxCost && (!maxCost === 0)){
+            else if(minCost === maxCost && (maxCost !== 0)){
                 
                 setErrorMessage("Min Cost cannot be equal to MaxCost")
+                return
                 
             }
             else{
 
-                setErrorMessage("")
-                setActivePage("address")
+                let validInput = false
+                for(let i = 0; i < title.current.value.length; i++){
+
+                    if(title.current.value[i] !== " "){
+
+                        validInput = true
+                        continue
+
+                    }
+
+                }
+
+                    if(validInput === true){
+
+                        let validDescInput = false 
+                        for(let i = 0; i < description.current.value.length; i++){
+
+                            if(description.current.value[i] !== " "){
+
+                                validDescInput = true
+
+                            }
+
+                        }
+
+                        if(validDescInput && validInput){
+
+                            setErrorMessage("")
+                            setActivePage("address")
+
+
+                        }
+                        else{
+
+                            setErrorMessage("Must enter a description")
+                            return
+
+                        }
+                        
+
+                }
+                else{
+
+                    setErrorMessage("Must enter a title")
+                    return
+
+                }
+
+
+                
 
             }
 
@@ -575,7 +629,7 @@
                                 
                                 ">
                                     <label>Min Cost: {minCost === 1000 ? `$${minCost}+` : minCost === 0 ? "none" : `$${minCost}`}</label>
-                                    <input value={minCost} type="range" min={0} max={1000} onChange={(e) => setMinCost(Number(e.target.value))}/>
+                                    <input value={minCost} type="range" step={5} min={0} max={1000} onChange={(e) => setMinCost(Number(e.target.value))}/>
                                 </div>
                                 
                                 <div className="
@@ -586,7 +640,7 @@
                                 
                                 ">
                                     <label>Max Cost: {maxCost === 1000 ? `$${maxCost}+` : maxCost === 0 ? "none" : `$${maxCost}`}</label>
-                                    <input value={maxCost} type="range" min={0} max={1000} onChange={(e) => setMaxCost(Number(e.target.value))}/>
+                                    <input value={maxCost} type="range" step={5} min={0} max={1000} onChange={(e) => setMaxCost(Number(e.target.value))}/>
                                 </div>
                             </div>
                         </div>
@@ -819,7 +873,7 @@
                         
                                 text-red-600
                                 
-                        ">Error Message</p>
+                        ">{errorMessage }</p>
                         <div className="
 
                                 mt-10

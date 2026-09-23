@@ -58,7 +58,7 @@ function MakeBooking(){
         setDate(tempDate)
 
 
-        fetch("/api/booking/getschedule", {
+        fetch("/api/booking/client/getschedule", {
 
             method:"POST",
             headers:{
@@ -84,7 +84,7 @@ function MakeBooking(){
                     let result = await tokenService.requestJwt()
                     if(result){
 
-                        fetch("/api/booking/getschedule", {
+                        fetch("/api/booking/client/getschedule", {
 
                             method:"POST",
                             headers:{

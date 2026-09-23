@@ -52,7 +52,7 @@ function PHeader({active}){
                 ${active === "Gallery" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Gallery</Link>
-            <Link className={`
+            <Link to={"/editschedule"} className={`
             
                 flex-1
                 xl:pr-3

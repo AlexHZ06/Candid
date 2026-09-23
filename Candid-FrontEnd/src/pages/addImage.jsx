@@ -218,7 +218,7 @@ function AddImage(){
             
             }).then(response => response.json()).then(async data => {
 
-                if(data.sucsess) {
+                if(data.success) {
                     navigate(`/album/${albumId}/${albumName}`)
                 }
                 else {
@@ -241,7 +241,7 @@ function AddImage(){
                             
                             }).then(res => res.json()).then(d => {
 
-                                if(d.sucsess) {
+                                if(d.success) {
                                     navigate(`/album/${albumId}/${albumName}`)
                                 }
                                 else {

@@ -53,7 +53,7 @@ function AlbumCreate(){
                 body:formData
             }).then(response => response.json()).then(async data => {
 
-                if(data.sucsess) {
+                if(data.success) {
                     navigate("/gallery")
                 }
                 else {
@@ -70,7 +70,7 @@ function AlbumCreate(){
                                 body:formData
                             }).then(res => res.json()).then(d => {
 
-                                if(d.sucsess) {
+                                if(d.success) {
                                     navigate("/gallery")
                                 }
                                 else {

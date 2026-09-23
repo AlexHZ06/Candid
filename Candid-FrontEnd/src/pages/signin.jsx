@@ -12,6 +12,15 @@ function SignIn() {
 
     function submit(){
 
+        if((userName.current.value === "" || 
+            userName.current.value === null) || 
+        (userName.current.value === "" || 
+            userName.current.value === null)){
+
+            setResponse("Cannot enter blank details")
+            return  
+        }
+
         fetch("/api/auth/public/login",{
 
             method:"POST",
@@ -105,6 +114,8 @@ function SignIn() {
 
                 xl:w-[60vh]
                 xl:h-[70vh]
+                2xl:w-[40vh]
+                2xl:h-[50vh]
             
             ">
                 <p className="
@@ -142,6 +153,8 @@ function SignIn() {
                     xl:mt-7
                     xl:w-[40vh]
 
+                    2xl:w-[30vh]
+
                 "/>
                 <input ref={password} placeholder="Password" type="password" className="
                 
@@ -161,6 +174,7 @@ function SignIn() {
                     xl:mt-7
                     xl:w-[40vh]
                     
+                    2xl:w-[30vh]
                 
                 "/>
                 <p className="
@@ -204,7 +218,7 @@ function SignIn() {
                     active:text-black
 
                      xl:w-[40vh]    
-
+                    2xl:w-[30vh]
                 
                 ">Submit</button>
             </div>

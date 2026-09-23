@@ -114,6 +114,7 @@ function Index(){
                         text-7xl
 
                         xl:text-5xl
+                        2xl:text-8xl
 
                    
 

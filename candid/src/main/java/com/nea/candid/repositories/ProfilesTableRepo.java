@@ -54,7 +54,7 @@ public class ProfilesTableRepo {
                    returning profileid
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, userId, profileName, profileDescription, createdAt, false, mincost, maxcost, projectCatagory, latitude, longitude, defaultVector, defaultVector);
+        return jdbcTemplate.queryForObject(sql, Long.class, userId, profileName, profileDescription, createdAt, true, mincost, maxcost, projectCatagory, latitude, longitude, defaultVector, defaultVector);
 
     }
 
@@ -131,7 +131,8 @@ public class ProfilesTableRepo {
         String sql = """
                     select *
                     from profilestable
-                    where userid = ?;
+                    where userid = ?
+                    and active = true
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowMap) ->{

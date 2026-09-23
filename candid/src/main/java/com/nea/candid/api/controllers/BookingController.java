@@ -36,10 +36,17 @@ public class BookingController {
 
     }
 
-    @PostMapping("/getschedule")
+    @PostMapping("/client/getschedule")
     public ResponseBody getSchedule(@RequestBody Map<String, Long> body){
 
         return bookingService.getSchedule(body.get("userId"));
+
+    }
+
+    @PostMapping("/photographer/getschedule")
+    public ResponseBody getSchedulePhotographer(HttpServletRequest request){
+
+        return bookingService.getSchedule(Long.parseLong(request.getAttribute("userId").toString()));
 
     }
 
@@ -60,7 +67,7 @@ public class BookingController {
 
     @PostMapping("/client/requestslot")
     public ResponseBody requestSlot(HttpServletRequest request, @RequestBody BookingSlotsTableEntity entity){
-        System.out.println("hi");
+
         return bookingService.requestBookingSlot(entity, Long.parseLong(request.getAttribute("userId").toString()));
 
 

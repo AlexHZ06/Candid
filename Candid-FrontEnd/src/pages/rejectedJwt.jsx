@@ -72,6 +72,8 @@ function RejectedJwt(){
                 items-center
                 rounded-md
                 mt-25
+
+                xl:h-[40vh]
             
             ">
                 <p className="
@@ -102,7 +104,7 @@ function RejectedJwt(){
                         active:bg-white
                         active:text-black
 
-                        
+                        xl:w-[25vh]
 
                     
                     ">Back to home page</button>
