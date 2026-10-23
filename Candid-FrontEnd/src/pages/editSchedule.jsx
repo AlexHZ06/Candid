@@ -375,7 +375,7 @@ function EditSchedule(){
                             else{
 
                                  console.log(d.data)
-                                 navigate("/editschedule")
+                                 window.location.reload()
 
                             }
                                 
@@ -392,7 +392,7 @@ function EditSchedule(){
             }else{
 
                 console.log(data.data)
-                navigate("/editschedule")
+                window.location.reload()
 
             }
 

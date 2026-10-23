@@ -1,5 +1,6 @@
 package com.nea.candid.repositories;
 
+import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dbEnties.UsersTableEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -91,6 +92,28 @@ public class UsersTableRepo {
             return rs.getLong("userid");
 
         }, minLat, maxLat, minLon, maxLon);
+
+    }
+
+    public List<UsersTableEntity> getAllPhotographer(){
+
+        String sql = """
+                select *
+                from userstable
+                where usertype = 'photographer'
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            return new UsersTableEntity(rs.getLong("userid"), rs.getString("username"), rs.getString("firstname"),
+                    rs.getString("lastname"),
+                    rs.getString("usertype"),
+                    rs.getString("email"),
+                    rs.getString("hashedpassword"),
+                    rs.getDate("datejoined")
+            );
+
+        });
 
     }
 

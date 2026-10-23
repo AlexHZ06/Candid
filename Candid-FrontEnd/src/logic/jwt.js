@@ -1,9 +1,17 @@
 
 import { useNavigate } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
 
 export class jwtService{
 
     navigation = useNavigate()
+
+    decodeUserId(){
+
+        const token = jwtDecode(localStorage.getItem("jwt"))
+        return token.sub
+
+    }
 
     checkTokenPhotographer(){
 

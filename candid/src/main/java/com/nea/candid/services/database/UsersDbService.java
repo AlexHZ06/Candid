@@ -31,4 +31,10 @@ public class UsersDbService {
 
     }
 
+    public List<UsersTableEntity> getAllPhotographers(){
+
+        return usersTableRepo.getAllPhotographer();
+
+    }
+
 }

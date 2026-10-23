@@ -62,7 +62,7 @@ function AlbumEdit(){
         }).then(response => response.json()).then(data =>{
 
                 console.log(data)
-                if(data.sucsess){
+                if(data.success){
                     
                     console.log("d")
                     navigate('/gallery')

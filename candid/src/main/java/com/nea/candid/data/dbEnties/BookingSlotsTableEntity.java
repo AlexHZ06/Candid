@@ -15,7 +15,7 @@ public class BookingSlotsTableEntity {
     private final long slotid;
     private final int startslot;
     private final int endslot;
-    private final Date dateofshoot;
+    private  Date dateofshoot;
     private final long clientid;
     private final long photographerid;
     private final String status;
@@ -56,5 +56,9 @@ public class BookingSlotsTableEntity {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setDateofshoot(Date dateofshoot) {
+        this.dateofshoot = dateofshoot;
     }
 }

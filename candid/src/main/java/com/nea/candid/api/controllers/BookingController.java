@@ -68,6 +68,8 @@ public class BookingController {
     @PostMapping("/client/requestslot")
     public ResponseBody requestSlot(HttpServletRequest request, @RequestBody BookingSlotsTableEntity entity){
 
+        System.out.println(entity.getDayofshoot());
+
         return bookingService.requestBookingSlot(entity, Long.parseLong(request.getAttribute("userId").toString()));
 
 

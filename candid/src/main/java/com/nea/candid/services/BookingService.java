@@ -198,6 +198,8 @@ public class BookingService {
 
     public ResponseBody requestBookingSlot(BookingSlotsTableEntity bookingSlotsTableEntity, long client){
 
+        System.out.println("Ran");
+
         int start = bookingSlotsTableEntity.getStartslot();
         int end = bookingSlotsTableEntity.getEndslot();
         long photographer = bookingSlotsTableEntity.getPhotographerid();
@@ -215,7 +217,7 @@ public class BookingService {
 
         while(index < schedule.size() && !valid){
 
-            if((start >= schedule.get(index).getStartSlot() && end <= schedule.get(index).getEndSlot() && schedule.get(index).getDayofweek() == dateOfShoot.getDayOfWeek().getValue())){
+            if((start >= schedule.get(index).getStartSlot() && end <= schedule.get(index).getEndSlot() && schedule.get(index).getDayofweek() == dateOfShoot.getDayOfWeek().getValue() - 1)){
 
                 valid = true;
 
@@ -239,31 +241,35 @@ public class BookingService {
             }
 
             index = 0;
+
             while(index < slots.size() && valid){
 
-                LocalDate shootDate = slots.get(index).getDayofshoot().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                Date date = slots.get(index).getDayofshoot();
 
-                if(start <= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
+                LocalDate existingDate = ((java.sql.Date) date).toLocalDate();
 
-                    valid = false;
 
-                }
-                else if(start >= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
+                if(start <= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && dateOfShoot.equals(existingDate) && (!slots.get(index).getStatus().equals("pending") || slots.get(index).getClientid() == client)){
 
                     valid = false;
 
                 }
-                else if(start <= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && end >= slots.get(index).getStartslot() && shootDate.equals(dateOfShoot)){
+                else if(start >= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && dateOfShoot.equals(existingDate) && (!slots.get(index).getStatus().equals("pending") || slots.get(index).getClientid() == client)){
 
                     valid = false;
 
                 }
-                else if(start >= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && start <= slots.get(index).getEndslot() && shootDate.equals(dateOfShoot)){
+                else if(start <= slots.get(index).getStartslot() && end <= slots.get(index).getEndslot() && end >= slots.get(index).getStartslot() && dateOfShoot.equals(existingDate) && (!slots.get(index).getStatus().equals("pending") || slots.get(index).getClientid() == client)){
 
                     valid = false;
 
                 }
-                else if(slots.get(index).getStartslot() == start && slots.get(index).getEndslot() == end && shootDate.equals(dateOfShoot)){
+                else if(start >= slots.get(index).getStartslot() && end >= slots.get(index).getEndslot() && start <= slots.get(index).getEndslot() && dateOfShoot.equals(existingDate) && (!slots.get(index).getStatus().equals("pending") || slots.get(index).getClientid() == client)){
+
+                    valid = false;
+
+                }
+                else if(slots.get(index).getStartslot() == start && slots.get(index).getEndslot() == end && dateOfShoot.equals(existingDate) && (!slots.get(index).getStatus().equals("pending") || slots.get(index).getClientid() == client)){
 
                     valid = false;
 

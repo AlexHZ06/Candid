@@ -2,9 +2,13 @@ import CHeader from "../compnents/cheader"
 import { useEffect } from "react"
 import { jwtService } from "../logic/jwt"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
-function MakeBooking(){
+
+function MakeBooking() {
+
+    const { userid } = useParams()
+
 
     const [scheduleSlots, setScheduleSlots] = useState(() => {
         const slots = []
@@ -26,7 +30,9 @@ function MakeBooking(){
 
         return slots
     })
-    const photographerId = 2
+
+    
+    const photographerId = userid
     const tokenService = new jwtService()
     const [retrievedSchedule, setRetrievedSchedule] = useState([])
     const [retrievedBookings, setRetrievedBookings] = useState([])
@@ -35,39 +41,115 @@ function MakeBooking(){
     const [errorText, setErrorText] = useState([])
     const [date, setDate] = useState(new Date())
     const [week, setWeek] = useState("")
-    const[ogWeek, setOgWeek] = useState("")
+    const [ogWeek, setOgWeek] = useState("")
 
 
     useEffect(() => {
 
+
         tokenService.checkTokenClient()
         const tempDate = new Date(date)
-        if(tempDate.getDay() === 0){
+        if (tempDate.getDay() === 0) {
 
             tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 6))
-            
+
         }
-        else{
+        else {
 
             tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 1))
 
         }
 
-        setWeek("" + tempDate.toLocaleDateString("en-GB", {month: "short"}) +  " " + tempDate.getDate())
+        setWeek("" + tempDate.toLocaleDateString("en-GB", { month: "short" }) + " " + tempDate.getDate())
         setOgWeek(tempDate)
         setDate(tempDate)
 
 
         fetch("/api/booking/client/getschedule", {
 
-            method:"POST",
-            headers:{
+            method: "POST",
+            headers: {
 
-                "Content-Type":"application/json",
-                auth:localStorage.getItem("jwt")
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
 
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
+
+                userId: photographerId
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if (!data.success) {
+
+                if (data.internalCode === 401) {
+
+                    let result = await tokenService.requestJwt()
+                    if (result) {
+
+                        fetch("/api/booking/client/getschedule", {
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },
+                            body: JSON.stringify({
+
+                                userId: photographerId
+
+                            })
+
+                        }).then(r => r.json()).then(d => {
+
+                            if (!d.success) {
+
+                                setErrorText(d.error)
+
+                            }
+                            else {
+
+                                setRetrievedSchedule(d.data)
+
+                            }
+
+                        })
+
+                    }
+                    else {
+
+                        navigate("/rejectedjwt")
+
+                    }
+
+                } else {
+
+                    setErrorText(data.error)
+
+                }
+
+            } else {
+
+                setRetrievedSchedule(data.data)
+
+            }
+
+        })
+
+        fetch("/api/booking/getbookingslots", {
+
+            method: "POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                "auth": localStorage.getItem("jwt")
+
+            },
+            body: JSON.stringify({
 
                 userId:photographerId
 
@@ -75,25 +157,28 @@ function MakeBooking(){
 
         }).then(response => response.json()).then(async data => {
 
-            console.log(data.data)
+            if (!data.success) {
 
-            if(!data.success){
-
-                if(data.internalCode === 401){
+                if (data.internalCode === 401) {
 
                     let result = await tokenService.requestJwt()
-                    if(result){
+                    if (!result) {
 
-                        fetch("/api/booking/client/getschedule", {
+                        navigate("/rejectedjwt")
 
-                            method:"POST",
-                            headers:{
+                    }
+                    else {
 
-                                "Content-Type":"application/json",
-                                auth:localStorage.getItem("jwt")
+                        fetch("/api/booking/getbookingslots", {
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                "auth": localStorage.getItem("jwt")
 
                             },
-                            body:JSON.stringify({
+                            body: JSON.stringify({
 
                                 userId:photographerId
 
@@ -101,95 +186,13 @@ function MakeBooking(){
 
                         }).then(r => r.json()).then(d => {
 
-                            if(!d.success){
-
-                                setErrorText(d.error)
-
-                            }
-                            else{
-
-                                setRetrievedSchedule(d.data)
-                                console.log(d.data)
-
-                            }
-                            
-                        })
-
-                    }
-                    else{
-
-                        navigate("/rejectedjwt")
-
-                    }
-
-                }else{
-
-                    setErrorText(data.error)
-                    
-                }
-
-            }else{
-
-                setRetrievedSchedule(data.data)
-                console.log(data.data)
-
-            }
-
-        })
-
-        fetch("/api/booking/getbookingslots",{
-
-            method:"POST",
-            headers:{
-
-                "Content-Type":"application/json",
-                "auth":localStorage.getItem("jwt")
-
-            },
-            body:JSON.stringify({
-
-                userId:"2"
-
-            })
-
-        }).then(response => response.json()).then(async data => {
-
-            if(!data.success){
-
-                if(data.internalCode === 401){
-
-                    let result = await tokenService.requestJwt()
-                    if(!result){
-
-                        navigate("rejectedjwt")
-
-                    }
-                    else{
-
-                        fetch("/api/booking/getbookingslots",{
-
-                            method:"POST",
-                            headers:{
-
-                                "Content-Type":"application/json",
-                                "auth":localStorage.getItem("jwt")
-
-                            },
-                            body:JSON.stringify({
-
-                                userId:"2"
-
-                            })
-
-                        }).then(r => r.json()).then(d => {
-
-                            if(d.success){
+                            if (d.success) {
 
                                 setRetrievedBookings(d.data)
 
-                            }else{
-
-                                setErrorText(errorText, d.error)
+                            } else {
+                                
+                                setErrorText(d.error)
 
                             }
 
@@ -198,16 +201,16 @@ function MakeBooking(){
                     }
 
                 }
-                else{
+                else {
 
-                    setErrorText(errorText, data.error)
-                    
+                    setErrorText(data.error)
+
                 }
 
-            }else{
+            } else {
 
                 setRetrievedBookings(data.data)
-                
+
             }
 
         })
@@ -215,13 +218,14 @@ function MakeBooking(){
     }, [])
 
     useEffect(() => {
-        
+
         if (retrievedSchedule.length === 0) {
             return
         }
 
         setScheduleSlots(prev => {
             const updated = prev.map(day => [...day])
+
 
             for (let i = 0; i < retrievedSchedule.length; i++) {
 
@@ -230,8 +234,8 @@ function MakeBooking(){
                 const day = retrievedSchedule[i].dayofweek
 
                 while (slot <= end) {
-
-                    updated[day][slot] = {...updated[day][slot], status: "schedule"}
+                    
+                    updated[day][slot] = { ...updated[day][slot], status: "schedule" }
                     slot++
                 }
             }
@@ -240,27 +244,27 @@ function MakeBooking(){
         })
     }, [retrievedSchedule])
 
-    function revert(){
+    function revert() {
 
         setScheduleSlots(() => {
-        const slots = []
+            const slots = []
 
-        for (let i = 0; i < 7; i++) {
-            const week = []
+            for (let i = 0; i < 7; i++) {
+                const week = []
 
-            for (let j = 0; j < 48; j++) {
-                week.push({
-                    startslot: j,
-                    endslot: j,
-                    dayofweek: i,
-                    status: ""
-                })
+                for (let j = 0; j < 48; j++) {
+                    week.push({
+                        startslot: j,
+                        endslot: j,
+                        dayofweek: i,
+                        status: ""
+                    })
+                }
+
+                slots.push(week)
             }
 
-            slots.push(week)
-        }
-
-        return slots
+            return slots
         })
 
         if (retrievedSchedule.length === 0) {
@@ -277,7 +281,7 @@ function MakeBooking(){
 
                 while (slot <= end) {
 
-                    updated[day][slot] = {...updated[day][slot], status: "schedule"}
+                    updated[day][slot] = { ...updated[day][slot], status: "schedule" }
                     slot++
                 }
             }
@@ -290,61 +294,91 @@ function MakeBooking(){
     }
 
     useEffect(() => {
-
-        console.log(scheduleSlots)
-
-    }, [scheduleSlots])
-
-    useEffect(() => {
-
-        if (retrievedSchedule.length === 0) {
-            return
-        }
+        if (retrievedBookings.length === 0) return
 
         setScheduleSlots(prev => {
             const updated = prev.map(day => [...day])
 
             for (let i = 0; i < retrievedBookings.length; i++) {
-                
                 let slot = retrievedBookings[i].startslot
                 const end = retrievedBookings[i].endslot
-                const day = retrievedBookings[i].dayofweek
+
+                const date = new Date(retrievedBookings[i].dayofshoot);
+                const day = (date.getDay() + 6) % 7;
 
                 while (slot <= end) {
+                    
+                    if(updated[day][slot].status == "schedule"){
 
-                    updated[day][slot] = {...updated[day][slot], status: retrievedBookings.status}
+                        if(retrievedBookings[i].status === "pending"){
+
+
+                            if("" + retrievedBookings[i].clientid === "" + tokenService.decodeUserId()){
+
+     
+                                updated[day][slot] = {...updated[day][slot],status: "blocked"}
+
+                            }
+                            else{
+
+                                updated[day][slot] = {...updated[day][slot],status: "schedule"}
+                                
+                            }             
+
+                        }
+                        else if(retrievedBookings[i].status === "accepted"){
+
+                            if("" + retrievedBookings[i].clientid === "" + tokenService.decodeUserId()){
+
+                                updated[day][slot] = {...updated[day][slot],status: "accepted"}
+
+                            }
+                            else{
+
+                                updated[day][slot] = {...updated[day][slot],status: "blocked"}
+                                
+                            }        
+
+                        }
+
                     slot++
                 }
             }
+        }
+        
+
+            console.log("update")
+            console.log(updated)
 
             return updated
-        })
+        }
+        )
+ 
+    }, [retrievedBookings]) 
 
-    }, [retrievedBookings])
-
-    function nextWeek(){
+    function nextWeek() {
 
         let tempDate = new Date(date)
 
         tempDate.setDate(tempDate.getDate() + 7)
-        setWeek(tempDate.toLocaleDateString("en-GB", {month: "short"}) + " " + tempDate.getDate())
+        setWeek(tempDate.toLocaleDateString("en-GB", { month: "short" }) + " " + tempDate.getDate())
 
         setDate(tempDate)
 
     }
 
-    function backWeek(){
+    function backWeek() {
 
         let tempDate = new Date(date)
 
         tempDate.setDate(tempDate.getDate() - 7)
 
-        if(tempDate < ogWeek){
+        if (tempDate < ogWeek) {
             return
         }
 
         setWeek(
-            tempDate.toLocaleDateString("en-GB", {month: "short"}) +
+            tempDate.toLocaleDateString("en-GB", { month: "short" }) +
             " " +
             tempDate.getDate()
         )
@@ -363,16 +397,16 @@ function MakeBooking(){
 
                 for (let j = 0; j < prev[i].length; j++) {
 
-                    if ( prev[i][j].startslot === startSlot && prev[i][j].dayofweek === day){
+                    if (prev[i][j].startslot === startSlot && prev[i][j].dayofweek === day) {
 
-                        if(status === "schedule"){
+                        if (status === "schedule") {
 
-                            updated[i][j] = {...updated[i][j],status: "selected"}
+                            updated[i][j] = { ...updated[i][j], status: "selected" }
 
                         }
-                        else if(status === "selected"){
+                        else if (status === "selected") {
 
-                           updated[i][j] = {...updated[i][j],status: "schedule"}
+                            updated[i][j] = { ...updated[i][j], status: "schedule" }
 
                         }
 
@@ -386,42 +420,44 @@ function MakeBooking(){
         })
     }
 
-    function submit(){
+    function submit() {
 
         let slotList = []
         let selectedAny = false
+        let dayOfShoot = new Date()
 
-        for(let i = 0; i < scheduleSlots.length; i++){
+
+        for (let i = 0; i < scheduleSlots.length; i++) {
 
             let temp = []
 
-            for(let j = 0; j < scheduleSlots[i].length; j++){
+            for (let j = 0; j < scheduleSlots[i].length; j++) {
 
 
-                if(scheduleSlots[i][j].status === "selected"){
+                if (scheduleSlots[i][j].status === "selected") {
 
                     selectedAny = true
 
                     temp.push({
 
-                        scheduleid:0,
-                        startslot:scheduleSlots[i][j].startslot,
-                        endslot:scheduleSlots[i][j].endslot,
-                        dayofweek:scheduleSlots[i][j].dayofweek,
-                        photographerid:0
+                        scheduleid: 0,
+                        startslot: scheduleSlots[i][j].startslot,
+                        endslot: scheduleSlots[i][j].endslot,
+                        dayofweek: scheduleSlots[i][j].dayofweek,
+                        photographerid: 0
 
                     })
 
-                    
+
 
                 }
 
             }
-            
+
             slotList.push(temp)
         }
 
-        if(!selectedAny){
+        if (!selectedAny) {
 
             setErrorText("must select atleast 2")
             return
@@ -430,15 +466,15 @@ function MakeBooking(){
 
         let newSlot = []
 
-        for(let i = 0; i < slotList.length; i++){
+        for (let i = 0; i < slotList.length; i++) {
 
-            if(slotList[i].length === 0){
+            if (slotList[i].length === 0) {
 
                 continue
 
             }
 
-            for(let j = 0; j < slotList[i].length; j++){
+            for (let j = 0; j < slotList[i].length; j++) {
 
                 const current = slotList[i][j].startslot
 
@@ -446,8 +482,8 @@ function MakeBooking(){
 
                 const hasNext = j < slotList[i].length - 1 && slotList[i][j + 1].startslot - current === 1
 
-                if(!hasPrevious && !hasNext){
-                    
+                if (!hasPrevious && !hasNext) {
+
                     setErrorText("Cannot select a single slot")
                     return
                 }
@@ -455,17 +491,15 @@ function MakeBooking(){
             }
 
             let start = slotList[i][0].startslot
-   
 
-            for(let j = 1; j < slotList[i].length; j++){
 
-                const isConsecutive =
-                    slotList[i][j].startslot -
-                    slotList[i][j - 1].startslot === 1
+            for (let j = 1; j < slotList[i].length; j++) {
+
+                const isConsecutive = slotList[i][j].startslot - slotList[i][j - 1].startslot === 1
 
                 const isLast = j === slotList[i].length - 1
 
-                if(!isConsecutive){
+                if (!isConsecutive) {
 
                     newSlot.push({
                         slotid: 0,
@@ -478,12 +512,12 @@ function MakeBooking(){
                     start = slotList[i][j].startslot
                 }
 
-                if(isLast){
+                if (isLast) {
 
                     newSlot.push({
                         slotid: 0,
                         startslot: start,
-                        endslot: slotList[i][j - 1].endslot,
+                        endslot: slotList[i][j].endslot,
                         dayofweek: i,
                         photographerid: 0
                     })
@@ -493,114 +527,114 @@ function MakeBooking(){
 
             const tempDate = new Date()
 
-            if(newSlot[0].dayofweek === 6){
+            if (newSlot[0].dayofweek === 6) {
 
                 tempDate.setDate(date.getDate() - 1)
 
-            }else{
+            } else {
 
                 tempDate.setDate(date.getDate() + (newSlot[0].dayofweek))
 
             }
 
-            fetch("/api/booking/client/requestslot",{
+            dayOfShoot = tempDate
 
-                method:"POST",
-                headers:{
-
-                    "Content-Type":"application/json",
-                    auth:localStorage.getItem("jwt")
-
-                },
-                body:JSON.stringify({
-
-                    slotid: 0,
-                    startslot: newSlot[0].startslot,
-                    endslot: newSlot[0].endslot,
-                    clientid: 0,
-                    photographerid: photographerId,
-                    status: "",
-                    dateofshoot:tempDate
-
-                })
-
-            }).then(response => response.json()).then(async data => {
-
-                if(!data.success){
-
-                    if(data.internalCode === 401){
-
-                        let result = await tokenService.requestJwt()
-                        if(!result){
-
-                            navigate("/rejectedjwt")
-
-                        }
-                        else{
-
-                            fetch("/api/booking/client/requestslot",{
-
-                                method:"POST",
-                                headers:{
-
-                                    "Content-Type":"application/json",
-                                    auth:localStorage.getItem("jwt")
-
-                                },
-                                body:JSON.stringify({
-
-                                    slotid: 0,
-                                    startslot: newSlot[0].startslot,
-                                    endslot: newSlot[0].endslot,
-                                    clientid: 0,
-                                    photographerid: photographerId,
-                                    status: "",
-                                    dateofshoot:tempDate
-
-                                })
-
-                            }).then(r => r.json()).then(d => {
-
-                                if(d.success){
-
-                                    setRetrievedBookings(d.data)
-
-                                }
-                                else{
-
-                                    setErrorText(d.error)
-
-                                }
-
-                            })
-
-                        }
-
-                    }else{
-
-                        setErrorText(data.error)
-
-                    }
-
-                }else{
-
-                    setRetrievedBookings(data.data)
-
-                }
-
-            })
-
-        }       
-
-        console.log(newSlot)
+        }
 
         if(newSlot.length > 1){
 
-            setErrorText("booking must not be split")
+            setErrorText("Slots cannot be seperated")
             return
 
         }
 
+        fetch("/api/booking/client/requestslot", {
+
+            method: "POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },
+            body: JSON.stringify({
+
+                slotid: 0,
+                startslot: newSlot[0].startslot,
+                endslot: newSlot[0].endslot,
+                clientid: 0,
+                photographerid: photographerId,
+                status: "",
+                dateofshoot: dayOfShoot
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if (!data.success) {
+
+                if (data.internalCode === 401) {
+
+                    let result = await tokenService.requestJwt()
+                    if (!result) {
+
+                        navigate("/rejectedjwt")
+
+                    }
+                    else {
+
+                        fetch("/api/booking/client/requestslot", {
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },
+                            body: JSON.stringify({
+
+                                slotid: 0,
+                                startslot: newSlot[0].startslot,
+                                endslot: newSlot[0].endslot,
+                                clientid: 0,
+                                photographerid: photographerId,
+                                status: "",
+                                dateofshoot: tempDate
+
+                            })
+
+                        }).then(r => r.json()).then(d => {
+
+                            if (d.success) {
+
+                                setRetrievedBookings(d.data)
+                                console.log("added")
+
+                            }
+                            else {
+
+                                setErrorText(d.error)
+
+                            }
+
+                        })
+
+                    }
+
+                } else {
+
+                    setErrorText(data.error)
+
+                }
+
+            } else {
+                console.log("added")
+                setRetrievedBookings(data.data)
+
+            }
+
+        })
     }
 
     return (
@@ -615,7 +649,7 @@ function MakeBooking(){
             items-center
         
         ">
-            <CHeader active={""}/>
+            <CHeader active={""} />
             <div className="
             
                 shadow-[0_0px_10px_rgba(0,0,0,0.25)]
@@ -659,7 +693,7 @@ function MakeBooking(){
                     
                     ">Next</button>
                 </div>
-                
+
                 <div className="
                     
 
@@ -673,7 +707,7 @@ function MakeBooking(){
                     p-2
 
                 ">
-                    
+
                     <div className="
                     
                         flex
@@ -1256,15 +1290,16 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[0]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button disabled={slot.status === "blocked"} onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
 
                                     `}></button>
 
@@ -1294,15 +1329,16 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[1]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1332,15 +1368,17 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[2]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-400": ""}
                                     
                                     `}></button>
 
@@ -1370,15 +1408,17 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[3]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-400": ""}
                                     
                                     `}></button>
 
@@ -1408,15 +1448,17 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[4]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-400": ""}
                                     
                                     `}></button>
 
@@ -1446,15 +1488,17 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[5]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-400": ""}
                                     
                                     `}></button>
 
@@ -1484,15 +1528,17 @@ function MakeBooking(){
                             ">
                                 {scheduleSlots[6]?.map(slot => (
 
-                                    <button onClick={() => {selectSlot(slot.status, slot.startslot, slot.dayofweek)}} className={`
+                                    <button onClick={() => { selectSlot(slot.status, slot.startslot, slot.dayofweek) }} className={`
                                     
                                         w-full
                                         block
                                         hover:shadow-[0_0px_5px_rgba(0,0,0,0.25)_inset]
                                         h-[3vh]
-                                        ${slot.status === ""? "bg-neutral-100": ""}
-                                        ${slot.status === "schedule"? "bg-blue-400": ""}
-                                        ${slot.status === "selected"? "bg-amber-500": ""}
+                                        ${slot.status === "" ? "bg-neutral-100" : ""}
+                                        ${slot.status === "schedule" ? "bg-blue-400" : ""}
+                                        ${slot.status === "selected" ? "bg-amber-500" : ""}
+                                        ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-400": ""}
                                     
                                     `}></button>
 
@@ -1501,7 +1547,7 @@ function MakeBooking(){
                         </div>
                     </div>
                 </div>
-                    <p className="
+                <p className="
                     
                         text-red-600
                         pt-10
@@ -1561,7 +1607,7 @@ function MakeBooking(){
                         active:text-black
                     
                     ">Revert</button>
-                    <button className="
+                    <Link to={"/temp"} className="
                     
                         bg-black
                         text-white
@@ -1581,7 +1627,7 @@ function MakeBooking(){
                         active:bg-white
                         active:text-black
                     
-                    ">Back</button>
+                    ">Back</Link>
                 </div>
 
             </div>

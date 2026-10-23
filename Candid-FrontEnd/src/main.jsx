@@ -19,6 +19,7 @@ import Profiles from './pages/profiles'
 import CreateProfile from './pages/createProflie'
 import MakeBooking from './pages/makeBooking'
 import EditSchedule from './pages/editSchedule'
+import Temp from './pages/temp'
 
 const router = createBrowserRouter([
 
@@ -36,8 +37,9 @@ const router = createBrowserRouter([
   {path:"/chome", element:<ClientHome/>},
   {path:"/profiles", element:<Profiles/>},
   {path:"/createprofile", element:<CreateProfile/>},
-  {path:"/makebooking", element:<MakeBooking/>},
-  {path:"/editschedule", element:<EditSchedule/>}
+  {path:"/makebooking/:userid", element:<MakeBooking/>},
+  {path:"/editschedule", element:<EditSchedule/>},
+  {path:"/temp", element:<Temp/>}
   
 
 ])

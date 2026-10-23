@@ -52,7 +52,7 @@ function CHeader({active}){
                 ${active === "Search" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Search</Link>
-            <Link className={`
+            <Link to={"/temp"} className={`
             
                 flex-1
                 xl:pr-4
