@@ -82,4 +82,10 @@ public class BookingDbService {
 
     }
 
+    public List<BookingSlotsTableEntity> getWeekSlots(LocalDate startDate, long photographerId){
+
+        return bookingSlotsTableRepo.getSlotsOfPhotographerWeek(photographerId,startDate);
+
+    }
+
 }

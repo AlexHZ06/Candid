@@ -43,27 +43,10 @@ function MakeBooking() {
     const [week, setWeek] = useState("")
     const [ogWeek, setOgWeek] = useState("")
 
-
-    useEffect(() => {
-
+    function refreshCalander(SelectedWeek){
 
         tokenService.checkTokenClient()
-        const tempDate = new Date(date)
-        if (tempDate.getDay() === 0) {
-
-            tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 6))
-
-        }
-        else {
-
-            tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 1))
-
-        }
-
-        setWeek("" + tempDate.toLocaleDateString("en-GB", { month: "short" }) + " " + tempDate.getDate())
-        setOgWeek(tempDate)
-        setDate(tempDate)
-
+        setErrorText("")
 
         fetch("/api/booking/client/getschedule", {
 
@@ -140,20 +123,26 @@ function MakeBooking() {
 
         })
 
-        fetch("/api/booking/getbookingslots", {
+        const localDate = [
+            SelectedWeek.getFullYear(),
+            String(SelectedWeek.getMonth() + 1).padStart(2, "0"),
+            String(SelectedWeek.getDate()).padStart(2, "0")
+        ].join("-");
+
+        const request = new FormData()
+        request.append("photographerId", photographerId)
+        request.append("date", localDate)
+
+
+        fetch("/api/booking/client/getweekslots", {
 
             method: "POST",
             headers: {
 
-                "Content-Type": "application/json",
                 "auth": localStorage.getItem("jwt")
 
             },
-            body: JSON.stringify({
-
-                userId:photographerId
-
-            })
+            body:request
 
         }).then(response => response.json()).then(async data => {
 
@@ -169,20 +158,15 @@ function MakeBooking() {
                     }
                     else {
 
-                        fetch("/api/booking/getbookingslots", {
+                        fetch("/api/booking/client/getweekslots", {
 
                             method: "POST",
                             headers: {
 
-                                "Content-Type": "application/json",
                                 "auth": localStorage.getItem("jwt")
 
                             },
-                            body: JSON.stringify({
-
-                                userId:photographerId
-
-                            })
+                            body:request
 
                         }).then(r => r.json()).then(d => {
 
@@ -215,6 +199,27 @@ function MakeBooking() {
 
         })
 
+    }
+
+    useEffect(() => {
+
+        const tempDate = new Date(date)
+        if (tempDate.getDay() === 0) {
+
+            tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 6))
+
+        }
+        else {
+
+            tempDate.setDate(tempDate.getDate() - (tempDate.getDay() - 1))
+
+        }
+
+        setWeek("" + tempDate.toLocaleDateString("en-GB", { month: "short" }) + " " + tempDate.getDate())
+        setOgWeek(tempDate)
+        setDate(tempDate)
+        refreshCalander(tempDate)
+
     }, [])
 
     useEffect(() => {
@@ -244,55 +249,6 @@ function MakeBooking() {
         })
     }, [retrievedSchedule])
 
-    function revert() {
-
-        setScheduleSlots(() => {
-            const slots = []
-
-            for (let i = 0; i < 7; i++) {
-                const week = []
-
-                for (let j = 0; j < 48; j++) {
-                    week.push({
-                        startslot: j,
-                        endslot: j,
-                        dayofweek: i,
-                        status: ""
-                    })
-                }
-
-                slots.push(week)
-            }
-
-            return slots
-        })
-
-        if (retrievedSchedule.length === 0) {
-            return
-        }
-
-        setScheduleSlots(prev => {
-            const updated = prev.map(day => [...day])
-
-            for (let i = 0; i < retrievedSchedule.length; i++) {
-                let slot = retrievedSchedule[i].startslot
-                const end = retrievedSchedule[i].endslot
-                const day = retrievedSchedule[i].dayofweek
-
-                while (slot <= end) {
-
-                    updated[day][slot] = { ...updated[day][slot], status: "schedule" }
-                    slot++
-                }
-            }
-
-            return updated
-        })
-
-        setErrorText("")
-
-    }
-
     useEffect(() => {
         if (retrievedBookings.length === 0) return
 
@@ -309,6 +265,8 @@ function MakeBooking() {
                 while (slot <= end) {
                     
                     if(updated[day][slot].status == "schedule"){
+
+                        console.log(updated[day][slot])
 
                         if(retrievedBookings[i].status === "pending"){
 
@@ -335,21 +293,20 @@ function MakeBooking() {
                             }
                             else{
 
-                                updated[day][slot] = {...updated[day][slot],status: "blocked"}
+                                updated[day][slot] = {...updated[day][slot],status: "taken"}
                                 
                             }        
 
                         }
+                       
+                        
 
-                    slot++
                 }
+
+                slot++
             }
         }
         
-
-            console.log("update")
-            console.log(updated)
-
             return updated
         }
         )
@@ -364,6 +321,7 @@ function MakeBooking() {
         setWeek(tempDate.toLocaleDateString("en-GB", { month: "short" }) + " " + tempDate.getDate())
 
         setDate(tempDate)
+        refreshCalander(tempDate)
 
     }
 
@@ -384,6 +342,7 @@ function MakeBooking() {
         )
 
         setDate(tempDate)
+        refreshCalander(tempDate)
 
     }
 
@@ -525,17 +484,11 @@ function MakeBooking() {
 
             }
 
-            const tempDate = new Date()
+            const tempDate = new Date(date)
 
-            if (newSlot[0].dayofweek === 6) {
-
-                tempDate.setDate(date.getDate() - 1)
-
-            } else {
-
-                tempDate.setDate(date.getDate() + (newSlot[0].dayofweek))
-
-            }
+            tempDate.setDate(
+                tempDate.getDate() + newSlot[0].dayofweek
+            )
 
             dayOfShoot = tempDate
 
@@ -635,6 +588,8 @@ function MakeBooking() {
             }
 
         })
+
+        refreshCalander(date)
     }
 
     return (
@@ -1300,6 +1255,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
 
                                     `}></button>
 
@@ -1339,6 +1296,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1378,7 +1337,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
-                                        ${slot.status === "accepted" ? "bg-green-400": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1418,7 +1378,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
-                                        ${slot.status === "accepted" ? "bg-green-400": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1458,7 +1419,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
-                                        ${slot.status === "accepted" ? "bg-green-400": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1498,7 +1460,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
-                                        ${slot.status === "accepted" ? "bg-green-400": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1538,7 +1501,8 @@ function MakeBooking() {
                                         ${slot.status === "schedule" ? "bg-blue-400" : ""}
                                         ${slot.status === "selected" ? "bg-amber-500" : ""}
                                         ${slot.status === "blocked" ? "bg-blue-200 hover:shadow-none ": ""}
-                                        ${slot.status === "accepted" ? "bg-green-400": ""}
+                                        ${slot.status === "accepted" ? "bg-green-300 hover:shadow-none ": ""}
+                                        ${slot.status === "taken" ? "bg-blue-700 hover:shadow-none ": ""}
                                     
                                     `}></button>
 
@@ -1586,27 +1550,6 @@ function MakeBooking() {
                         active:text-black
                     
                     ">Save</button>
-                    <button onClick={revert} className="
-                    
-                        bg-red-600
-                        text-white
-                        rounded-xl
-                        w-[10vh]
-                        h-8.75
-                        flex
-                        items-center
-                        justify-center
-                         hover:bg-red-700
-      
-                        transition
-                        duration-100
-
-                        shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
-                        active:bg-white
-                        active:text-black
-                    
-                    ">Revert</button>
                     <Link to={"/temp"} className="
                     
                         bg-black

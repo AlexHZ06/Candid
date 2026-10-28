@@ -4,6 +4,8 @@ import com.nea.candid.data.dbEnties.BookingSlotsTableEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +39,32 @@ public class BookingSlotsTableRepo {
             );
 
         }, photographerid);
+
+    }
+
+    public List<BookingSlotsTableEntity> getSlotsOfPhotographerWeek(long photographerid, LocalDate date){
+
+        LocalDate endDate = date.plusDays(6);
+
+        String sql = """
+                select *
+                from bookingslotstable
+                where photographerid = ?
+                and dateofshoot Between ? and ?;
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            return new BookingSlotsTableEntity(
+                    rs.getLong("slotid"),
+                    rs.getInt("startslot"),
+                    rs.getInt("endslot"),
+                    rs.getDate("dateofshoot"),
+                    rs.getLong("clientid"),
+                    rs.getLong("photographerid"),
+                    rs.getString("status")
+            );
+        }, photographerid, date, endDate);
 
     }
 

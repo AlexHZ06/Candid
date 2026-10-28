@@ -8,6 +8,7 @@ import org.apache.coyote.Response;
 import org.springframework.web.bind.annotation.*;
 import com.nea.candid.data.dto.ResponseBody;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,13 @@ public class BookingController {
 
         return bookingService.requestBookingSlot(entity, Long.parseLong(request.getAttribute("userId").toString()));
 
+
+    }
+
+    @PostMapping("/client/getweekslots")
+    public ResponseBody getWeekSlots(@RequestParam LocalDate date, @RequestParam long photographerId){
+
+        return bookingService.getWeekSlots(photographerId, date);
 
     }
 

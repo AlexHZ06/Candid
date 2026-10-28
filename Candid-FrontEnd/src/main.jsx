@@ -20,6 +20,7 @@ import CreateProfile from './pages/createProflie'
 import MakeBooking from './pages/makeBooking'
 import EditSchedule from './pages/editSchedule'
 import Temp from './pages/temp'
+import ClientPage from './pages/clientPage'
 
 const router = createBrowserRouter([
 
@@ -39,11 +40,17 @@ const router = createBrowserRouter([
   {path:"/createprofile", element:<CreateProfile/>},
   {path:"/makebooking/:userid", element:<MakeBooking/>},
   {path:"/editschedule", element:<EditSchedule/>},
-  {path:"/temp", element:<Temp/>}
+  {path:"/temp", element:<Temp/>},
+  {path:"/clientPage", element:<ClientPage/>}
   
 
 ])
 
-createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router}/>
-)
+console.log("main.jsx loaded");
+
+const rootElement = document.getElementById('root');
+console.log("Root element:", rootElement);
+
+createRoot(rootElement).render(
+  <RouterProvider router={router} />
+);

@@ -5,6 +5,7 @@ import com.nea.candid.data.dbEnties.SchedulesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.repositories.SchedulesTableRepo;
 import com.nea.candid.services.database.BookingDbService;
+import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -208,7 +209,7 @@ public class BookingService {
         List<SchedulesTableEntity> schedule = bookingDbService.getPhotographerSchedule(photographer);
         if(schedule.isEmpty()){
 
-            throw new IllegalArgumentException("photographer cannot has no schedule");
+            throw new IllegalArgumentException("photographer has no schedule");
 
         }
 
@@ -318,6 +319,21 @@ public class BookingService {
 
         List<BookingSlotsTableEntity> bookingSlots = bookingDbService.getPhotographersSlots(userId);
         return ResponseBody.success(bookingSlots, 955);
+
+    }
+
+    public ResponseBody getWeekSlots(long photographerId, LocalDate startDate){
+
+        try {
+
+            return ResponseBody.success(bookingDbService.getWeekSlots(startDate, photographerId), 955);
+
+        }
+        catch(Exception e){
+
+            return ResponseBody.error("no week slots", 905);
+
+        }
 
     }
 
