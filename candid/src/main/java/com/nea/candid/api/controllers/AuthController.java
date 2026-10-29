@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/auth")
@@ -47,6 +48,13 @@ public class AuthController {
     public ResponseEntity logOutUser(HttpServletRequest request) {
 
         return ResponseEntity.status(HttpStatus.OK).body(authService.logOut(Long.parseLong(request.getAttribute("userId").toString())));
+
+    }
+
+    @PostMapping("/getuserbyids")
+    public ResponseBody getUserByIds(@RequestBody Map<String, List<Long>> body) {
+
+        return authService.getUserByIds(body.get("userIds"));
 
     }
 

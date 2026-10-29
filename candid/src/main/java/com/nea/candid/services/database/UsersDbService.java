@@ -37,4 +37,20 @@ public class UsersDbService {
 
     }
 
+    public List<UsersTableEntity> getUsersById(List<Long> idList){
+
+        List<UsersTableEntity> result = usersTableRepo.getUsersById(idList);
+        if(result.size() == 0 || result == null){
+
+            throw new RuntimeException("no users found");
+
+        }
+        else{
+
+            return result;
+
+        }
+
+    }
+
 }

@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -114,6 +115,48 @@ public class UsersTableRepo {
             );
 
         });
+
+    }
+
+    public List<UsersTableEntity> getUsersById(List<Long> ids){
+
+        if(ids==null || ids.isEmpty()){
+
+            return null;
+
+        }
+
+        String idList = "" + ids.get(0);
+        for(int i = 1; i < ids.size(); i++){
+
+            idList += "," + ids.get(i);
+
+        }
+
+        String sql = """
+                select *
+                from userstable
+                where userid in (
+                """ + idList + """ 
+                )
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            return new UsersTableEntity(
+                    rs.getLong("userid"),
+                    rs.getString("username"),
+                    rs.getString("firstname"),
+                    rs.getString("lastname"),
+                    rs.getString("usertype"),
+                    rs.getString("email"),
+                    rs.getString("hashedpassword"),
+                    rs.getDate("datejoined")
+            );
+
+
+        });
+
 
     }
 

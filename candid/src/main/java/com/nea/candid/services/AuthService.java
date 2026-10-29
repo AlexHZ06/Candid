@@ -7,6 +7,8 @@ import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.services.database.UsersDbService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AuthService {
 
@@ -66,6 +68,20 @@ public class AuthService {
 
         jwtService.removeJwt(userId);
         return ResponseBody.success("logged out", 153);
+
+    }
+
+    public ResponseBody getUserByIds(List<Long> idList){
+
+        try {
+
+            return ResponseBody.success(usersTableService.getUsersById(idList), 955);
+
+        }catch(Exception e){
+
+            return ResponseBody.error("Could not retrieve users", 905);
+
+        }
 
     }
 
