@@ -62,7 +62,7 @@ function PHeader({active}){
                 ${active === "Calander" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Calander</Link>
-            <Link className={`
+            <Link to={"/clientpage"} className={`
             
                 flex-1
                 
@@ -72,7 +72,7 @@ function PHeader({active}){
                 ${active === "Clients" ? "text-black" : "text-neutral-500 hover:text-black"}
             `}
             >Clients</Link>
-            <Link className={`
+            <Link  className={`
             
                 flex-1
                 active:text-neutral-500

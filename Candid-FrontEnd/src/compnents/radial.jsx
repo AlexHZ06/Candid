@@ -1,5 +1,6 @@
 
 function Radial({ active, onClick, text }) {
+    
     const isActive = Array.isArray(active)
         ? active.includes(text)
         : active === text;

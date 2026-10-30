@@ -21,6 +21,7 @@ import MakeBooking from './pages/makeBooking'
 import EditSchedule from './pages/editSchedule'
 import Temp from './pages/temp'
 import ClientPage from './pages/clientPage'
+import Booking from './pages/booking'
 
 const router = createBrowserRouter([
 
@@ -41,7 +42,8 @@ const router = createBrowserRouter([
   {path:"/makebooking/:userid", element:<MakeBooking/>},
   {path:"/editschedule", element:<EditSchedule/>},
   {path:"/temp", element:<Temp/>},
-  {path:"/clientPage", element:<ClientPage/>}
+  {path:"/clientpage", element:<ClientPage/>},
+  {path:"/booking", element:<Booking/>}
   
 
 ])
