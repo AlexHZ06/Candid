@@ -250,7 +250,7 @@ function ClientPage() {
                     rounded-md
                     mt-10
                     justify-self-center
-                    
+                
 
                 ">
                 <div className="
@@ -262,67 +262,146 @@ function ClientPage() {
                         items-center
                         justify-evenly
                         mt-5
+                        
+                        xl:gap-2
+                        
                     
                     ">
                     <div className="
                         
+                        xl:flex
+                        xl:flex-row
+                        xl:flex-1
+                        xl:items-center
                         
+                        
+                        ">
+                        <p className="
+                            
+                            font-light
+                            text-2xl
+                            flex-1
+                            xl:text-1xl
+                            xl:flex
+                            xl:items-center
+                            xl:justify-center
+                                
+                            
+                        ">Total Clients</p>
+                        <p className="
+                            
+                                font-semibold
+                                text-3xl
+                                flex-1
+                                xl:text-4xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
+                            
+                            
+                        ">5</p>
+                    </div>
+                    <div className="
+                        
+                        xl:flex
+                        xl:flex-row
+                        xl:flex-1
+                        
+                        xl:items-center
+                        xl:justify-center
                         
                         ">
                         <p className="
                             
                                 font-light
                                 text-2xl
-                            
-                            ">Total Clients</p>
-                        <p className="
-                            
-                                font-semibold
-                                text-3xl
-                            
-                            ">5</p>
-                    </div>
-                    <div>
-                        <p className="
-                            
-                                font-light
-                                text-2xl
+                                flex-1
+                                xl:text-1xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
+                                
                             
                             ">Pending Requests</p>
                         <p className="
                             
                                 font-semibold
                                 text-3xl
+                                flex-1
+                                xl:text-4xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
                             
                             ">3</p>
                     </div>
-                    <div>
+                    <div className="
+                        
+                        xl:flex
+                        xl:flex-row
+                        xl:flex-1
+                        xl:items-center
+                        
+                        
+                        ">
                         <p className="
                             
-                                font-light
+                                                               font-light
                                 text-2xl
+                                flex-1
+                                xl:text-1xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
+                                
                             
                             ">upcomming sessions</p>
                         <p className="
                             
                                 font-semibold
                                 text-3xl
+                                flex-1
+                                xl:text-4xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
                             
                             ">2</p>
                     </div>
-                    <div>
+                    <div className="
+                        
+                        xl:flex
+                        xl:flex-row
+                        xl:flex-1
+                        xl:items-center
+                        
+                        
+                        
+                        ">
                         <p className="
                             
-                                font-light
+                                                                font-light
                                 text-2xl
+                                flex-1
+                                xl:text-1xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
+                                
+                            
                             
                             ">galleries deleivered</p>
                         <p className="
                             
                                 font-semibold
                                 text-3xl
+                                flex-1
+                                xl:text-4xl
+                                xl:flex
+                                xl:items-center
+                                xl:justify-center
                             
-                            ">5</p>
+                        ">5</p>
                     </div>
                 </div>
                 <div className="
@@ -332,6 +411,13 @@ function ClientPage() {
                     w-9/10
                     mb-5
                     pt-4
+
+                    xl:pt-2
+                    xl:mt-3
+
+                    flex
+                    flex-col
+                    items-center
                     
                 ">
                     <div>
@@ -357,7 +443,7 @@ function ClientPage() {
                                     border-2
                                     border-neutral-300
                                     rounded-4xl
-                                    pl-2
+                                    
                                     w-[90vh]
                                     h-[4vh]
 
@@ -365,6 +451,10 @@ function ClientPage() {
                                     active:border-neutral-500
                                     hover:shadow-[0_0_10px_rgba(0,0,0,0.25)]
                                     focus:ring-0
+
+                                    xl:h-[7vh]
+                                    xl:w-[115vh]
+                                    xl:pl-3
                                     
                                 "/>
                             </div>
@@ -377,9 +467,10 @@ function ClientPage() {
                         flex
                         items-center
                         justify-evenly
-                        w-[90vh]
+                        w-[fit]
                         justify-self-center
                         mt-3
+                        gap-3
                         
                     
                     ">
@@ -398,6 +489,8 @@ function ClientPage() {
                             rounded-xl
                             whitespace-nowrap
                             hover:shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+
+                            xl:p-0
                         ">
                             <option disabled value="">Order By</option>
                             <option value="Newest">Newest</option>
@@ -463,6 +556,7 @@ function ClientPage() {
                             
                                 ml-5
                                 flex-10
+                                xl:flex-100
 
                             ">
                                 <div className="
@@ -501,7 +595,7 @@ function ClientPage() {
 
                             </div>
                             <div className={`
-                                flex-2
+                                flex-20
                                 mr-5
                                 rounded-2xl
                                 w-[8vh]
@@ -509,6 +603,7 @@ function ClientPage() {
                                 flex
                                 items-center
                                 justify-center
+                                
                                 ${booking.status === "accepted" ? "bg-green-400":""}
                                 ${booking.status === "pending" ? "bg-amber-300":""}
                             

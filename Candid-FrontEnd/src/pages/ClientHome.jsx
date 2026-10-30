@@ -40,6 +40,8 @@ function ClientHome(){
                     flex-col
                     items-center
                     rounded-md
+
+                    bg-red
                 
                 ">
                     <div className="
