@@ -22,6 +22,10 @@ import EditSchedule from './pages/editSchedule'
 import Temp from './pages/temp'
 import ClientPage from './pages/clientPage'
 import Booking from './pages/booking'
+import FormEdit from './pages/formEdit'
+import MakeQuestion from './pages/makeQuestion'
+import FormFill from './pages/fillForm'
+import BookingDetails from './pages/bookingDetails'
 
 const router = createBrowserRouter([
 
@@ -43,7 +47,11 @@ const router = createBrowserRouter([
   {path:"/editschedule", element:<EditSchedule/>},
   {path:"/temp", element:<Temp/>},
   {path:"/clientpage", element:<ClientPage/>},
-  {path:"/booking", element:<Booking/>}
+  {path:"/booking/:bookingid", element:<Booking/>},
+  {path:"/formEdit", element:<FormEdit/>},
+  {path:"/makeQuestion", element:<MakeQuestion/>},
+  {path:"/fillform/:photographerid", element:<FormFill/>},
+  {path:"/bookingdetails", element:<BookingDetails/>}
   
 
 ])

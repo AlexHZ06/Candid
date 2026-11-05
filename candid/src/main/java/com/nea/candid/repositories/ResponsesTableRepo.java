@@ -18,13 +18,12 @@ public class ResponsesTableRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ResponsesTableEntity> getAllResponses(long photographerId, long bookingId) {
+    public List<ResponsesTableEntity> getAllResponses(long bookingId) {
 
         String sql = """
                 select *
                 from responsestable
-                where photographerid = ?
-                and bookingid = ?;
+                where bookingid = ?;
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -36,7 +35,7 @@ public class ResponsesTableRepo {
                     rs.getLong("bookingid")
             );
 
-        }, photographerId, bookingId);
+        }, bookingId);
 
     }
 

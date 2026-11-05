@@ -3,11 +3,12 @@ import PHeader from "../compnents/pheader"
 import Radial from "../compnents/radial"
 import { Link } from "react-router-dom"
 import { jwtService } from "../logic/jwt"
-
+import { useNavigate } from "react-router-dom"
 
 
 function ClientPage() {
 
+    const navigate = useNavigate()
     const [active, setActive] = useState("All Clients")
     const jwt = new jwtService()
     const [bookings, setBookings] = useState([])
@@ -228,6 +229,20 @@ function ClientPage() {
         if (active == "Cancelled" && booking.status != "cancelled") return false
         return true
     })
+
+    function toBooking(id, booking){
+
+        navigate(`/booking/${id}`, {
+
+            state:{
+
+                booking
+
+            }
+
+        })
+
+    }
 
     return (
         <div className="
@@ -522,7 +537,7 @@ function ClientPage() {
 
                     {bookings.map(booking => (
 
-                        <Link id={booking.slotid} className={`
+                        <button onClick={()=>{toBooking(booking.slotid, booking)}} id={booking.slotid} className={`
                         
                             w-8/10
                             h-20
@@ -610,7 +625,7 @@ function ClientPage() {
                             `}>
                                 <p>{booking.status}</p>
                             </div>
-                        </Link>
+                        </button>
 
                     ))}
 

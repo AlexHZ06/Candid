@@ -284,8 +284,8 @@ public class BookingService {
 
                 Date date = Date.from(dateOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-                bookingDbService.addSlot(start, end, date, client, photographer, "pending");
-                return ResponseBody.success("Slot added", 556);
+
+                return ResponseBody.success(bookingDbService.addSlot(start, end, date, client, photographer, "pending"), 556);
 
             }
             else {

@@ -85,6 +85,18 @@ public class AuthService {
 
     }
 
+    public ResponseBody getUserById(long id){
+
+        try{
+            return ResponseBody.success(usersTableService.getUserById(id), 955);
+        }catch(Exception e){
+
+            return ResponseBody.error("Could not retrieve user", 905);
+
+        }
+
+    }
+
     //TODO implement signup
     public void SignUp(String username, String password){
 

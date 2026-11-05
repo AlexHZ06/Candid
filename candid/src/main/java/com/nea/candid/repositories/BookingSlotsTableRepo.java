@@ -35,7 +35,11 @@ public class BookingSlotsTableRepo {
                     rs.getDate("dateofshoot"),
                     rs.getLong("clientid"),
                     rs.getLong("photographerid"),
-                    rs.getString("status")
+                    rs.getString("status"),
+                    rs.getString("message"),
+                    rs.getString("address"),
+                    rs.getDouble("latitude"),
+                    rs.getDouble("longitude")
             );
 
         }, photographerid);
@@ -62,20 +66,38 @@ public class BookingSlotsTableRepo {
                     rs.getDate("dateofshoot"),
                     rs.getLong("clientid"),
                     rs.getLong("photographerid"),
-                    rs.getString("status")
+                    rs.getString("status"),
+                    rs.getString("message"),
+                    rs.getString("address"),
+                    rs.getDouble("latitude"),
+                    rs.getDouble("longitude")
             );
+
         }, photographerid, date, endDate);
 
     }
+
+
 
     public int addSlot(int startslot, int endslot, Date dateofshoot, long clinetid, long photographerid, String status) {
 
         String sql = """
                 Insert into bookingslotstable(startslot, endslot, dateofshoot, clientid, photographerid, status)
                 values(?,?,?,?,?,?)
+                returning slotid
                 """;
 
-        return jdbcTemplate.update(sql, startslot, endslot, dateofshoot, clinetid, photographerid, status);
+        Integer id = jdbcTemplate.queryForObject(sql, Integer.class, startslot, endslot, dateofshoot, clinetid, photographerid, status);
+        if(id == null){
+
+            return -1;
+
+        }
+        else{
+
+            return id;
+
+        }
 
     }
 

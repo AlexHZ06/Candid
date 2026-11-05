@@ -8,6 +8,7 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 function MakeBooking() {
 
     const { userid } = useParams()
+    let bookingid = -1;
 
 
     const [scheduleSlots, setScheduleSlots] = useState(() => {
@@ -379,6 +380,20 @@ function MakeBooking() {
         })
     }
 
+    function toForm(){
+
+        navigate(`/fillform/${userid}`, {
+
+            state:{
+
+                slotid:bookingid
+
+            }
+         
+        })
+
+    }
+
     function submit() {
 
         let slotList = []
@@ -561,8 +576,8 @@ function MakeBooking() {
 
                             if (d.success) {
 
-                                setRetrievedBookings(d.data)
-                                console.log("added")
+                                bookingid = d.data
+                                toForm()
 
                             }
                             else {
@@ -582,8 +597,8 @@ function MakeBooking() {
                 }
 
             } else {
-                console.log("added")
-                setRetrievedBookings(data.data)
+                bookingid = data.data
+                toForm()
 
             }
 

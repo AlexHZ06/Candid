@@ -58,4 +58,11 @@ public class AuthController {
 
     }
 
+    @PostMapping("/getuserbyid")
+    public ResponseBody getUserById(@RequestBody Map<String, Long> body) {
+
+        return authService.getUserById(body.get("userId"));
+
+    }
+
 }

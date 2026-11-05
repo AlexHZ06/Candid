@@ -18,49 +18,27 @@ public class QuestionTableRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int[] saveQuestion(List<QuestionsTableEntity> questionsTableEntities){
+    public int saveQuestion(QuestionsTableEntity entity){
 
         String sql = """
-                inser into questionstable(photographerid, question, active)
-                values(?,?,?)
+                insert into questionstable(photographerid, question, active)
+                values(?,?,true)
                 """;
 
-        return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-
-                ps.setLong(1, questionsTableEntities.get(i).getPhotographerid());
-                ps.setString(2, questionsTableEntities.get(i).getQuestion());
-                ps.setBoolean(3, questionsTableEntities.get(i).isActive());
-
-            }
-
-            @Override
-            public int getBatchSize() {
-                return questionsTableEntities.size();
-            }
-        });
+        return jdbcTemplate.update(sql, entity.getPhotographerid(), entity.getQuestion());
 
     }
 
-    public int markInactive(List<Long> questionids) {
+    public int markInactive(long questionId) {
 
-        String ids = "" + questionids.getFirst();
-
-        for (int i = 0; i < questionids.size(); i++) {
-
-            ids = ids + "," + questionids.get(i);
-
-        }
 
         String sql = """
                 update questionstable
                 set active = false
-                where questionid in (""" + ids + """
-                )
+                where questionid = ?
                 """;
 
-        return jdbcTemplate.update(sql);
+        return jdbcTemplate.update(sql, questionId);
 
     }
 

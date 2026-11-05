@@ -50,11 +50,13 @@ public class BookingDbService {
 
     }
 
-    public void addSlot(int startslot, int endslot, Date dayofshoot, long clinetid, long photographerid, String status){
+    public int addSlot(int startslot, int endslot, Date dayofshoot, long clinetid, long photographerid, String status){
 
         int result = bookingSlotsTableRepo.addSlot(startslot,endslot,dayofshoot,clinetid,photographerid,status);
-        if(result == 0)
+        if(result == -1) {
             throw new RuntimeException("insert slot failed");
+        }
+        return result;
 
     }
 

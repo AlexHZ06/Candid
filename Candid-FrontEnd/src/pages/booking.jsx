@@ -1,8 +1,164 @@
 
 import PHeader from "../compnents/pheader"
 import { Link } from "react-router-dom"
+import user from "../resources/user.png"
+import calendar from "../resources/calendar (3).png"
+import pin from "../resources/location.png"
+import clock from "../resources/clock.png"
+import image from "../resources/image.png"
+import quote from "../resources/quote.png"
+import phone from "../resources/phone-svgrepo-com.svg"
+import mail from "../resources/email.png"
+import { useLocation } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { jwtService } from "../logic/jwt"
 
 function Booking(){
+
+    const location = useLocation()
+    const booking = location.state.booking
+    const [userProfile, setUserProfile] = useState("")
+
+    const jwt = new jwtService()
+
+    useEffect(()=>{
+
+        fetch("/api/auth/getuserbyid",{
+
+            method: "POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },            
+            body:JSON.stringify({
+
+                userId:booking.clientid
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if(!data.success){
+
+                if(data.internalCode == 401){
+
+                    let result = await jwt.requestJwt()
+                    if(result){
+
+                        fetch("/api/auth/getuserbyid",{
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },            
+                            body:JSON.stringify({
+
+                                userId:booking.clientid
+
+                            })
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(d.success){
+
+                                console.log(d.data)
+                                setUserProfile(d.data)
+
+                            }
+                            else{
+
+                                console.log("error")
+
+                            }
+
+                        })                       
+
+                    }
+
+                }else{
+
+                    console.log("error")
+
+                }
+
+            }else{
+
+                console.log(data.data)
+                setUserProfile(data.data)
+
+            }
+
+        })
+
+    }, [])
+
+    function calcTime(slotNumb){
+
+        if(slotNumb == 0){
+
+            return "00:00"
+
+        }
+        if(slotNumb == 48){
+
+            return "00:00"
+
+        }
+        if(slotNumb % 2 == 0){
+
+            return slotNumb / 2 + ":00"
+
+        }
+        else{
+
+            return (slotNumb - 1) / 2 + ":30"
+
+        }
+
+    }
+
+    function calcDur(diff){
+
+        let hours = 0
+        let halfHour = null
+
+        if(diff % 2 == 0){
+
+            hours = diff / 2
+            halfHour = false
+
+        }
+        else{
+
+            hours = (diff - 1) / 2
+            halfHour = true
+
+        }
+
+        if(hours == 1){
+
+            return "1 hour"
+
+        }
+        else if(hours == 0 )
+
+        if(halfHour){
+
+            return hours + " and a half hours" 
+
+        }else{
+
+            return hours + " hours"
+
+        }
+
+    }
+
 
     return(
 
@@ -74,7 +230,7 @@ function Booking(){
                                 ml-7
                                 w-[10vh]
 
-                            " src="src\resources\user.png" /> 
+                            " src={user} /> 
 
                             <div className="
                             
@@ -86,7 +242,7 @@ function Booking(){
                                 
                                     font-bold
                                 
-                                ">Name placeholder</p>
+                                ">{userProfile.firstname} {userProfile.lastname}</p>
 
                                 <p className="
                                 
@@ -151,8 +307,8 @@ function Booking(){
                                         w-[2vh]
                                         h-[2vh]
 
-                                    " src="src\resources\calendar (3).png" />                               
-                                    <p>11-06-2026</p>
+                                    " src={calendar} />                               
+                                    <p>{booking.dayofshoot?.split("-").reverse().join("-")}</p>
                                 </div>
 
                                 <div className="
@@ -167,7 +323,7 @@ function Booking(){
                                         w-[2vh]
                                         h-[2vh]
 
-                                    " src="src\resources\location.png" />
+                                    " src={pin} />
 
                                     <p>Greenwhich 1.1mil</p>
                                 </div>
@@ -192,9 +348,9 @@ function Booking(){
                                         w-[2vh]
                                         h-[2vh]
 
-                                    " src="src\resources\clock.png" />
+                                    " src={clock} />
 
-                                    <p>10:30 11:30 (1 hour)</p>
+                                    <p>{calcTime(booking.startslot)} - {calcTime(booking.endslot)} ({calcDur(booking.endslot - booking.startslot)})</p>
                                 </div>
 
                                 <div className="
@@ -209,7 +365,7 @@ function Booking(){
                                         w-[2vh]
                                         h-[2vh]
 
-                                    " src="src\resources\image.png" />
+                                    " src={image} />
 
                                     <p>wedding</p>
                                 </div>
@@ -236,7 +392,7 @@ function Booking(){
                                 xl:w-[8vh]
                                 xl:h-[8vh]
 
-                            " src="src\resources\quote.png" />
+                            " src={quote} />
 
                             <p className="
                             
@@ -250,7 +406,7 @@ function Booking(){
                                 text-[2vh]
                                 text-neutral-800
 
-                                xl:text-[3vh]
+                                xl:text-[2vh]
                             
                             ">Hi mark, was wondering if you would be free to do some wedding photogrpahy for my upcomming wedding</p>
                         </div>
@@ -328,9 +484,9 @@ function Booking(){
                                     w-[3vh]
                                     h-[3vh]
                                 
-                                " src="src\resources\user (1).png" />
+                                " src={user} />
 
-                                <p>Alexander Hernandez</p>
+                                <p>{userProfile.firstname} {userProfile.lastname}</p>
                             </div>
 
                             <div className="
@@ -345,7 +501,7 @@ function Booking(){
                                     w-[3vh]
                                     h-[3vh]
                                 
-                                " src="src\resources\phone-svgrepo-com.svg" />
+                                " src={phone} />
 
                                 <p>+44 74165691</p>
                             </div>
@@ -362,9 +518,9 @@ function Booking(){
                                     w-[3vh]
                                     h-[3vh]
                                 
-                                " src="src\resources\email.png" />
+                                " src={mail} />
 
-                                <p>Alexander@email.com</p>
+                                <p>{userProfile.email}</p>
                             </div>
                         </div>
                     </div>
