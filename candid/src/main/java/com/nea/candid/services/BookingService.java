@@ -1,6 +1,7 @@
 package com.nea.candid.services;
 
 import com.nea.candid.data.dbEnties.BookingSlotsTableEntity;
+import com.nea.candid.data.dbEnties.ResponsesTableEntity;
 import com.nea.candid.data.dbEnties.SchedulesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
 import com.nea.candid.repositories.SchedulesTableRepo;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
 
 @Service
 public class BookingService {
@@ -236,8 +238,8 @@ public class BookingService {
 
                 Date date = Date.from(dateOfShoot.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-                bookingDbService.addSlot(start, end, date, client, photographer, "pending");
-                return ResponseBody.success("Slot added", 556);
+                long result = bookingDbService.addSlot(start, end, date, client, photographer, "pending");
+                return ResponseBody.success(result, 556);
 
             }
 
@@ -332,6 +334,49 @@ public class BookingService {
         catch(Exception e){
 
             return ResponseBody.error("no week slots", 905);
+
+        }
+
+    }
+
+    public ResponseBody addFinalDetails(BookingSlotsTableEntity bookingSlotsTableEntity){
+
+        try{
+
+            bookingDbService.addDetails(bookingSlotsTableEntity);
+            return ResponseBody.success("added details", 952);
+
+        }catch(Exception e){
+
+            return ResponseBody.error("no details updated", 903);
+
+        }
+
+    }
+
+    public ResponseBody acceptBooking(long bookingId){
+
+        try{
+
+            bookingDbService.setAccepted(bookingId);
+            return ResponseBody.success("added details", 955);
+
+        }catch(Exception e){
+
+            return ResponseBody.error("no details updated", 903);
+
+        }
+
+    }
+
+    public ResponseBody rejectBooking(long bookingId){
+
+        try{
+            bookingDbService.setRejected(bookingId);
+            return ResponseBody.success("added details", 955);
+        }catch(Exception e){
+
+            return ResponseBody.error("no details updated", 903);
 
         }
 

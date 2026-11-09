@@ -14,6 +14,7 @@ function FormFill(){
     const [errorText, setErrorText] = useState("")
     
     const bookingId = location.state?.slotid
+    console.log(bookingId)
 
     const responses = {}
 
@@ -138,6 +139,8 @@ function FormFill(){
 
         for(let key in responses){
 
+            console.log(response[key], key, bookingId)
+
             response.push({
 
                 responseid:-1,
@@ -188,7 +191,7 @@ function FormFill(){
                             if(d.success){
 
                                 console.log("added")
-                                navigate("/temp")
+                                toDetails()
 
                             }else{
 
@@ -210,9 +213,19 @@ function FormFill(){
             else{
 
                 console.log("added")
-                navigate("/temp")
+                toDetails()
 
             }
+
+        })
+
+    }
+
+    function toDetails(){
+
+        navigate("/bookingdetails", {
+
+            state:bookingId
 
         })
 

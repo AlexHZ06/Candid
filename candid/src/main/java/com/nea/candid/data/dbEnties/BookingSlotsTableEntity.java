@@ -23,9 +23,10 @@ public class BookingSlotsTableEntity {
     private String address;
     private double latitude;
     private double longitude;
+    private String category;
 
 
-    public BookingSlotsTableEntity(long slotid, int startslot, int endslot, Date dateofshoot, long clientid, long photographerid, String status, String message, String address, double latitude, double longitude) {
+    public BookingSlotsTableEntity(long slotid, int startslot, int endslot, Date dateofshoot, long clientid, long photographerid, String status, String message, String address, double latitude, double longitude, String category) {
         this.slotid = slotid;
         this.startslot = startslot;
         this.endslot = endslot;
@@ -37,6 +38,31 @@ public class BookingSlotsTableEntity {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.category = category;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public Date getDateofshoot() {
+        return dateofshoot;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 
     public long getSlotid() {

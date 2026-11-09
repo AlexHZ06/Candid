@@ -39,10 +39,23 @@ public class BookingSlotsTableRepo {
                     rs.getString("message"),
                     rs.getString("address"),
                     rs.getDouble("latitude"),
-                    rs.getDouble("longitude")
+                    rs.getDouble("longitude"),
+                    rs.getString("category")
             );
 
         }, photographerid);
+
+    }
+
+    public int setStatus (String status, long bookingId){
+
+        String sql = """
+                update bookingslotstable
+                set status = ?
+                where slotid = ?;
+                """;
+
+        return jdbcTemplate.update(sql, status, bookingId);
 
     }
 
@@ -70,7 +83,8 @@ public class BookingSlotsTableRepo {
                     rs.getString("message"),
                     rs.getString("address"),
                     rs.getDouble("latitude"),
-                    rs.getDouble("longitude")
+                    rs.getDouble("longitude"),
+                    rs.getString("category")
             );
 
         }, photographerid, date, endDate);
@@ -98,6 +112,22 @@ public class BookingSlotsTableRepo {
             return id;
 
         }
+
+    }
+
+    public int addDetails(BookingSlotsTableEntity entity){
+
+        String sql = """
+                update bookingslotstable
+                set message = ?,
+                    address = ?,
+                    latitude = ?,
+                    longitude = ?,
+                    category = ?
+                where slotid = ?
+            """;
+
+        return jdbcTemplate.update(sql, entity.getMessage(), entity.getAddress(), entity.getLatitude(), entity.getLongitude(),entity.getCategory(), entity.getSlotid());
 
     }
 

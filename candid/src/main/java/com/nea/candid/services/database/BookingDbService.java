@@ -1,10 +1,13 @@
 package com.nea.candid.services.database;
 
 import com.nea.candid.data.dbEnties.BookingSlotsTableEntity;
+import com.nea.candid.data.dbEnties.ResponsesTableEntity;
 import com.nea.candid.data.dbEnties.SchedulesTableEntity;
 import com.nea.candid.repositories.BookingSlotsTableRepo;
+import com.nea.candid.repositories.ResponsesTableRepo;
 import com.nea.candid.repositories.SchedulesTableRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -15,10 +18,12 @@ public class BookingDbService {
 
     private final BookingSlotsTableRepo bookingSlotsTableRepo;
     private final SchedulesTableRepo schedulesTableRepo;
+    private final ResponsesTableRepo responsesTableRepo;
 
-    public BookingDbService(BookingSlotsTableRepo bookingSlotsTableRepo, SchedulesTableRepo schedulesTableRepo) {
+    public BookingDbService(BookingSlotsTableRepo bookingSlotsTableRepo, SchedulesTableRepo schedulesTableRepo, ResponsesTableRepo responsesTableRepo) {
         this.bookingSlotsTableRepo = bookingSlotsTableRepo;
         this.schedulesTableRepo = schedulesTableRepo;
+        this.responsesTableRepo = responsesTableRepo;
     }
 
     public List<SchedulesTableEntity> getScheduleByDay(int day, long photographerId) {
@@ -87,6 +92,61 @@ public class BookingDbService {
     public List<BookingSlotsTableEntity> getWeekSlots(LocalDate startDate, long photographerId){
 
         return bookingSlotsTableRepo.getSlotsOfPhotographerWeek(photographerId,startDate);
+
+    }
+
+    public void addDetails(BookingSlotsTableEntity bookingSlotsTableEntity){
+
+        try{
+
+            bookingSlotsTableRepo.addDetails(bookingSlotsTableEntity);
+
+        }catch(Exception e){
+
+            e.printStackTrace();
+            throw new RuntimeException("insert booking slot failed");
+
+        }
+
+    }
+
+    public List<ResponsesTableEntity> getResponses(long bookingId){
+
+        List<ResponsesTableEntity> response = responsesTableRepo.getAllResponses(bookingId);
+        if(response == null || response.isEmpty()) {
+
+            throw new RuntimeException("get responses failed");
+
+        }
+        else{
+
+            return response;
+
+        }
+
+    }
+
+    public void setAccepted(long bookingId){
+
+        try {
+            bookingSlotsTableRepo.setStatus("accepted",bookingId);
+        }catch(Exception e){
+
+            throw new RuntimeException("set accepted failed");
+
+        }
+
+    }
+
+    public void setRejected(long bookingId){
+
+        try {
+            bookingSlotsTableRepo.setStatus("rejected",bookingId);
+        }catch(Exception e){
+
+            throw new RuntimeException("set accepted failed");
+
+        }
 
     }
 

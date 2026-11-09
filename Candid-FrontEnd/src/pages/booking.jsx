@@ -10,14 +10,38 @@ import quote from "../resources/quote.png"
 import phone from "../resources/phone-svgrepo-com.svg"
 import mail from "../resources/email.png"
 import { useLocation } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { jwtService } from "../logic/jwt"
+import { useNavigate } from "react-router-dom"
 
 function Booking(){
 
     const location = useLocation()
     const booking = location.state.booking
     const [userProfile, setUserProfile] = useState("")
+    const [queResDict, setQueResDict] = useState({})
+    const [responses, setResponses] = useState([])
+    const [questions, setQuestions] = useState([])
+    const navigate = useNavigate()
+
+    console.log(location.state)
+
+    const address = () => {
+
+        let unfomat = booking.address;
+        let list = unfomat.split(",");
+        let newAdress = "";
+
+        newAdress = list[0];
+
+        for (let i = 1; i < list.length; i++) {
+            newAdress = newAdress + " " + list[i];
+        }
+
+        console.log("ad")
+        console.log(newAdress);
+        return newAdress;
+    }
 
     const jwt = new jwtService()
 
@@ -95,7 +119,361 @@ function Booking(){
 
         })
 
+        getResponses()
+        getQuestions()
+        
+
     }, [])
+
+    useEffect(()=>{
+
+        makeQueResPair()
+
+    }, [responses, questions])
+
+    function getQuestion(id){
+
+        for(let i = 0; i < questions.length; i++){
+
+            if(questions[i].questionid === id){
+
+                return questions[i].question
+
+            }
+
+        }
+
+    }
+
+    function reject(){
+
+
+        fetch("/api/booking/photogprapher/rejectbooking", {
+
+            method: "POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },
+            body:JSON.stringify({
+
+                bookingId:booking.slotid
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if(!data.success){
+
+                if(data.internalCode == 401){
+
+                    let result = await jwt.requestJwt()
+                    if(result){
+
+                       fetch("/booking//photogprapher/rejectbooking", {
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },
+                            body:JSON.stringify({
+
+                                bookingId:booking.slotid
+
+                            })
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(d.success){
+
+                                console.log(d.data)
+                                navigate("/clientpage")
+
+                            }
+                            else{
+
+                                console.log("error")
+
+                            }
+
+                        })
+
+                    }
+
+                }else{
+
+                    console.log("error")
+
+                }
+
+            }else{
+
+                console.log(data.data)
+                navigate("/clientpage")
+
+            }
+
+        })
+
+    }
+
+    function accept(){
+
+
+        fetch("/api/booking/photogprapher/acceptbooking", {
+
+            method: "POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },
+            body:JSON.stringify({
+
+                bookingId:booking.slotid
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if(!data.success){
+
+                if(data.internalCode == 401){
+
+                    let result = await jwt.requestJwt()
+                    if(result){
+
+                       fetch("/booking//photogprapher/acceptbooking", {
+
+                            method: "POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },
+                            body:JSON.stringify({
+
+                                bookingId:booking.slotid
+
+                            })
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(d.success){
+
+                                console.log(d.data)
+                                navigate("/clientpage")
+
+                            }
+                            else{
+
+                                console.log("error")
+
+                            }
+
+                        })
+
+                    }
+
+                }else{
+
+                    console.log("error")
+
+                }
+
+            }else{
+
+                console.log(data.data)
+                navigate("/clientpage")
+
+            }
+
+        })
+
+    }
+
+    function getResponses(){
+
+        fetch("/api/form/getresponses", {
+
+            method:"POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },     
+            body:JSON.stringify({
+
+                bookingId:booking.slotid
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if(!data.success){
+
+                if(data.internalCode == 401){
+
+                    let result = await jwt.requestJwt()
+                    if(result){
+
+                        fetch("/api/form/getresponses", {
+
+                            method:"POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },     
+                            body:JSON.stringify({
+
+                                bookingId:booking.slotid
+
+                            })
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(d.success){
+
+                                console.log(d.data)
+                                setResponses(d.data)
+
+                            }else{
+
+                                console.log("error")
+
+                            }
+
+                        })
+
+                    }
+
+                }else{
+
+                    console.log("error")
+
+                }
+
+            }else{
+
+                console.log(data.data)
+                setResponses(data.data)
+
+            }
+
+        })
+
+    }
+
+    function getQuestions(){
+
+        fetch("/api/form/getquestions",{
+
+            method:"POST",
+            headers: {
+
+                "Content-Type": "application/json",
+                auth: localStorage.getItem("jwt")
+
+            },
+            body:JSON.stringify({
+
+                photographerId:booking.photographerid
+
+            })
+
+        }).then(response => response.json()).then(async data => {
+
+            if(!data.success){
+
+                if(data.internalCode === 401){
+
+                    let result = await jwt.requestJwt()
+
+                    if(result){
+
+                        fetch("/api/form/getquestions",{
+
+                            method:"POST",
+                            headers: {
+
+                                "Content-Type": "application/json",
+                                auth: localStorage.getItem("jwt")
+
+                            },
+                            body:JSON.stringify({
+
+                                photographerId:booking.photographerid
+
+                            })
+
+                        }).then(res => res.json()).then(d => {
+
+                            if(d.success){
+
+                                console.log(d.data)
+                                setQuestions(d.data)
+
+                            }else{
+
+                                console.log("error")
+
+                            }
+
+                        })
+                    }
+
+                }
+                else{
+
+                    console.log("error")
+
+                }
+
+            }else{
+
+                console.log(data.data)
+                setQuestions(data.data)
+
+            }
+
+        })
+
+    }
+
+    function makeQueResPair(){
+
+        let newQueResDict = {}
+
+        for(let i = 0; i < responses.length; i++){
+
+            for(let j = 0; j < questions.length; j++){
+
+                if(questions[j].questionid === responses[i].questionid){
+
+                    newQueResDict[questions[j].questionid] = responses[i].response
+
+                }
+
+            }
+
+        }
+
+        setQueResDict(newQueResDict)
+
+        console.log("hi")
+        console.log(newQueResDict)
+
+    }
 
     function calcTime(slotNumb){
 
@@ -163,19 +541,19 @@ function Booking(){
     return(
 
         <div className="
-        
+
             w-screen
             h-screen
             overflow-hidden
             flex
             items-center
             flex-col
-        
+
         ">
             <PHeader active={"Clients"}/>
 
             <div className="
-            
+
                 mt-5
                 flex-1
                 min-h-0
@@ -190,10 +568,10 @@ function Booking(){
                 scrollbar-width:none
 
                 xl:mt-0
-            
+
             ">
                 <div className="
-                
+
                     flex
                     border
                     border-neutral-300
@@ -208,23 +586,23 @@ function Booking(){
                     shrink-0
 
                     xl:h-85
-                
+
                 ">
                     <div className="
-                    
+
                         flex
                         w-full
                         justify-between
                         mt-5
-                    
+
                     ">
                         <div className="
-                        
+
                             flex
-                        
+
                         ">
                             <img className="
-                            
+
                                 bg-blue-300
                                 rounded-full
                                 ml-7
@@ -233,28 +611,23 @@ function Booking(){
                             " src={user} /> 
 
                             <div className="
-                            
+
                                 ml-5
                                 mt-2
-                            
+
                             ">
                                 <p className="
-                                
+
                                     font-bold
-                                
+
                                 ">{userProfile.firstname} {userProfile.lastname}</p>
 
-                                <p className="
-                                
-                                    text-neutral-600
-                                
-                                ">user tag</p>
                             </div>
-                            
+
                         </div>
 
                         <p className="
-                        
+
                             bg-amber-300
                             h-7
                             w-[10vh]
@@ -266,44 +639,44 @@ function Booking(){
                             mr-7
 
                             xl:w-[15vh]
-                        
+
                         ">pending</p>
                     </div>
 
                     <div className="
-                    
+
                         w-full
                         h-full
                         flex
                         flex-col
                         p-5
-                    
+
                     ">
                         <div className="
-                        
+
                             w-8/10
                             flex-1
                             flex
                             gap-7
                             p-2
-                        
+
                         ">
                             <div className="
-                            
+
                                 flex
                                 flex-col
                                 gap-4
-                            
+
                             ">
                                 <div className="
-                                
+
                                     flex
                                     items-center
                                     gap-2
-                                
+
                                 ">
                                     <img className="
-                                    
+
                                         w-[2vh]
                                         h-[2vh]
 
@@ -312,39 +685,39 @@ function Booking(){
                                 </div>
 
                                 <div className="
-                                
+
                                     flex
                                     items-center
                                     gap-2
-                                
+
                                 ">
                                     <img className="
-                                    
+
                                         w-[2vh]
                                         h-[2vh]
 
                                     " src={pin} />
 
-                                    <p>Greenwhich 1.1mil</p>
+                                    <p>{address()}</p>
                                 </div>
                             </div>
 
                             <div className="
-                            
+
                                 flex
                                 flex-col
                                 gap-4
-                            
+
                             ">
                                 <div className="
-                                
+
                                     flex
                                     items-center
                                     gap-2
-                                
+
                                 ">
                                     <img className="
-                                    
+
                                         w-[2vh]
                                         h-[2vh]
 
@@ -354,26 +727,26 @@ function Booking(){
                                 </div>
 
                                 <div className="
-                                
+
                                     flex
                                     items-center
                                     gap-2
-                                
+
                                 ">
                                     <img className="
-                                    
+
                                         w-[2vh]
                                         h-[2vh]
 
                                     " src={image} />
 
-                                    <p>wedding</p>
+                                    <p>{booking.category}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="
-                        
+
                             rounded-2xl
                             w-full
                             flex-1
@@ -383,19 +756,19 @@ function Booking(){
 
                         ">
                             <img className="
-                            
+
                                 w-[3vh]
                                 h-[3vh]
                                 object-cover
                                 opacity-50
-                                
+
                                 xl:w-[8vh]
                                 xl:h-[8vh]
 
                             " src={quote} />
 
                             <p className="
-                            
+
                                 w-full
                                 pr-20
                                 ml-10
@@ -407,14 +780,14 @@ function Booking(){
                                 text-neutral-800
 
                                 xl:text-[2vh]
-                            
-                            ">Hi mark, was wondering if you would be free to do some wedding photogrpahy for my upcomming wedding</p>
+
+                            ">{booking.message}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="
-                
+
                     flex
                     border
                     border-neutral-300
@@ -427,97 +800,97 @@ function Booking(){
                     mt-5
                     justify-self-center
                     shrink-0
-                
+
                 ">
                     <div className="
-                    
+
                         flex
                         w-full
                         justify-between
-                    
+
                     ">
                         <p className="
-                        
+
                             font-semibold
                             pl-5
                             pt-3
                             text-[2vh]
-                        
+
                         ">Clients Details</p>
 
                         <Link className="
-                        
+
                             pr-5
                             pt-3
                             text-neutral-600
                             hover:text-black
                             active:text-neutral-600
 
-                        
+
                         ">See profile</Link>
                     </div>
 
                     <div className="
-                    
+
                         flex
                         w-full
                         justify-start
                         p-5
-                    
+
                     ">
                         <div className="
-                        
+
                             flex
                             flex-col
                             gap-4
-                        
+
                         ">
                             <div className="
-                            
+
                                 flex
                                 items-center
                                 gap-2
-                            
+
                             ">
                                 <img className="
-                                
+
                                     w-[3vh]
                                     h-[3vh]
-                                
+
                                 " src={user} />
 
                                 <p>{userProfile.firstname} {userProfile.lastname}</p>
                             </div>
 
                             <div className="
-                            
+
                                 flex
                                 items-center
                                 gap-2
-                            
+
                             ">
                                 <img className="
-                                
+
                                     w-[3vh]
                                     h-[3vh]
-                                
+
                                 " src={phone} />
 
                                 <p>+44 74165691</p>
                             </div>
 
                             <div className="
-                            
+
                                 flex
                                 items-center
                                 gap-2
-                            
+
                             ">
                                 <img className="
-                                
+
                                     w-[3vh]
                                     h-[3vh]
-                                
+
                                 " src={mail} />
 
                                 <p>{userProfile.email}</p>
@@ -527,7 +900,7 @@ function Booking(){
                 </div>
 
                 <div className="
-                
+
                     flex
                     border
                     border-neutral-300
@@ -540,10 +913,10 @@ function Booking(){
                     mt-5
                     justify-self-center
                     shrink-0
-                
+
                 ">
                     <p className="
-                    
+
                         w-full
                         font-semibold   
                         pl-5
@@ -551,11 +924,57 @@ function Booking(){
                         text-[2vh]
 
                         xl:text-[3vh]
-                            
+
                     ">Booking Form</p>
+                    <div className="
+                    
+                        
+                        w-full
+                        p-5
+                        flex
+                        flex-col
+                        gap-5
+                        overflow-y-scroll
+                        [&::-webkit-scrollbar]:hidden
+                        [-ms-overflow-style:none]
+                        scrollbar-width:none
+                    
+                    ">
+
+                        {questions.map(question => (
+
+                            <div className="
+                            
+                                border
+                                border-neutral-500
+                                rounded-xl  
+                                p-5
+                                
+
+                            ">
+                                <p className="
+                                
+                                    text-[2vh]
+                                    font-semibold
+                                    text-neutral-800
+                                    border-b
+                                    border-neutral-400
+                                
+                                ">{question.question}</p>
+                                <p className="
+                                
+                                    
+                                    mt-3
+                                
+                                ">{queResDict[question.questionid]}</p>
+                            </div>
+
+                        ))}
+                    </div>
+                    
                 </div>
                 <div className="
-                
+
                     flex
                     border
                     border-neutral-300
@@ -565,17 +984,17 @@ function Booking(){
                     shadow-[0_0px_10px_rgba(0,0,0,0.25)]
                     flex-row
                     justify-evenly
-                    
+
                     items-center
                     rounded-md
                     mt-5
                     justify-self-center
                     shrink-0
-                
+
                 ">
 
-                    <button className="
-                        
+                    <button onClick={accept} className="
+
                         bg-green-600
                         text-white
                         rounded-xl
@@ -585,7 +1004,7 @@ function Booking(){
                         items-center
                         justify-center
                          hover:bg-green-900
-      
+
                         transition
                         duration-100
 
@@ -596,14 +1015,14 @@ function Booking(){
 
                         xl:h-[7vh]
                         xl:w-[30vh]
-                    
-                        
-                    
+
+
+
                     ">
                         Accept
                     </button>
-                    <button className="
-                        
+                    <button onClick={reject} className="
+
                         bg-red-600
                         text-white
                         rounded-xl
@@ -613,7 +1032,7 @@ function Booking(){
                         items-center
                         justify-center
                         hover:bg-red-800
-      
+
                         transition
                         duration-100
 
@@ -624,13 +1043,13 @@ function Booking(){
 
                         xl:h-[7vh]
                         xl:w-[30vh]
-                    
-                        
-                    
+
+
+
                     ">
                         Reject
                     </button>
-                
+
                 </div>
             </div>
         </div>

@@ -83,4 +83,25 @@ public class BookingController {
 
     }
 
+    @PostMapping("/client/adddetails")
+    public ResponseBody addDetails(@RequestBody BookingSlotsTableEntity entity){
+
+        return bookingService.addFinalDetails(entity);
+
+    }
+
+    @PostMapping("/photogprapher/acceptbooking")
+    public ResponseBody acceptBooking(@RequestBody Map<String, Long> body){
+
+        return  bookingService.acceptBooking(body.get("bookingId"));
+
+    }
+
+    @PostMapping("/photogprapher/rejectbooking")
+    public ResponseBody rejectBooking(@RequestBody Map<String, Long> body){
+
+        return bookingService.rejectBooking(body.get("bookingId"));
+
+    }
+
 }

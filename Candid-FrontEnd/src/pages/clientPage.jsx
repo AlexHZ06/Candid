@@ -361,7 +361,7 @@ function ClientPage() {
                         ">
                         <p className="
                             
-                                                               font-light
+                                font-light
                                 text-2xl
                                 flex-1
                                 xl:text-1xl
@@ -395,7 +395,7 @@ function ClientPage() {
                         ">
                         <p className="
                             
-                                                                font-light
+                                font-light
                                 text-2xl
                                 flex-1
                                 xl:text-1xl
@@ -491,6 +491,7 @@ function ClientPage() {
                     ">
                         <Radial onClick={()=>{radialClick("All Clients")}} active={active} text="All Clients"/>
                         <Radial onClick={()=>{radialClick("Pending")}} text="Pending" active={active}/>
+                        <Radial onClick={()=>{radialClick("Rejected")}} text="Rejected" active={active}/>
                         <Radial onClick={()=>{radialClick("Accepted")}} text="Accepted" active={active}/>
                         <Radial onClick={()=>{radialClick("Completed")}} text="Completed" active={active}/>
                         <Radial onClick={()=>{radialClick("Cancelled")}} text="Cancelled" active={active}/>
@@ -554,6 +555,7 @@ function ClientPage() {
                             ${active == "Accepted" && booking.status != "accepted" ? "hidden": ""}
                             ${active == "Completed" && booking.status != "completed" ? "hidden": ""}
                             ${active == "Cancelled" && booking.status != "cancelled" ? "hidden": ""}
+                            ${active == "Rejected" && booking.status != "rejected" ? "hidden": ""}
                             ${searchText.length > 0 && !dict[booking.clientid].toLowerCase().includes(searchText.toLowerCase()) ? "hidden" : ""}
                         
                         `}>
@@ -600,7 +602,7 @@ function ClientPage() {
                                     ">{calcTime(booking.startslot)} - {calcTime(booking.endslot)}</p>
                                     
                                 </div>
-                                <p>tag line</p>
+                                
                             </div>
                             <div className="
                             
@@ -621,6 +623,7 @@ function ClientPage() {
                                 
                                 ${booking.status === "accepted" ? "bg-green-400":""}
                                 ${booking.status === "pending" ? "bg-amber-300":""}
+                                ${booking.status === "rejected" ? "bg-red-400":""}
                             
                             `}>
                                 <p>{booking.status}</p>
