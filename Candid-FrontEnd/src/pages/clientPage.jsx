@@ -227,6 +227,7 @@ function ClientPage() {
         if (active == "Accepted" && booking.status != "accepted") return false
         if (active == "Completed" && booking.status != "completed") return false
         if (active == "Cancelled" && booking.status != "cancelled") return false
+        if (active == "Rejected" && booking.status != "cancelled") return false
         return true
     })
 

@@ -153,9 +153,6 @@ public class AlbumsTableRepo {
                     rs.getDate("dateposted"),
                     rs.getString("photourl"),
                     rs.getString("thumbnailurl"),
-                    rs.getFloat("filesize"),
-                    rs.getFloat("width"),
-                    rs.getFloat("height"),
                     list
             );
 

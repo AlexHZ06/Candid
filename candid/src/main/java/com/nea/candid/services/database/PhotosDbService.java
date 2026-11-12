@@ -32,7 +32,7 @@ public class PhotosDbService {
 
     public Long addToPhotosTable(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float fileSize, float width, float height, float[] globalVector) {
 
-        return photosTableRepo.addPhoto(userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, fileSize, width, height, globalVector);
+        return photosTableRepo.addPhoto(userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, globalVector);
 
     }
 
@@ -165,6 +165,12 @@ public class PhotosDbService {
     public List<PhotosTableEntity> getAllPhotosFromAlbum(long albumId){
 
         return albumsTableRepo.getAllImagesFromAlbum(albumId);
+
+    }
+
+    public List<PhotosTableEntity> getPhotosByWords(List<String> words, List<Long> excludeIds, String category, int imagesNeeded, float minPrice, float maxPrice, List<Long> validPhotographers){
+
+        return photosTableRepo.getPhotosByWords(words, excludeIds, category, imagesNeeded, minPrice, maxPrice, validPhotographers);
 
     }
 

@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom"
 
 function AlbumFolder({title, photos, id, thumbnail}){
@@ -20,13 +21,16 @@ function AlbumFolder({title, photos, id, thumbnail}){
 
             active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
             relative
+            overflow-hidden
 
         ">
 
             <img src={thumbnail} className="
             
                absolute
-               w-[200px]
+               w-full
+               h-full
+               object-cover
                rounded-xl
                top-0
                left-0

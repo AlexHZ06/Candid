@@ -2,10 +2,7 @@ package com.nea.candid.api.controllers;
 
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dbEnties.UsersTableEntity;
-import com.nea.candid.services.EmbeddedVectorService;
-import com.nea.candid.services.GeoCodingService;
-import com.nea.candid.services.ImageDecoderService;
-import com.nea.candid.services.RecommendationService;
+import com.nea.candid.services.*;
 import com.nea.candid.services.database.PhotosDbService;
 import com.nea.candid.services.database.UsersDbService;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +21,16 @@ public class testContorller {
     private final EmbeddedVectorService embeddedVectorService;
     private final RecommendationService  recommendationService;
     private final GeoCodingService geoCodingService;
+    private final KeyWordService keyWordService;
     private final UsersDbService usersDbService;
 
-    public testContorller(ImageDecoderService imageDecoderService, PhotosDbService photosTableService, EmbeddedVectorService embeddedVectorService, RecommendationService recommendationService, GeoCodingService geoCodingService, UsersDbService usersDbService) {
+    public testContorller(ImageDecoderService imageDecoderService, PhotosDbService photosTableService, EmbeddedVectorService embeddedVectorService, RecommendationService recommendationService, GeoCodingService geoCodingService, KeyWordService keyWordService, UsersDbService usersDbService) {
         this.imageDecoderService = imageDecoderService;
         this.photosTableService = photosTableService;
         this.embeddedVectorService = embeddedVectorService;
         this.recommendationService = recommendationService;
         this.geoCodingService = geoCodingService;
+        this.keyWordService = keyWordService;
         this.usersDbService = usersDbService;
     }
 
@@ -76,7 +75,12 @@ public class testContorller {
 
     }
 
+    @PostMapping("/public/getKeyWords")
+    public ResponseBody getKeyWords(@RequestBody Map<String,String> body){
 
+        return ResponseBody.success(keyWordService.extractNouns(body.get("text")), 101);
+
+    }
 
     @PostMapping("/public/getcoord")
     public double[] getAddress(@RequestBody Map<String,String> body) throws Exception {

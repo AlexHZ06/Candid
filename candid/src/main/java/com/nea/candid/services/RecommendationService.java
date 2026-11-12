@@ -2,6 +2,7 @@ package com.nea.candid.services;
 
 import com.nea.candid.data.dataObjects.FeedImage;
 import com.nea.candid.data.dataObjects.ImageScore;
+import com.nea.candid.data.dataObjects.PhotoRecoObject;
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dbEnties.ProfilesTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
@@ -514,6 +515,28 @@ public class RecommendationService {
         }
 
         return finalFeed;
+
+    }
+
+    public List<PhotoRecoObject> makePhotoRecoObjects(List<PhotosTableEntity> photos, float[][] dislike, float[][] like){
+
+        List<PhotoRecoObject> photoRecos = new ArrayList<>();
+
+        for(int i = 0; i < photos.size(); i++){
+
+            float likeScore = computeRecommendationScore(photos.get(i).getPhotoid(), like);
+            float dislikeScore = computeRecommendationScore(photos.get(i).getPhotoid(), dislike);
+
+            if(likeScore > dislikeScore){
+
+                photoRecos.add(new PhotoRecoObject(photos.get(i), likeScore - dislikeScore));
+
+            }
+
+        }
+
+        photoRecos.sort(Comparator.comparingDouble(PhotoRecoObject::getScore).reversed());
+        return photoRecos;
 
     }
 

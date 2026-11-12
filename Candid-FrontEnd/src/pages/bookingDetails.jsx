@@ -13,7 +13,6 @@ function BookingDetails() {
     const postCode = useRef()
     const country = useRef()
     const [errorMessage, setErrorMessage] = useState()
-    const [coord, setCoord] = useState()
     const [active, setActive] = useState("other")
     const message = useRef()
     let addressString = ""
@@ -78,7 +77,7 @@ function BookingDetails() {
                             if (d.success) {
 
                                 setCoord(d.data)
-                                saveDetails()
+                                saveDetails(addressString, d.data)
 
                             }
                             else {
@@ -102,7 +101,7 @@ function BookingDetails() {
             else {
 
                 setCoord(data.data)
-                saveDetails()
+                saveDetails(addressString, data.data)
 
             }
 
@@ -123,7 +122,7 @@ function BookingDetails() {
 
     }
 
-    function saveDetails(){
+    function saveDetails(address, coordinates) {
 
         fetch("/api/booking/client/adddetails",{
 
@@ -144,9 +143,9 @@ function BookingDetails() {
                 photographerid:-1,
                 status:null,
                 message:message.current.value,
-                address:addressString,
-                latitude:coord[0],
-                longitude:coord[1],
+                address: address,
+                latitude: coordinates[0],
+                longitude: coordinates[1],
                 category:activeCat
 
             })

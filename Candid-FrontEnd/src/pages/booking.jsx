@@ -626,9 +626,8 @@ function Booking(){
 
                         </div>
 
-                        <p className="
+                        <p className={`
 
-                            bg-amber-300
                             h-7
                             w-[10vh]
                             flex
@@ -640,7 +639,11 @@ function Booking(){
 
                             xl:w-[15vh]
 
-                        ">pending</p>
+                            ${booking.status === "accepted" ? "bg-green-400":""}
+                            ${booking.status === "pending" ? "bg-amber-300":""}
+                            ${booking.status === "rejected" ? "bg-red-400":""}
+
+                        `}>{booking.status}</p>
                     </div>
 
                     <div className="

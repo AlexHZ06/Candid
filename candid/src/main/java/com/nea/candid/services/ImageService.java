@@ -129,21 +129,20 @@ public class ImageService {
 
     public void addPhotoTags(long photoid, List<Long> tagid){
 
-            int[] result = photosTableService.addPhotoTags(photoid, tagid);
-            if(result.length != tagid.size()){
+        int[] result = photosTableService.addPhotoTags(photoid, tagid);
+        if(result.length != tagid.size()){
 
-                throw new RuntimeException("Tags junctions do not align with number of tags");
+            throw new RuntimeException("Tags junctions do not align with number of tags");
 
-            }
+        }
+
+    }
+
+    public void addKeyWords(List<String> keywords){
+
+
 
     }
 
 
-    //TODO implement delete photo
-    public void deletePhoto(){
-
-        //TODO delete all photo tags
-        //TODO Delete from storage
-        //TODO Delete from database
-    }
 }

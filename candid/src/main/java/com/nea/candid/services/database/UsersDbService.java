@@ -27,7 +27,11 @@ public class UsersDbService {
 
     public List<Long> getPhotographerByDistanceBounds(double minLat, double minLon, double maxLat, double maxLon){
 
-        return usersTableRepo.getPhotographerByDistanceBounds(minLat, minLon, maxLat, maxLon);
+        List<Long> result = usersTableRepo.getPhotographerByDistanceBounds(minLat, minLon, maxLat, maxLon);
+        if(result == null || result.isEmpty()){
+            return null;
+        }
+        return result;
 
     }
 

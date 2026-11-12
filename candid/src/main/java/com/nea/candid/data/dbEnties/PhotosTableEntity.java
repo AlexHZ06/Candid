@@ -20,12 +20,9 @@ public class PhotosTableEntity {
     private final Date dateposted;
     private final  String photourl;
     private final  String thumbnailurl;
-    private final  float filesize;
-    private final  float width;
-    private final  float height;
     private final  float[] globalembeddedvector;
 
-    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float filesize, float width, float height, float[] globalembeddedvector) {
+    public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float[] globalembeddedvector) {
         this.photoid = photoid;
         this.userid = userid;
         this.photoname = photoname;
@@ -34,9 +31,6 @@ public class PhotosTableEntity {
         this.dateposted = dateposted;
         this.photourl = photourl;
         this.thumbnailurl = thumbnailurl;
-        this.filesize = filesize;
-        this.width = width;
-        this.height = height;
         this.globalembeddedvector = globalembeddedvector;
     }
 
@@ -72,18 +66,6 @@ public class PhotosTableEntity {
 
     public String getThumbnailurl() {
         return thumbnailurl;
-    }
-
-    public float getFilesize() {
-        return filesize;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public float getHeight() {
-        return height;
     }
 
     public float[] getGlobalEmbeddedVector() {

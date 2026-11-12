@@ -26,6 +26,8 @@ import FormEdit from './pages/formEdit'
 import MakeQuestion from './pages/makeQuestion'
 import FormFill from './pages/fillForm'
 import BookingDetails from './pages/bookingDetails'
+import CchatPage from './pages/cchatPage'
+import PchatPage from './pages/pchatPage'
 
 const router = createBrowserRouter([
 
@@ -51,7 +53,9 @@ const router = createBrowserRouter([
   {path:"/formEdit", element:<FormEdit/>},
   {path:"/makeQuestion", element:<MakeQuestion/>},
   {path:"/fillform/:photographerid", element:<FormFill/>},
-  {path:"/bookingdetails", element:<BookingDetails/>}
+  {path:"/bookingdetails", element:<BookingDetails/>},
+  {path:"/Cchatpage", element:<CchatPage/>},
+  {path:"/Pchatpage", element:<PchatPage/>}
   
 
 ])

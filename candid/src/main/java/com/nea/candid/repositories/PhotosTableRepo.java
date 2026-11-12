@@ -20,7 +20,7 @@ public class PhotosTableRepo {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long addPhoto(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float fileSize, float width, float height, float[] globalEmbeddedVector) {
+    public long addPhoto(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float[] globalEmbeddedVector) {
 
         String sql = """
                 
@@ -29,7 +29,7 @@ public class PhotosTableRepo {
                 returning photoid
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, fileSize, width, height, globalEmbeddedVector);
+        return jdbcTemplate.queryForObject(sql, Long.class, userid, photoName, description, category, datePosted, photoUrl, thumbNailUrl, globalEmbeddedVector);
 
     }
 
@@ -85,9 +85,6 @@ public class PhotosTableRepo {
                     rs.getDate("dateposted"),
                     rs.getString("photourl"),
                     rs.getString("thumbnailurl"),
-                    rs.getFloat("filesize"),
-                    rs.getFloat("width"),
-                    rs.getFloat("height"),
                     vector
             );
 
@@ -221,9 +218,6 @@ public class PhotosTableRepo {
                     rs.getDate("dateposted"),
                     rs.getString("photourl"),
                     rs.getString("thumbnailurl"),
-                    rs.getFloat("filesize"),
-                    rs.getFloat("width"),
-                    rs.getFloat("height"),
                     vector
             );
 
@@ -261,13 +255,103 @@ public class PhotosTableRepo {
                     rs.getDate("dateposted"),
                     rs.getString("photourl"),
                     rs.getString("thumbnailurl"),
-                    rs.getFloat("filesize"),
-                    rs.getFloat("width"),
-                    rs.getFloat("height"),
                     vector
             );
 
         },amount);
+
+    }
+
+    public List<PhotosTableEntity> getPhotosByWords(List<String> words, List<Long> excludeIds, String category, int imagesNeeded, float minPrice, float maxPrice, List<Long> validPhotographers){
+
+
+
+        String wordsList = words.getFirst();
+        for(int i = 1; i < wordsList.length(); i++){
+
+            wordsList = wordsList + ", " + words.get(i);
+
+        }
+        String idList = "" + excludeIds.getFirst();
+        for(int i = 1; i < idList.length(); i++){
+
+            idList = idList + ", " + excludeIds.get(i);
+
+        }
+
+        String photographerIds =  "";
+
+        String sql = """
+                select photostable.*
+                from photostable, keywordstable, catpricetable, userstable
+                where photostable.photoid = keyswordstable.photoid
+                and userstable.userid = photostable.userid
+                and userstable.userid = catpricetable.userid
+                and catpricetable.avprice Between(? and ?)
+                and photostable.tagname in (
+                and keyswordstable.word in (""" + wordsList + """
+                )
+                and photostable.photoid not in ("""+ idList +"""
+                )
+                and category = ?
+                group by photostable.photoid
+                having count(distinct keywordstable.keyword) = ?
+                """;
+
+        if(validPhotographers != null){
+
+            photographerIds =  "" + validPhotographers.getFirst();
+
+            for(int i = 1; i < validPhotographers.size(); i++){
+
+                photographerIds = photographerIds + ", " + validPhotographers.get(i);
+
+            }
+
+            sql = """
+                select photostable.*
+                from photostable, keywordstable, catpricetable, userstable
+                where photostable.photoid = keyswordstable.photoid
+                and userstable.userid = photostable.userid
+                and userstable.userid = catpricetable.userid
+                and catpricetable.avprice Between(? and ?)
+                and photostable.tagname in (
+                and keyswordstable.word in (""" + wordsList + """
+                )
+                and photostable.photoid not in ("""+ idList +"""
+                )
+                and photostable.userid in ("""+ photographerIds +"""
+                )
+                and category = ?
+                group by photostable.photoid
+                having count(distinct keywordstable.keyword) = ?
+                """;
+
+        }
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            Array sqlArray = rs.getArray("globalembeddedvector");
+            Float[] boxed = (Float[]) sqlArray.getArray();
+
+            float[] vector = new float[23];
+
+            for (int i = 0; i < vector.length; i++) {
+                vector[i] = boxed[i].floatValue();
+            }
+
+            return new PhotosTableEntity(
+                    rs.getLong("photoid"),
+                    rs.getLong("userid"),
+                    rs.getString("photoname"),
+                    rs.getString("description"),
+                    rs.getString("category"),
+                    rs.getDate("dateposted"),
+                    rs.getString("photourl"),
+                    rs.getString("thumbnailurl"),
+                    vector
+            );
+        },minPrice, maxPrice, category, imagesNeeded);
 
     }
 

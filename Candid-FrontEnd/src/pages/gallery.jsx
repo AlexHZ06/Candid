@@ -1,3 +1,4 @@
+
 import PHeader from "../compnents/pheader"
 import { Link } from "react-router-dom"
 import AlbumFolder from "../compnents/albumFolder"
@@ -35,22 +36,17 @@ function Gallery(){
     return(
 
         <div className="
-        
             w-screen 
             min-h-screen 
-        
         ">
             <PHeader active="Gallery"/>
             <div className="
-
                 flex
                 felx-col
                 items-center
                 justify-center
-
             ">
                 <div className="
-                
                     flex
                     border
                     border-neutral-300
@@ -61,33 +57,25 @@ function Gallery(){
                     items-center
                     rounded-md
                     mt-10
-                
                 ">
                     <div className="
-                    
                         w-9/10
                         flex
                         mt-5
                         justify-center
                         items-center
-                    
                         xl:mt-2
                         xl:pb-2
-
                     ">
                         <p className="
-                        
                             font-semibold
                             tracking-wide
                             text-neutral-700
                             text-2xl
-                        
-                            
-                        
                         ">Gallery</p>
                     </div>
-                        <div className="
-                    
+
+                    <div className="
                         border
                         border-neutral-300
                         rounded-xl
@@ -97,41 +85,38 @@ function Gallery(){
                         shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
                         flex
                         flex-row
-                        
                         gap-4
                         overflow-y-auto
-              
                         justify-center
                         shrink-0
                         flex-wrap
-                        
-                        
                         content-start
-           
-                    
                     ">
                         
                         {albums?.map(album => (
 
-                            <AlbumFolder title={album.albumname} photos={album.numofphotos} id={album.albumid} thumbnail={"/api" + album.thumnail}/>
+                            <AlbumFolder 
+                                title={album.albumname} 
+                                photos={album.numofphotos} 
+                                id={album.albumid} 
+                                thumbnail={"/api" + album.thumnail}
+                                key={album.albumid}
+                            />
 
                         ))}
 
                     </div>
+
                     <div className="
-                    
                         w-10/10
                         flex
                         flex-row
                         items-center
                         justify-center
                         mt-5
-
                         xl:mt-2
                     ">
-
                         <Link to={"/albumcreate"} className="
-                        
                             bg-black
                             text-white
                             rounded-xl
@@ -140,21 +125,15 @@ function Gallery(){
                             flex
                             items-center
                             justify-center
-                             hover:bg-gray-900
-      
+                            hover:bg-gray-900
                             transition
                             duration-100
-
                             shadow-[0_0px_10px_rgba(0,0,0,0.25)]
-
                             active:bg-white
                             active:text-black
-
                             xl:h-[5vh]
                             xl:w-[15vh]
-                        
                         ">Add Album</Link>
-
                     </div>
 
                 </div>
