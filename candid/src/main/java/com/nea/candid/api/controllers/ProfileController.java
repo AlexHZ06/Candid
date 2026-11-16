@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/profile/client")
@@ -20,6 +21,13 @@ public class ProfileController {
 
     public ProfileController(ProfileService profileService) {
         this.profileService = profileService;
+    }
+
+    @PostMapping("/getprofilebyid")
+    public ResponseBody getProfileById(@RequestBody Map<String, Long> body){
+
+        return profileService.getProfileById(body.get("profileId"));
+
     }
 
     @GetMapping("/getprofile")

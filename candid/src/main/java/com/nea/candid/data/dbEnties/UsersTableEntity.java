@@ -18,8 +18,9 @@ public class UsersTableEntity {
     private final String email;
     private final String hashedpassword;
     private final Date datejoined;
+    private final String phone;
 
-    public UsersTableEntity(Long userid, String username, String firstname, String lastname, String usertype, String email, String hashedpassword, Date datejoined) {
+    public UsersTableEntity(Long userid, String username, String firstname, String lastname, String usertype, String email, String hashedpassword, Date datejoined, String phone) {
         this.userid = userid;
         this.username = username;
         this.firstname = firstname;
@@ -28,6 +29,11 @@ public class UsersTableEntity {
         this.email = email;
         this.hashedpassword = hashedpassword;
         this.datejoined = datejoined;
+        this.phone = phone;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public Long getUserid() {

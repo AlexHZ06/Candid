@@ -63,4 +63,16 @@ public class ProfileService {
 
     }
 
+    public ResponseBody getProfileById(long id){
+
+        try {
+            return ResponseBody.success(profilesTableService.getProfileById(id), 952);
+        }catch(Exception e){
+
+            return ResponseBody.error("Profile was not found", 903);
+
+        }
+
+    }
+
 }

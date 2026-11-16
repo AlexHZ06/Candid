@@ -35,7 +35,8 @@ public class UsersTableRepo {
                         rs.getString("usertype"),
                         rs.getString("email"),
                         rs.getString("hashedpassword"),
-                        rs.getDate("datejoined")
+                        rs.getDate("datejoined"),
+                        rs.getString("phone")
                 );
 
             }, userName);
@@ -65,7 +66,8 @@ public class UsersTableRepo {
                         rs.getString("usertype"),
                         rs.getString("email"),
                         rs.getString("hashedpassword"),
-                        rs.getDate("datejoined")
+                        rs.getDate("datejoined"),
+                        rs.getString("phone")
                 );
 
             }, userId);
@@ -111,7 +113,8 @@ public class UsersTableRepo {
                     rs.getString("usertype"),
                     rs.getString("email"),
                     rs.getString("hashedpassword"),
-                    rs.getDate("datejoined")
+                    rs.getDate("datejoined"),
+                    rs.getString("phone")
             );
 
         });
@@ -153,7 +156,8 @@ public class UsersTableRepo {
                     rs.getString("usertype"),
                     rs.getString("email"),
                     rs.getString("hashedpassword"),
-                    rs.getDate("datejoined")
+                    rs.getDate("datejoined"),
+                    rs.getString("phone")
             );
 
 

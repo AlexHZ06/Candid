@@ -168,9 +168,15 @@ public class PhotosDbService {
 
     }
 
-    public List<PhotosTableEntity> getPhotosByWords(List<String> words, List<Long> excludeIds, String category, int imagesNeeded, float minPrice, float maxPrice, List<Long> validPhotographers){
+    public List<PhotosTableEntity> getFeedPhotos(List<String> words, List<Long> excludeIds, String category, float minPrice, float maxPrice, List<Long> validPhotographers, int neededWords){
 
-        return photosTableRepo.getPhotosByWords(words, excludeIds, category, imagesNeeded, minPrice, maxPrice, validPhotographers);
+        return photosTableRepo.getFeedPhotos(words, excludeIds, category, minPrice, maxPrice, validPhotographers, neededWords);
+
+    }
+
+    public float getCatPrice(String category, long userId){
+
+        return photosTableRepo.getCatPrice(category, userId);
 
     }
 

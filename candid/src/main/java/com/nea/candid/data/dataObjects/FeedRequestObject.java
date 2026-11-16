@@ -8,18 +8,24 @@ public class FeedRequestObject {
     private float minPrice;
     private float maxPrice;
     private float radius;
+    private long profileId;
 
-    public FeedRequestObject(String search, String category, long userId, float minPrice, float maxPrice, float radius) {
+    public FeedRequestObject(String search, String category, long userId, float minPrice, float maxPrice, float radius, long profileId ) {
         this.search = search;
         this.category = category;
         this.userId = userId;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
         this.radius = radius;
+        this.profileId = profileId;
     }
 
     public float getRadius() {
         return radius;
+    }
+
+    public long getProfileId() {
+        return profileId;
     }
 
     public String getSearch() {

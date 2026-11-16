@@ -9,6 +9,8 @@ import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -262,82 +264,96 @@ public class PhotosTableRepo {
 
     }
 
-    public List<PhotosTableEntity> getPhotosByWords(List<String> words, List<Long> excludeIds, String category, int imagesNeeded, float minPrice, float maxPrice, List<Long> validPhotographers){
-
-
-
-        String wordsList = words.getFirst();
-        for(int i = 1; i < wordsList.length(); i++){
-
-            wordsList = wordsList + ", " + words.get(i);
-
-        }
-        String idList = "" + excludeIds.getFirst();
-        for(int i = 1; i < idList.length(); i++){
-
-            idList = idList + ", " + excludeIds.get(i);
-
-        }
-
-        String photographerIds =  "";
+    public List<PhotosTableEntity> getFeedPhotos(
+            List<String> words,
+            List<Long> excludeIds,
+            String category,
+            float minPrice,
+            float maxPrice,
+            List<Long> validPhotographers,
+            int neededWords) {
 
         String sql = """
-                select photostable.*
-                from photostable, keywordstable, catpricetable, userstable
-                where photostable.photoid = keyswordstable.photoid
-                and userstable.userid = photostable.userid
-                and userstable.userid = catpricetable.userid
-                and catpricetable.avprice Between(? and ?)
-                and photostable.tagname in (
-                and keyswordstable.word in (""" + wordsList + """
-                )
-                and photostable.photoid not in ("""+ idList +"""
-                )
-                and category = ?
-                group by photostable.photoid
-                having count(distinct keywordstable.keyword) = ?
+            SELECT DISTINCT photostable.*
+            FROM photostable, userstable
+            WHERE userstable.userid = photostable.userid
+            AND EXISTS (
+                SELECT 1
+                FROM unnest(string_to_array(photostable.category, ',')) AS c(value)
+                WHERE c.value = ?
+            )
+            """;
+
+        List<Object> params = new ArrayList<>();
+        params.add(category);
+
+        if (!words.isEmpty()) {
+
+            sql = sql + """
+                AND (
+                    SELECT COUNT(DISTINCT keywordstable.word)
+                    FROM keywordstable
+                    WHERE keywordstable.photoid = photostable.photoid
+                    AND keywordstable.word IN (
                 """;
 
-        if(validPhotographers != null){
+            sql = sql + String.join(", ", Collections.nCopies(words.size(), "?"));
+            sql = sql + ")) >= ?";
 
-            photographerIds =  "" + validPhotographers.getFirst();
-
-            for(int i = 1; i < validPhotographers.size(); i++){
-
-                photographerIds = photographerIds + ", " + validPhotographers.get(i);
-
-            }
-
-            sql = """
-                select photostable.*
-                from photostable, keywordstable, catpricetable, userstable
-                where photostable.photoid = keyswordstable.photoid
-                and userstable.userid = photostable.userid
-                and userstable.userid = catpricetable.userid
-                and catpricetable.avprice Between(? and ?)
-                and photostable.tagname in (
-                and keyswordstable.word in (""" + wordsList + """
-                )
-                and photostable.photoid not in ("""+ idList +"""
-                )
-                and photostable.userid in ("""+ photographerIds +"""
-                )
-                and category = ?
-                group by photostable.photoid
-                having count(distinct keywordstable.keyword) = ?
-                """;
-
+            params.addAll(words);
+            params.add(neededWords);
         }
+
+        if (!excludeIds.isEmpty()) {
+
+            sql = sql + " AND photostable.photoid NOT IN ("
+                    + String.join(", ", Collections.nCopies(excludeIds.size(), "?"))
+                    + ")";
+
+            params.addAll(excludeIds);
+        }
+
+        if (!validPhotographers.isEmpty()) {
+
+            sql = sql + " AND photostable.userid IN ("
+                    + String.join(", ", Collections.nCopies(validPhotographers.size(), "?"))
+                    + ")";
+
+            params.addAll(validPhotographers);
+        }
+
+        sql = sql + """
+            AND EXISTS (
+                SELECT 1
+                FROM catpricetable
+                WHERE catpricetable.userid = photostable.userid
+                AND catpricetable.category = ?
+            """;
+
+        params.add(category);
+
+        if (minPrice != -1) {
+            sql = sql + " AND catpricetable.avprice >= ?";
+            params.add(minPrice);
+        }
+
+        if (maxPrice != -1) {
+            sql = sql + " AND catpricetable.avprice <= ?";
+            params.add(maxPrice);
+        }
+
+        sql = sql + ")";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
 
             Array sqlArray = rs.getArray("globalembeddedvector");
             Float[] boxed = (Float[]) sqlArray.getArray();
-
             float[] vector = new float[23];
 
             for (int i = 0; i < vector.length; i++) {
+
                 vector[i] = boxed[i].floatValue();
+
             }
 
             return new PhotosTableEntity(
@@ -351,7 +367,24 @@ public class PhotosTableRepo {
                     rs.getString("thumbnailurl"),
                     vector
             );
-        },minPrice, maxPrice, category, imagesNeeded);
+
+        }, params.toArray());
+    }
+
+    public float getCatPrice(String category, long userid) {
+
+        String sql = """
+                select avprice
+                from catpricetable
+                where userid = ?
+                and category = ?
+                """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+
+            return rs.getFloat("avprice");
+
+        }, userid, category);
 
     }
 

@@ -11,23 +11,16 @@ import jakarta.persistence.Table;
 public class SchedulesTableEntity {
 
     @Id
-    private final long scheduleid;
-    private final int startslot;
-    private final int endslot;
-    private final int dayofweek;
-    private final long photographerid;
+    private long scheduleid;
+    private int startslot;
+    private int endslot;
+    private int dayofweek;
+    private long photographerid;
 
-    @JsonCreator
-    public SchedulesTableEntity(
-            @JsonProperty("scheduleid") long scheduleid,
-            @JsonProperty("startslot") int startSlot,
-            @JsonProperty("endslot") int endSlot,
-            @JsonProperty("dayofweek") int dayofweek,
-            @JsonProperty("photographerid") long photographerid
-    ) {
+    public SchedulesTableEntity(long scheduleid, int startslot, int endslot, int dayofweek, long photographerid) {
         this.scheduleid = scheduleid;
-        this.startslot = startSlot;
-        this.endslot = endSlot;
+        this.startslot = startslot;
+        this.endslot = endslot;
         this.dayofweek = dayofweek;
         this.photographerid = photographerid;
     }

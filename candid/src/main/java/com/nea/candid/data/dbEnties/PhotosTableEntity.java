@@ -3,6 +3,7 @@ package com.nea.candid.data.dbEnties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,15 +13,16 @@ import java.util.Date;
 public class PhotosTableEntity {
 
     @Id
-    private final  long photoid;
-    private final  long userid;
-    private final  String photoname;
-    private final  String description;
-    private final  String category;
-    private final Date dateposted;
-    private final  String photourl;
-    private final  String thumbnailurl;
-    private final  float[] globalembeddedvector;
+    private long photoid;
+    private long userid;
+    private String photoname;
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    private String category;
+    private Date dateposted;
+    private String photourl;
+    private String thumbnailurl;
+    private float[] globalembeddedvector;
 
     public PhotosTableEntity(long photoid, long userid, String photoname, String description, String category, Date dateposted, String photourl, String thumbnailurl, float[] globalembeddedvector) {
         this.photoid = photoid;

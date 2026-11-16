@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RequestMapping("/image")
 @RestController
 public class ImageController {
@@ -55,6 +57,13 @@ public class ImageController {
             }
 
         }
+
+    }
+
+    @PostMapping("/getcatprice")
+    public ResponseBody getCatPrice(@RequestBody Map<String, String> body){
+
+        return imageService.getCatPrice(body.get("category").toLowerCase(), Long.parseLong(body.get("userId")));
 
     }
 

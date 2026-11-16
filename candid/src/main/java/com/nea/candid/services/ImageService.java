@@ -138,9 +138,9 @@ public class ImageService {
 
     }
 
-    public void addKeyWords(List<String> keywords){
+    public ResponseBody getCatPrice(String category, long userId){
 
-
+        return ResponseBody.success(photosTableService.getCatPrice(category, userId), 952);
 
     }
 
