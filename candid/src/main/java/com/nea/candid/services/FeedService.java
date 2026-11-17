@@ -62,7 +62,7 @@ public class FeedService {
 
         if(search != ""){
 
-            keyWords = keyWordService.extractNouns(search);
+            keyWords = keyWordService.extractKeywords(search);
             neededWords = keyWords.size();
 
         }

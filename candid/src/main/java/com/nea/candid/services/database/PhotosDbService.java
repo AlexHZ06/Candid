@@ -1,12 +1,10 @@
 package com.nea.candid.services.database;
 
 import com.nea.candid.data.dbEnties.AlbumsTableEntity;
+import com.nea.candid.data.dbEnties.CatPriceTableEntity;
 import com.nea.candid.data.dbEnties.PhotosTableEntity;
 import com.nea.candid.data.dto.ResponseBody;
-import com.nea.candid.repositories.AlbumsTableRepo;
-import com.nea.candid.repositories.PhotosTableRepo;
-import com.nea.candid.repositories.SectionVectorsTableRepo;
-import com.nea.candid.repositories.TagsTableRepo;
+import com.nea.candid.repositories.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +19,14 @@ public class PhotosDbService {
     private final TagsTableRepo tagsTableRepo;
     private final SectionVectorsTableRepo sectionVectorsTableRepo;
     private final AlbumsTableRepo albumsTableRepo;
+    private final CatPriceTableRepo catPriceTableRepo;
 
-
-    public PhotosDbService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, SectionVectorsTableRepo sectionVectorsTableRepo, AlbumsTableRepo albumsTableRepo) {
+    public PhotosDbService(PhotosTableRepo photosTableRepo, TagsTableRepo tagsTableRepo, SectionVectorsTableRepo sectionVectorsTableRepo, AlbumsTableRepo albumsTableRepo, CatPriceTableRepo catPriceTableRepo) {
         this.photosTableRepo = photosTableRepo;
         this.tagsTableRepo = tagsTableRepo;
         this.sectionVectorsTableRepo = sectionVectorsTableRepo;
         this.albumsTableRepo = albumsTableRepo;
+        this.catPriceTableRepo = catPriceTableRepo;
     }
 
     public Long addToPhotosTable(long userid, String photoName, String description, String category, LocalDateTime datePosted, String photoUrl, String thumbNailUrl, float fileSize, float width, float height, float[] globalVector) {
@@ -176,7 +175,23 @@ public class PhotosDbService {
 
     public float getCatPrice(String category, long userId){
 
-        return photosTableRepo.getCatPrice(category, userId);
+        return catPriceTableRepo.getCatPrice(category, userId);
+
+    }
+
+    public List<CatPriceTableEntity> getCatPrices(long userId){
+
+        List<CatPriceTableEntity> result = catPriceTableRepo.getCatPrices(userId);
+        System.out.println("get prices");
+        System.out.println(result.size());
+
+        if(result == null || result.isEmpty()){
+
+            throw new DataIntegrityViolationException("no prices");
+
+        }
+
+        return result;
 
     }
 

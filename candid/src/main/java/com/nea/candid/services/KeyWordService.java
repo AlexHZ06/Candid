@@ -21,27 +21,29 @@ public class KeyWordService {
 
     }
 
-    public List<String> extractNouns(String text) {
+    public List<String> extractKeywords(String text) {
 
         CoreDocument document = new CoreDocument(text);
         pipeline.annotate(document);
 
-        Set<String> nouns = new HashSet<>();
+        Set<String> keywords = new HashSet<>();
 
         for(int i = 0; i < document.tokens().size(); i++) {
 
             CoreLabel token = document.tokens().get(i);
             String pos = token.tag();
 
-            if(pos.startsWith("NN")){
+            if(pos.startsWith("NN") ||  // Nouns
+                    pos.startsWith("JJ") ||  // Adjectives
+                    pos.startsWith("VB")) {  // Verbs
 
-                nouns.add(token.lemma().toLowerCase());
+                keywords.add(token.lemma().toLowerCase());
 
             }
 
         }
 
-        return new ArrayList<String>(nouns);
+        return new ArrayList<>(keywords);
 
     }
 

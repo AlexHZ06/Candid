@@ -23,7 +23,7 @@ public class AlbumController {
     }
 
 
-    @PostMapping("/photographer/getphotos")
+    @PostMapping("/getphotos")
     public ResponseBody getAllPhotoFromAlbum(@RequestBody Map<String, Long> body){
 
         return albumService.getAllPhotosFromAlbum(body.get("albumId"));
@@ -51,10 +51,10 @@ public class AlbumController {
 
     }
 
-    @GetMapping("/photographer/getallalbums")
-    public ResponseBody getAllAlbums(HttpServletRequest request){
+    @PostMapping("/getallalbums")
+    public ResponseBody getAllAlbums(@RequestBody Map<String, Long> body){
 
-        return albumService.getAllAlbums(Long.parseLong((String) request.getAttribute("userId")));
+        return albumService.getAllAlbums(body.get("userId"));
 
     }
 

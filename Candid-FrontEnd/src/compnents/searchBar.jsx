@@ -29,6 +29,7 @@ function SearchBar(){
             justify-center
             items-center
             flex-col
+            
 
         ">
         <div className="
@@ -44,8 +45,14 @@ function SearchBar(){
                 border-neutral-300
                 rounded-4xl
                 pl-2
-                w-[30vh]
-                h-[4vh]
+
+
+
+                w-[50vh]
+                h-[6vh]
+
+                2xl:w-[30vh]
+                2xl:h-[4vh]
 
                 hover:border-neutral-400
                 active:border-neutral-500
@@ -55,8 +62,10 @@ function SearchBar(){
             "/>
             <button className="
             
-                h-[4vh]
-                w-[4vh]
+                2xl:h-[4vh]
+                2xl:w-[4vh]
+                h-[6vh]
+                w-[6vh]
                 border-2
                 border-neutral-300
                 rounded-4xl
@@ -70,8 +79,10 @@ function SearchBar(){
             </button>
             <button onClick={filterPress} className="
             
-                h-[4vh]
-                w-[4vh]
+                2xl:h-[4vh]
+                2xl:w-[4vh]
+                h-[6vh]
+                w-[6vh]
                 border-2
                 border-neutral-300
                 rounded-4xl
@@ -83,7 +94,15 @@ function SearchBar(){
             ">
                 <img src="src\resources\Filter-3--Streamline-Ultimate.png"/>
             </button>
+            <button className="
             
+                text-neutral-600
+                hover:text-black
+                active:text-neutral-600
+            
+            ">
+                view profile
+            </button>
         </div>
         <TagsCatSelection hide={hidden}/>
         </div>

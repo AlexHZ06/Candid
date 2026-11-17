@@ -2,11 +2,14 @@ import CHeader from "../compnents/cheader"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { jwtService } from "../logic/jwt";
+import { useNavigate } from "react-router-dom";
 
 function Profiles(){
 
     const tokenService = new jwtService()
     const [profiles, setProfiles] = useState();
+
+    const navigate = useNavigate()
 
     useEffect(() =>{
 
@@ -65,6 +68,20 @@ function Profiles(){
         })
 
     }, [])
+
+    function clickProfile(profileBody){
+
+        navigate("/imagesearch", {
+
+            state:{
+
+                profile:profileBody
+
+            }
+
+        })
+
+    }
 
     return(
 
@@ -146,7 +163,7 @@ function Profiles(){
                         
                         {profiles?.map(profile => (
 
-                            <Link className="
+                            <button onClick={()=>{clickProfile(profile);}} className="
                             
                                 w-[20vh]
                                 bg-neutral-50
@@ -166,7 +183,7 @@ function Profiles(){
                                     
 
                                 ">{profile.profilename}</p>
-                            </Link>
+                            </button>
 
                         ))}
 

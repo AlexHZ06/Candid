@@ -224,7 +224,6 @@ function MakeBooking() {
     }, [])
 
     useEffect(() => {
-
         if (retrievedSchedule.length === 0) {
             return
         }
@@ -232,16 +231,18 @@ function MakeBooking() {
         setScheduleSlots(prev => {
             const updated = prev.map(day => [...day])
 
-
             for (let i = 0; i < retrievedSchedule.length; i++) {
 
-                let slot = retrievedSchedule[i].startslot
-                const end = retrievedSchedule[i].endslot
+                let slot = retrievedSchedule[i].startSlot
+                const end = retrievedSchedule[i].endSlot
                 const day = retrievedSchedule[i].dayofweek
 
                 while (slot <= end) {
-                    
-                    updated[day][slot] = { ...updated[day][slot], status: "schedule" }
+                    updated[day][slot] = {
+                        ...updated[day][slot],
+                        status: "schedule"
+                    }
+
                     slot++
                 }
             }
@@ -619,7 +620,7 @@ function MakeBooking() {
             items-center
         
         ">
-            <CHeader active={""} />
+            <CHeader active={"Search"} />
             <div className="
             
                 shadow-[0_0px_10px_rgba(0,0,0,0.25)]
@@ -1565,7 +1566,7 @@ function MakeBooking() {
                         active:text-black
                     
                     ">Save</button>
-                    <Link to={"/temp"} className="
+                    <Link to={"/profiles"} className="
                     
                         bg-black
                         text-white

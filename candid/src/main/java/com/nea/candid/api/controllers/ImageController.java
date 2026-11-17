@@ -67,4 +67,11 @@ public class ImageController {
 
     }
 
+    @PostMapping("/getcatprices")
+    public ResponseBody getCatPrices(@RequestBody Map<String, Long> body){
+
+        return imageService.getCatPrices(body.get("userId"));
+
+    }
+
 }

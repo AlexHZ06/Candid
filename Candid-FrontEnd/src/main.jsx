@@ -12,14 +12,12 @@ import ImageSearch from './pages/imageSearch'
 import SignUp from './pages/signup'
 import AddImage from './pages/addimage'
 import AlbumCreate from './pages/albumCreate'
-import CHeader from './compnents/cheader'
 import RejectedJwt from './pages/rejectedJwt'
 import ClientHome from './pages/ClientHome'
 import Profiles from './pages/profiles'
 import CreateProfile from './pages/createProflie'
 import MakeBooking from './pages/makeBooking'
 import EditSchedule from './pages/editSchedule'
-import Temp from './pages/temp'
 import ClientPage from './pages/clientPage'
 import Booking from './pages/booking'
 import FormEdit from './pages/formEdit'
@@ -28,6 +26,10 @@ import FormFill from './pages/fillForm'
 import BookingDetails from './pages/bookingDetails'
 import CchatPage from './pages/cchatPage'
 import PchatPage from './pages/pchatPage'
+import CHeader from './compnents/cheader'
+import ImageCard from './pages/imageCard'
+import PhotographerUser from './pages/photographerUser'
+import AlbumView from './pages/albumView'
 
 const router = createBrowserRouter([
 
@@ -47,7 +49,6 @@ const router = createBrowserRouter([
   {path:"/createprofile", element:<CreateProfile/>},
   {path:"/makebooking/:userid", element:<MakeBooking/>},
   {path:"/editschedule", element:<EditSchedule/>},
-  {path:"/temp", element:<Temp/>},
   {path:"/clientpage", element:<ClientPage/>},
   {path:"/booking/:bookingid", element:<Booking/>},
   {path:"/formEdit", element:<FormEdit/>},
@@ -55,8 +56,10 @@ const router = createBrowserRouter([
   {path:"/fillform/:photographerid", element:<FormFill/>},
   {path:"/bookingdetails", element:<BookingDetails/>},
   {path:"/Cchatpage", element:<CchatPage/>},
-  {path:"/Pchatpage", element:<PchatPage/>}
-  
+  {path:"/Pchatpage", element:<PchatPage/>},
+  {path:"/imagecard", element:<ImageCard/>},
+  {path:"/photographeruser/:userid", element:<PhotographerUser/>},
+  {path:"/albumview", element:<AlbumView/>}
 
 ])
 

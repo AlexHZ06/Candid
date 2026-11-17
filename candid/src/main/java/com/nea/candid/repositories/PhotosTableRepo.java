@@ -264,41 +264,37 @@ public class PhotosTableRepo {
 
     }
 
-    public List<PhotosTableEntity> getFeedPhotos(
-            List<String> words,
-            List<Long> excludeIds,
-            String category,
-            float minPrice,
-            float maxPrice,
-            List<Long> validPhotographers,
-            int neededWords) {
 
-        String sql = """
-            SELECT DISTINCT photostable.*
-            FROM photostable, userstable
-            WHERE userstable.userid = photostable.userid
-            AND EXISTS (
-                SELECT 1
-                FROM unnest(string_to_array(photostable.category, ',')) AS c(value)
-                WHERE c.value = ?
-            )
-            """;
+    public List<PhotosTableEntity> getFeedPhotos(List<String> words, List<Long> excludeIds, String category, float minPrice, float maxPrice, List<Long> validPhotographers, int neededWords) {
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT DISTINCT photostable.*
+        FROM photostable
+        WHERE EXISTS (
+            SELECT 1
+            FROM unnest(string_to_array(photostable.category, ',')) AS c(value)
+            WHERE TRIM(c.value) = ?
+        )
+        """);
 
         List<Object> params = new ArrayList<>();
+
         params.add(category);
 
         if (!words.isEmpty()) {
 
-            sql = sql + """
-                AND (
-                    SELECT COUNT(DISTINCT keywordstable.word)
-                    FROM keywordstable
-                    WHERE keywordstable.photoid = photostable.photoid
-                    AND keywordstable.word IN (
-                """;
+            sql.append("""
+            AND (
+                SELECT COUNT(DISTINCT keywordstable.word)
+                FROM keywordstable
+                WHERE keywordstable.photoid = photostable.photoid
+                AND keywordstable.word IN (
+            """);
 
-            sql = sql + String.join(", ", Collections.nCopies(words.size(), "?"));
-            sql = sql + ")) >= ?";
+            sql.append(String.join(", ",
+                    Collections.nCopies(words.size(), "?")));
+
+            sql.append(")) >= ? ");
 
             params.addAll(words);
             params.add(neededWords);
@@ -306,86 +302,88 @@ public class PhotosTableRepo {
 
         if (!excludeIds.isEmpty()) {
 
-            sql = sql + " AND photostable.photoid NOT IN ("
-                    + String.join(", ", Collections.nCopies(excludeIds.size(), "?"))
-                    + ")";
+            sql.append(" AND photostable.photoid NOT IN (");
+
+            sql.append(String.join(", ",
+                    Collections.nCopies(excludeIds.size(), "?")));
+
+            sql.append(") ");
 
             params.addAll(excludeIds);
         }
 
         if (!validPhotographers.isEmpty()) {
 
-            sql = sql + " AND photostable.userid IN ("
-                    + String.join(", ", Collections.nCopies(validPhotographers.size(), "?"))
-                    + ")";
+            sql.append(" AND photostable.userid IN (");
+
+            sql.append(String.join(", ",
+                    Collections.nCopies(validPhotographers.size(), "?")));
+
+            sql.append(") ");
 
             params.addAll(validPhotographers);
         }
 
-        sql = sql + """
-            AND EXISTS (
-                SELECT 1
-                FROM catpricetable
-                WHERE catpricetable.userid = photostable.userid
-                AND catpricetable.category = ?
-            """;
+        sql.append("""
+        AND EXISTS (
+            SELECT 1
+            FROM catpricetable
+            WHERE catpricetable.userid = photostable.userid
+            AND catpricetable.category = ?
+        """);
 
         params.add(category);
 
         if (minPrice != -1) {
-            sql = sql + " AND catpricetable.avprice >= ?";
+
+            sql.append(" AND catpricetable.avprice >= ? ");
+
             params.add(minPrice);
         }
 
         if (maxPrice != -1) {
-            sql = sql + " AND catpricetable.avprice <= ?";
+
+            sql.append(" AND catpricetable.avprice <= ? ");
+
             params.add(maxPrice);
         }
 
-        sql = sql + ")";
+        sql.append(") ");
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        // Execute query
+        return jdbcTemplate.query(
+                sql.toString(),
+                (rs, rowNum) -> {
 
-            Array sqlArray = rs.getArray("globalembeddedvector");
-            Float[] boxed = (Float[]) sqlArray.getArray();
-            float[] vector = new float[23];
+                    Array sqlArray = rs.getArray("globalembeddedvector");
 
-            for (int i = 0; i < vector.length; i++) {
+                    Float[] boxed = (Float[]) sqlArray.getArray();
 
-                vector[i] = boxed[i].floatValue();
+                    float[] vector = new float[23];
 
-            }
+                    for (int i = 0; i < vector.length; i++) {
 
-            return new PhotosTableEntity(
-                    rs.getLong("photoid"),
-                    rs.getLong("userid"),
-                    rs.getString("photoname"),
-                    rs.getString("description"),
-                    rs.getString("category"),
-                    rs.getDate("dateposted"),
-                    rs.getString("photourl"),
-                    rs.getString("thumbnailurl"),
-                    vector
-            );
+                        vector[i] = boxed[i].floatValue();
 
-        }, params.toArray());
+                    }
+
+                    return new PhotosTableEntity(
+                            rs.getLong("photoid"),
+                            rs.getLong("userid"),
+                            rs.getString("photoname"),
+                            rs.getString("description"),
+                            rs.getString("category"),
+                            rs.getDate("dateposted"),
+                            rs.getString("photourl"),
+                            rs.getString("thumbnailurl"),
+                            vector
+                    );
+
+                },
+                params.toArray()
+        );
     }
 
-    public float getCatPrice(String category, long userid) {
 
-        String sql = """
-                select avprice
-                from catpricetable
-                where userid = ?
-                and category = ?
-                """;
-
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-
-            return rs.getFloat("avprice");
-
-        }, userid, category);
-
-    }
 
 }

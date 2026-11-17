@@ -18,7 +18,7 @@ function Album(){
 
         tokenService.checkTokenPhotographer()
 
-        fetch("/api/album/photographer/getallalbums", {
+        fetch("/api/album/getallalbums", {
 
             method:"GET",
             headers:{
@@ -33,7 +33,7 @@ function Album(){
 
         })
 
-        fetch("/api/album/photographer/getphotos",{
+        fetch("/api/album/getphotos",{
 
             method:"POST",
             headers:{

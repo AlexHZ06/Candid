@@ -16,7 +16,7 @@ function Gallery(){
 
         tokenService.checkTokenPhotographer()
 
-        fetch("/api/album/photographer/getallalbums", {
+        fetch("/api/album/getallalbums", {
 
             method:"GET",
             headers:{
@@ -95,13 +95,54 @@ function Gallery(){
                         
                         {albums?.map(album => (
 
-                            <AlbumFolder 
-                                title={album.albumname} 
-                                photos={album.numofphotos} 
-                                id={album.albumid} 
-                                thumbnail={"/api" + album.thumnail}
-                                key={album.albumid}
-                            />
+                            <Link to={`/album/${album.albumid}/${album.albumname}`} key={album.albumid} className="
+                            
+                                bg-neutral-200
+                                w-full
+                                aspect-square
+                                rounded-xl
+                                shadow-[0_0px_10px_rgba(0,0,0,0.25)]
+                                hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]
+                                transition
+                                duration-100
+                                active:shadow-[0_0px_10px_rgba(0,0,0,0.25)_inset]
+                                relative
+                                overflow-hidden
+
+                            ">
+
+                                <img src={"/api" + album.thumnail} className="
+                                
+                                    absolute
+                                    w-full
+                                    h-full
+                                    object-cover
+                                    rounded-xl
+                                    top-0
+                                    left-0
+                                
+                                "/>
+
+                                <div className="
+                                
+                                    absolute
+                                    bottom-0
+                                    left-0
+                                    w-full
+                                    bg-black/50
+                                    p-3
+
+                                ">
+                                    <p className="
+                                    
+                                        text-white
+                                        text-lg
+                                        font-semibold
+                                    
+                                    ">{album.albumname}</p>
+                                </div>
+
+                            </Link>
 
                         ))}
 

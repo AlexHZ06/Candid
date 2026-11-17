@@ -24,6 +24,7 @@ public class ImageService {
     private final PhotosDbService photosTableService;
     private final ImageDecoderService imageDecoderService;
 
+
     public ImageService(PhotosDbService photosTableService, ImageDecoderService imageDecoderService) {
         this.photosTableService = photosTableService;
         this.imageDecoderService = imageDecoderService;
@@ -141,6 +142,21 @@ public class ImageService {
     public ResponseBody getCatPrice(String category, long userId){
 
         return ResponseBody.success(photosTableService.getCatPrice(category, userId), 952);
+
+    }
+
+    public ResponseBody getCatPrices(long userId){
+
+        try{
+
+            return  ResponseBody.success(photosTableService.getCatPrices(userId), 952);
+
+        }catch (Exception e){
+
+            return ResponseBody.error("no prices", 903);
+
+        }
+
 
     }
 

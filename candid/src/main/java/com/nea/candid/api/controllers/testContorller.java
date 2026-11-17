@@ -78,7 +78,7 @@ public class testContorller {
     @PostMapping("/public/getKeyWords")
     public ResponseBody getKeyWords(@RequestBody Map<String,String> body){
 
-        return ResponseBody.success(keyWordService.extractNouns(body.get("text")), 101);
+        return ResponseBody.success(keyWordService.extractKeywords(body.get("text")), 101);
 
     }
 
